@@ -975,3 +975,12 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#0a1e2d">
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
