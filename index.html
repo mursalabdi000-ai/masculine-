@@ -1,1316 +1,1436 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masculine Security – Mini Office (Offline)</title>
+  <meta name="theme-color" content="#0b1220" />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#0f172a;
+      --panel2:#111c36;
+      --card:#0f1a33;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:rgba(255,255,255,.08);
+      --accent:#3b82f6;
+      --accent2:#22c55e;
+      --danger:#ef4444;
+      --warning:#f59e0b;
+      --radius:14px;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(59,130,246,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 30%, rgba(34,197,94,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .app{
+      min-height:100%;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+    }
+    /* Sidebar */
+    .sidebar{
+      position:sticky; top:0; height:100vh;
+      padding:18px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border-right:1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding:12px 10px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.02);
+      box-shadow: var(--shadow);
+    }
+    .logo{
+      width:40px; height:40px;
+      border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(34,197,94,.18));
+      border:1px solid var(--line);
+      font-weight:800;
+    }
+    .brand h1{
+      margin:0;
+      font-size:14px;
+      line-height:1.2;
+    }
+    .brand p{
+      margin:2px 0 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .nav{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .nav button{
+      width:100%;
+      text-align:left;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--text);
+      padding:10px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      transition:.15s ease;
+    }
+    .nav button:hover{background:rgba(255,255,255,.03); border-color:var(--line)}
+    .nav button.active{
+      background:rgba(59,130,246,.12);
+      border-color:rgba(59,130,246,.35);
+    }
+    .nav .left{
+      display:flex; align-items:center; gap:10px;
+      min-width:0;
+    }
+    .nav .icon{
+      width:28px; height:28px;
+      border-radius:10px;
+      display:grid; place-items:center;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      flex:0 0 auto;
+      font-size:13px;
+    }
+    .nav .label{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:13px;
+    }
+    .pill{
+      font-size:11px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:4px 8px;
+      flex:0 0 auto;
+    }
+    .sidebar .footer{
+      margin-top:auto;
+      padding:12px 10px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+    }
 
-  <head>
-    <meta charset="UTF-8">
-    <title>Masculine Security</title>
-    <link rel="stylesheet" href="./style.css">
+    /* Main */
+    .main{
+      padding:18px 18px 26px 18px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.02);
+      box-shadow: var(--shadow);
+      position:sticky; top:10px;
+      z-index:10;
+      backdrop-filter: blur(10px);
+    }
+    .crumbs{
+      min-width:0;
+    }
+    .crumbs .title{
+      font-size:14px;
+      font-weight:700;
+      margin:0;
+    }
+    .crumbs .sub{
+      margin:3px 0 0 0;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .actions{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:12px;
+      transition:.15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.18)}
+    .btn.primary{border-color:rgba(59,130,246,.45); background:rgba(59,130,246,.14)}
+    .btn.good{border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.14)}
+    .btn.danger{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.12)}
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
 
-  <link rel="manifest" href="./manifest.json">`n</head>
-    
-  <body>
-  <!-- Mini Unternehmens-App (Deutsch) – FULL MVP (PDF + CSV + MwSt + Firmenprofil)
-     Works offline with LocalStorage. Requires jsPDF CDN (see instructions above). -->
+    /* Layout blocks */
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .app{grid-template-columns: 1fr}
+      .sidebar{position:relative; height:auto}
+      .grid{grid-template-columns:1fr}
+      .topbar{position:relative; top:auto}
+    }
 
-<div id="app">
-  <header class="top">
-    <div class="brand">
-      <h1 id="appTitle">Mini Unternehmens-App</h1>
-      <div class="muted" id="appSub">Offline • Kunden • Rechnungen • Ausgaben • PDF • CSV</div>
-    </div>
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.02);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+    }
+    .muted{color:var(--muted)}
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .kpis{grid-template-columns:1fr}
+    }
+    .kpi{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(15,26,51,.55);
+    }
+    .kpi .klabel{font-size:12px; color:var(--muted)}
+    .kpi .kval{font-size:18px; font-weight:800; margin-top:6px}
+    .kpi .kmini{font-size:11px; color:var(--muted); margin-top:2px}
 
-    <nav class="tabs">
-      <button class="tab active" onclick="showPage('dashboard', this)">Übersicht</button>
-      <button class="tab" onclick="showPage('customers', this)">Kunden</button>
-      <button class="tab" onclick="showPage('invoices', this)">Rechnungen</button>
-      <button class="tab" onclick="showPage('expenses', this)">Ausgaben</button>
-      <button class="tab" onclick="showPage('settings', this)">Einstellungen</button>
-    </nav>
-  </header>
+    /* Tables */
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(15,26,51,.45);
+    }
+    th,td{
+      text-align:left;
+      padding:10px 10px;
+      font-size:12px;
+      border-bottom:1px solid var(--line);
+    }
+    th{
+      color:var(--muted);
+      font-weight:700;
+      background:rgba(255,255,255,.02);
+    }
+    tr:last-child td{border-bottom:none}
+    .row-actions{
+      display:flex; gap:6px; justify-content:flex-end;
+    }
+    .mini{
+      padding:6px 8px;
+      border-radius:10px;
+      font-size:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .mini.danger{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.12)}
+    .mini.good{border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.12)}
+    .mini:disabled{opacity:.55; cursor:not-allowed}
 
-  <main class="wrap">
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="page">
-      <h2>Übersicht</h2>
+    /* Forms */
+    .form{
+      display:grid;
+      gap:10px;
+    }
+    .field label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .field input, .field select, .field textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+    }
+    .field textarea{min-height:90px; resize:vertical}
+    .field input::placeholder, .field textarea::placeholder{color:rgba(156,163,175,.6)}
+    .form-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .form-row{grid-template-columns:1fr}
+    }
 
-      <div class="kpis">
-        <div class="kpi">
-          <div class="label">Umsatz (diesen Monat)</div>
-          <div class="value" id="kpiInvMonth">0,00 €</div>
-          <div class="muted small" id="kpiInvMonthSub">MwSt: 0,00 € • Brutto: 0,00 €</div>
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.55);
+      color:var(--text);
+      font-size:12px;
+      opacity:0;
+      transform:translateY(8px);
+      transition:.2s ease;
+      pointer-events:none;
+      max-width: 520px;
+    }
+    .toast.show{opacity:1; transform:translateY(0)}
+    .split{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .code{
+      font-family:var(--mono);
+      font-size:11px;
+      color:rgba(229,231,235,.85);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="root">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">MS</div>
+        <div>
+          <h1>Masculine Security</h1>
+          <p>Mini Office • Offline (local)</p>
         </div>
-        <div class="kpi">
-          <div class="label">Ausgaben (diesen Monat)</div>
-          <div class="value" id="kpiExpMonth">0,00 €</div>
-        </div>
-        <div class="kpi">
-          <div class="label">Umsatz (dieses Jahr)</div>
-          <div class="value" id="kpiInvYear">0,00 €</div>
-          <div class="muted small" id="kpiInvYearSub">MwSt: 0,00 € • Brutto: 0,00 €</div>
-        </div>
-        <div class="kpi">
-          <div class="label">Ausgaben (dieses Jahr)</div>
-          <div class="value" id="kpiExpYear">0,00 €</div>
-        </div>
       </div>
 
-      <div class="row">
-        <button class="btn" onclick="exportJSON()">Backup (JSON exportieren)</button>
-        <label class="btn">
-          Wiederherstellen (JSON importieren)
-          <input type="file" accept=".json" hidden onchange="importJSON(this.files[0])">
-        </label>
-        <button class="btn danger" onclick="resetAll()">Alles zurücksetzen</button>
+      <nav class="nav" id="nav">
+        <button class="active" data-page="dashboard">
+          <div class="left"><div class="icon">🏠</div><div class="label">Übersicht</div></div>
+          <span class="pill" id="pillDash">KPIs</span>
+        </button>
+        <button data-page="customers">
+          <div class="left"><div class="icon">👤</div><div class="label">Kunden</div></div>
+          <span class="pill" id="pillCustomers">0</span>
+        </button>
+        <button data-page="invoices">
+          <div class="left"><div class="icon">🧾</div><div class="label">Rechnungen</div></div>
+          <span class="pill" id="pillInvoices">0</span>
+        </button>
+        <button data-page="expenses">
+          <div class="left"><div class="icon">💳</div><div class="label">Ausgaben</div></div>
+          <span class="pill" id="pillExpenses">0</span>
+        </button>
+        <button data-page="settings">
+          <div class="left"><div class="icon">⚙️</div><div class="label">Einstellungen</div></div>
+          <span class="pill">Backup</span>
+        </button>
+      </nav>
+
+      <div class="footer">
+        <div><b>Tip:</b> Netlify updates = GitHub commit.</div>
+        <div class="muted" style="margin-top:6px">Version: <span id="ver">v1</span></div>
       </div>
+    </aside>
 
-      <div class="row">
-        <button class="btn" onclick="downloadCSV('customers')">Kunden CSV</button>
-        <button class="btn" onclick="downloadCSV('invoices')">Rechnungen CSV</button>
-        <button class="btn" onclick="downloadCSV('expenses')">Ausgaben CSV</button>
-      </div>
-
-      <p class="muted small">
-        Tipp: Im mobilen Browser „Zum Startbildschirm hinzufügen“ wählen, damit es wie eine App wirkt.
-      </p>
-    </section>
-
-    <!-- CUSTOMERS -->
-    <section id="customers" class="page hidden">
-      <h2>Kunden</h2>
-
-      <div class="card">
-        <div class="grid">
-          <input id="c_name" placeholder="Name *" />
-          <div class="row">
-            <input id="c_email" placeholder="E-Mail" />
-            <input id="c_phone" placeholder="Telefon" />
-          </div>
-          <div class="row">
-            <input id="c_street" placeholder="Straße / Hausnummer" />
-            <input id="c_city" placeholder="PLZ / Stadt" />
-          </div>
-
-          <div class="row">
-            <button class="btn primary" onclick="saveCustomer()">Speichern</button>
-            <button class="btn" onclick="clearCustomerForm()">Leeren</button>
-            <span class="muted" id="c_msg"></span>
-          </div>
+    <main class="main">
+      <div class="topbar">
+        <div class="crumbs">
+          <p class="title" id="pageTitle">Übersicht</p>
+          <p class="sub" id="pageSub">Umsatz • Ausgaben • Kunden • Rechnungen (offline)</p>
+        </div>
+        <div class="actions" id="topActions">
+          <button class="btn primary" id="quickInvoice">＋ Rechnung</button>
+          <button class="btn" id="quickCustomer">＋ Kunde</button>
+          <button class="btn" id="quickExpense">＋ Ausgabe</button>
+          <button class="btn" id="exportBtn">Export</button>
+          <button class="btn" id="importBtn">Import</button>
         </div>
       </div>
 
-      <div class="row">
-        <input id="c_search" placeholder="Kunden suchen..." oninput="renderCustomers()" />
-      </div>
+      <section id="view"></section>
+    </main>
+  </div>
 
-      <div id="customers_list" class="list"></div>
-    </section>
+  <div class="toast" id="toast"></div>
 
-    <!-- INVOICES -->
-    <section id="invoices" class="page hidden">
-      <h2>Rechnungen</h2>
+  <input type="file" id="fileInput" accept="application/json" style="display:none" />
 
-      <div class="card">
-        <div class="grid">
-          <div class="row">
-            <input id="i_no" placeholder="Rechnungsnr. (automatisch wenn leer)" />
-            <input id="i_date" type="date" />
-            <select id="i_status">
-              <option value="draft">Entwurf</option>
-              <option value="sent">Gesendet</option>
-              <option value="paid">Bezahlt</option>
-            </select>
-          </div>
+  <script>
+    // ===============================
+    // Mini Office App (offline localStorage)
+    // NOTE for CodePen: keep JS only here (HTML panel). Leave JS panel EMPTY.
+    // ===============================
 
-          <div class="row">
-            <select id="i_customer"></select>
-            <button class="btn" onclick="addItem()">+ Position</button>
-          </div>
+    (function(){
+      const LS_KEY = "ms_mini_office_v1";
+      const $ = (sel, el=document) => el.querySelector(sel);
+      const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
 
-          <div class="row">
-            <label class="pill">
-              <span>MwSt:</span>
-              <select id="i_vatMode" onchange="applyInvoiceVatMode()">
-                <option value="settings">wie Einstellungen</option>
-                <option value="0">0% (Kleinunternehmer)</option>
-                <option value="19">19% (Regelbesteuerung)</option>
-                <option value="custom">benutzerdefiniert</option>
-              </select>
-              <input id="i_vatCustom" class="mini" type="number" step="0.01" placeholder="z.B. 7" style="display:none;" oninput="updateInvoiceTotals()" />
-            </label>
+      const state = loadState();
 
-            <span class="muted small" id="i_vatHint"></span>
-          </div>
-
-          <div id="items" class="items"></div>
-
-          <div class="totals">
-            <div class="row">
-              <div class="total">Netto: <span id="i_subtotal">0,00 €</span></div>
-              <div class="total">MwSt: <span id="i_vat">0,00 €</span></div>
-              <div class="total">Brutto: <span id="i_total">0,00 €</span></div>
-            </div>
-            <div class="muted small" id="i_smallNote"></div>
-          </div>
-
-          <div class="row">
-            <button class="btn primary" onclick="saveInvoice()">Speichern</button>
-            <button class="btn" onclick="clearInvoiceForm()">Leeren</button>
-            <button class="btn" onclick="downloadCurrentInvoicePDF()">PDF (aktuelle Eingabe)</button>
-            <span class="muted" id="i_msg"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <input id="i_search" placeholder="Rechnungen suchen..." oninput="renderInvoices()" />
-      </div>
-
-      <div id="invoices_list" class="list"></div>
-    </section>
-
-    <!-- EXPENSES -->
-    <section id="expenses" class="page hidden">
-      <h2>Ausgaben</h2>
-
-      <div class="card">
-        <div class="grid">
-          <div class="row">
-            <input id="e_date" type="date" />
-            <input id="e_vendor" placeholder="Lieferant" />
-            <input id="e_amount" type="number" step="0.01" placeholder="Betrag €" />
-          </div>
-          <div class="row">
-            <select id="e_category">
-              <option value="fuel">Kraftstoff</option>
-              <option value="transport">Transport</option>
-              <option value="uniform">Uniform</option>
-              <option value="tools">Werkzeuge</option>
-              <option value="phone">Telefon</option>
-              <option value="other">Sonstiges</option>
-            </select>
-            <input id="e_note" placeholder="Notiz (optional)" />
-          </div>
-
-          <div class="row">
-            <button class="btn primary" onclick="saveExpense()">Speichern</button>
-            <button class="btn" onclick="clearExpenseForm()">Leeren</button>
-            <span class="muted" id="e_msg"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <input id="e_search" placeholder="Ausgaben suchen..." oninput="renderExpenses()" />
-      </div>
-
-      <div id="expenses_list" class="list"></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings" class="page hidden">
-      <h2>Einstellungen</h2>
-
-      <div class="card">
-        <h3>Firmenprofil (für PDFs)</h3>
-        <div class="grid">
-          <div class="row">
-            <input id="s_company" placeholder="Firmenname (z.B. Masculine Security)" />
-            <input id="s_owner" placeholder="Inhaber / Ansprechpartner" />
-          </div>
-          <div class="row">
-            <input id="s_street" placeholder="Straße / Hausnummer" />
-            <input id="s_city" placeholder="PLZ / Stadt" />
-          </div>
-          <div class="row">
-            <input id="s_phone" placeholder="Telefon" />
-            <input id="s_email" placeholder="E-Mail" />
-          </div>
-          <div class="row">
-            <input id="s_iban" placeholder="IBAN" />
-            <input id="s_bic" placeholder="BIC (optional)" />
-          </div>
-          <div class="row">
-            <input id="s_taxId" placeholder="Steuernummer / USt-IdNr (optional)" />
-            <input id="s_invoicePrefix" placeholder="Rechnungs-Präfix (z.B. MS)" />
-            <input id="s_invoiceStart" type="number" placeholder="Startnummer (z.B. 1)" />
-          </div>
-
-          <div class="row">
-            <label class="pill">
-              <span>MwSt Modus:</span>
-              <select id="s_vatMode" onchange="toggleVatCustom()">
-                <option value="0">0% (Kleinunternehmer)</option>
-                <option value="19">19% (Regelbesteuerung)</option>
-                <option value="custom">benutzerdefiniert</option>
-              </select>
-              <input id="s_vatCustom" class="mini" type="number" step="0.01" placeholder="z.B. 7" style="display:none;" />
-            </label>
-          </div>
-
-          <div class="row">
-            <textarea id="s_footer" rows="3" placeholder="Hinweis/Footnote für Rechnungen (z.B. Kleinunternehmerregelung §19 UStG)"></textarea>
-          </div>
-
-          <div class="row">
-            <button class="btn primary" onclick="saveSettings()">Einstellungen speichern</button>
-            <span class="muted" id="s_msg"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>CSV Export</h3>
-        <div class="row">
-          <button class="btn" onclick="downloadCSV('customers')">Kunden CSV</button>
-          <button class="btn" onclick="downloadCSV('invoices')">Rechnungen CSV</button>
-          <button class="btn" onclick="downloadCSV('expenses')">Ausgaben CSV</button>
-        </div>
-        <p class="muted small">CSV kannst du direkt in Excel öffnen.</p>
-      </div>
-    </section>
-  </main>
-</div>
-
-<style>
-  :root { --b:#ddd; --bg:#f7f7f7; --card:#fff; --txt:#111; --mut:#666; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, Arial, sans-serif; background: var(--bg); color: var(--txt); }
-  .top { position: sticky; top:0; background:#fff; border-bottom:1px solid var(--b); padding:12px; z-index: 10; }
-  .brand h1 { margin:0; font-size:18px; }
-  .muted { color: var(--mut); }
-  .small { font-size: 12px; }
-  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-  .tab { padding:8px 10px; border:1px solid var(--b); background:#fff; border-radius:10px; cursor:pointer; }
-  .tab.active { background:#eee; }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 14px; display:grid; gap: 12px; }
-  .page { background: var(--card); border:1px solid var(--b); border-radius:14px; padding: 12px; }
-  .hidden { display:none; }
-  .card { border:1px solid #eee; border-radius:12px; padding: 12px; background:#fff; margin-top: 10px; }
-  .grid { display:grid; gap:10px; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-  input, select, textarea { width:100%; padding:10px; border:1px solid var(--b); border-radius:10px; }
-  textarea { resize: vertical; }
-  .btn { border:1px solid var(--b); background:#fff; border-radius:10px; padding:10px 12px; cursor:pointer; }
-  .btn.primary { background:#111; color:#fff; border-color:#111; }
-  .btn.danger { border-color:#f1b3b3; color:#a40000; }
-  .list { display:grid; gap:8px; margin-top:10px; }
-  .item { border:1px solid #eee; border-radius:12px; padding:10px; display:flex; gap:10px; align-items:flex-start; }
-  .grow { flex:1; }
-  .kpis { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:10px; }
-  .kpi { border:1px solid #eee; border-radius:12px; padding:12px; }
-  .kpi .label { font-size:12px; color:var(--mut); }
-  .kpi .value { font-size:20px; font-weight:800; }
-  .items { display:grid; gap:8px; }
-  .itemrow { display:flex; gap:8px; flex-wrap:wrap; }
-  .itemrow input { flex:1; min-width: 170px; }
-  .itemrow input.small { width:120px; flex:0 0 auto; }
-  .totals { border-top: 1px dashed #e6e6e6; padding-top: 10px; margin-top: 10px; }
-  .total { font-weight:800; }
-  .pill { display:flex; gap:8px; align-items:center; padding:8px; border:1px solid #eee; border-radius:12px; }
-  .pill span { color: var(--mut); font-size: 12px; }
-  .mini { max-width: 130px; }
-  @media (max-width: 720px) {
-    .mini { max-width: 100%; }
-  }
-</style>
-
-<script>
-  // ====== Requires jsPDF (add in CodePen Settings → JavaScript):
-  // https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js
-
-  // ====== Storage ======
-  const KEY = "mini_unternehmens_app_de_v2";
-  const state = loadState();
-
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    return {
-      settings: {
-        company: "Masculine Security",
-        owner: "",
-        street: "",
-        city: "",
-        phone: "",
-        email: "",
-        iban: "",
-        bic: "",
-        taxId: "",
-        invoicePrefix: "MS",
-        invoiceStart: 1,
-        vatMode: "0",       // "0" | "19" | "custom"
-        vatCustom: 0,
-        footer: "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet."
-      },
-      customers: [],
-      invoices: [],
-      expenses: []
-    };
-  }
-
-  function saveState() {
-    localStorage.setItem(KEY, JSON.stringify(state));
-    refreshAll();
-  }
-
-  function uid() {
-    return Math.random().toString(16).slice(2) + Date.now().toString(16);
-  }
-
-  function todayISO() {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
-  }
-
-  function money(n) {
-    return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(Number(n || 0));
-  }
-
-  function setMsg(id, txt) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = txt || "";
-  }
-
-  function escapeHtml(s) {
-    return String(s || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  // ====== Tabs ======
-  function showPage(pageId, btn) {
-    document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-    document.getElementById(pageId).classList.remove("hidden");
-
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-
-    if (pageId === "customers") renderCustomers();
-    if (pageId === "invoices") renderInvoices();
-    if (pageId === "expenses") renderExpenses();
-    if (pageId === "settings") loadSettingsForm();
-    if (pageId === "dashboard") renderDashboard();
-  }
-
-  // ====== VAT helpers ======
-  function getSettingsVatRate() {
-    const m = state.settings.vatMode || "0";
-    if (m === "0") return 0;
-    if (m === "19") return 0.19;
-    const v = Number(state.settings.vatCustom || 0);
-    return Math.max(0, v / 100);
-  }
-
-  function getInvoiceVatRateFromForm() {
-    const mode = document.getElementById("i_vatMode").value;
-    if (mode === "settings") return getSettingsVatRate();
-    if (mode === "0") return 0;
-    if (mode === "19") return 0.19;
-    const v = Number(document.getElementById("i_vatCustom").value || 0);
-    return Math.max(0, v / 100);
-  }
-
-  function applyInvoiceVatMode() {
-    const mode = document.getElementById("i_vatMode").value;
-    const custom = document.getElementById("i_vatCustom");
-    custom.style.display = (mode === "custom") ? "inline-block" : "none";
-    updateInvoiceTotals();
-  }
-
-  // ====== Dashboard ======
-  function monthStartISO() {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    return `${y}-${m}-01`;
-  }
-  function yearStartISO() {
-    const y = new Date().getFullYear();
-    return `${y}-01-01`;
-  }
-
-  function renderDashboard() {
-    const mStart = monthStartISO();
-    const yStart = yearStartISO();
-
-    const invM = state.invoices.filter(x => (x.date || "") >= mStart);
-    const invY = state.invoices.filter(x => (x.date || "") >= yStart);
-
-    const netMonth = invM.reduce((a, x) => a + Number(x.subtotal || 0), 0);
-    const vatMonth = invM.reduce((a, x) => a + Number(x.vat || 0), 0);
-    const grossMonth = invM.reduce((a, x) => a + Number(x.total || 0), 0);
-
-    const netYear = invY.reduce((a, x) => a + Number(x.subtotal || 0), 0);
-    const vatYear = invY.reduce((a, x) => a + Number(x.vat || 0), 0);
-    const grossYear = invY.reduce((a, x) => a + Number(x.total || 0), 0);
-
-    const expMonth = state.expenses.filter(x => (x.date || "") >= mStart).reduce((a, x) => a + Number(x.amount || 0), 0);
-    const expYear  = state.expenses.filter(x => (x.date || "") >= yStart).reduce((a, x) => a + Number(x.amount || 0), 0);
-
-    document.getElementById("kpiInvMonth").textContent = money(netMonth);
-    document.getElementById("kpiInvMonthSub").textContent = `MwSt: ${money(vatMonth)} • Brutto: ${money(grossMonth)}`;
-    document.getElementById("kpiInvYear").textContent = money(netYear);
-    document.getElementById("kpiInvYearSub").textContent = `MwSt: ${money(vatYear)} • Brutto: ${money(grossYear)}`;
-    document.getElementById("kpiExpMonth").textContent = money(expMonth);
-    document.getElementById("kpiExpYear").textContent = money(expYear);
-  }
-
-  // ====== Customers ======
-  let editingCustomerId = null;
-
-  function clearCustomerForm() {
-    editingCustomerId = null;
-    ["c_name","c_email","c_phone","c_street","c_city"].forEach(id => (document.getElementById(id).value = ""));
-    setMsg("c_msg", "");
-  }
-
-  function saveCustomer() {
-    setMsg("c_msg", "");
-    const name = document.getElementById("c_name").value.trim();
-    if (!name) return setMsg("c_msg", "Name ist erforderlich.");
-
-    const obj = {
-      id: editingCustomerId || uid(),
-      name,
-      email: document.getElementById("c_email").value.trim(),
-      phone: document.getElementById("c_phone").value.trim(),
-      street: document.getElementById("c_street").value.trim(),
-      city: document.getElementById("c_city").value.trim()
-    };
-
-    const idx = state.customers.findIndex(x => x.id === obj.id);
-    if (idx >= 0) state.customers[idx] = obj;
-    else state.customers.unshift(obj);
-
-    saveState();
-    clearCustomerForm();
-    setMsg("c_msg", "Gespeichert ✅");
-  }
-
-  function editCustomer(id) {
-    const c = state.customers.find(x => x.id === id);
-    if (!c) return;
-    editingCustomerId = id;
-    document.getElementById("c_name").value = c.name || "";
-    document.getElementById("c_email").value = c.email || "";
-    document.getElementById("c_phone").value = c.phone || "";
-    document.getElementById("c_street").value = c.street || "";
-    document.getElementById("c_city").value = c.city || "";
-    setMsg("c_msg", "Bearbeiten…");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function deleteCustomer(id) {
-    if (!confirm("Kunden wirklich löschen?")) return;
-    state.customers = state.customers.filter(x => x.id !== id);
-    saveState();
-  }
-
-  function renderCustomers() {
-    const q = (document.getElementById("c_search").value || "").toLowerCase().trim();
-    const list = document.getElementById("customers_list");
-    list.innerHTML = "";
-
-    state.customers
-      .filter(c => !q || (c.name||"").toLowerCase().includes(q) || (c.email||"").toLowerCase().includes(q))
-      .forEach(c => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div class="grow">
-            <div style="font-weight:800">${escapeHtml(c.name||"")}</div>
-            <div class="muted">${escapeHtml([c.email,c.phone,c.street,c.city].filter(Boolean).join(" • "))}</div>
-          </div>
-          <button class="btn" onclick="editCustomer('${c.id}')">Bearbeiten</button>
-          <button class="btn danger" onclick="deleteCustomer('${c.id}')">Löschen</button>
-        `;
-        list.appendChild(div);
-      });
-
-    fillCustomerSelect();
-  }
-
-  function fillCustomerSelect() {
-    const sel = document.getElementById("i_customer");
-    const cur = sel.value;
-    sel.innerHTML = `<option value="">Kunde auswählen…</option>` +
-      state.customers.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
-    sel.value = cur;
-  }
-
-  // ====== Invoices ======
-  let editingInvoiceId = null;
-
-  function clearInvoiceForm() {
-    editingInvoiceId = null;
-    document.getElementById("i_no").value = "";
-    document.getElementById("i_date").value = todayISO();
-    document.getElementById("i_status").value = "draft";
-    document.getElementById("i_customer").value = "";
-    document.getElementById("items").innerHTML = "";
-    document.getElementById("i_vatMode").value = "settings";
-    document.getElementById("i_vatCustom").value = "";
-    document.getElementById("i_vatCustom").style.display = "none";
-    addItem();
-    updateInvoiceTotals();
-    setMsg("i_msg", "");
-  }
-
-  function addItem(desc = "", qty = 1, price = 0) {
-    const wrap = document.getElementById("items");
-    const row = document.createElement("div");
-    row.className = "itemrow";
-    row.innerHTML = `
-      <input placeholder="Beschreibung" value="${escapeHtml(desc)}" oninput="updateInvoiceTotals()" />
-      <input class="small" type="number" step="0.01" placeholder="Menge" value="${qty}" oninput="updateInvoiceTotals()" />
-      <input class="small" type="number" step="0.01" placeholder="Einzel €" value="${price}" oninput="updateInvoiceTotals()" />
-      <button class="btn danger" onclick="this.parentElement.remove(); updateInvoiceTotals()">Entfernen</button>
-    `;
-    wrap.appendChild(row);
-    updateInvoiceTotals();
-  }
-
-  function readItems() {
-    const rows = Array.from(document.querySelectorAll("#items .itemrow"));
-    return rows.map(r => {
-      const inputs = r.querySelectorAll("input");
-      return {
-        desc: inputs[0].value.trim(),
-        qty: Number(inputs[1].value || 0),
-        price: Number(inputs[2].value || 0)
+      const ui = {
+        nav: $("#nav"),
+        view: $("#view"),
+        title: $("#pageTitle"),
+        sub: $("#pageSub"),
+        toast: $("#toast"),
+        pillCustomers: $("#pillCustomers"),
+        pillInvoices: $("#pillInvoices"),
+        pillExpenses: $("#pillExpenses"),
+        ver: $("#ver"),
+        fileInput: $("#fileInput"),
+        exportBtn: $("#exportBtn"),
+        importBtn: $("#importBtn"),
+        quickInvoice: $("#quickInvoice"),
+        quickCustomer: $("#quickCustomer"),
+        quickExpense: $("#quickExpense"),
       };
-    }).filter(it => it.desc || it.qty || it.price);
-  }
 
-  function calcSubtotal(items) {
-    return items.reduce((a, it) => a + (Number(it.qty||0) * Number(it.price||0)), 0);
-  }
+      ui.ver.textContent = "v1 (offline)";
 
-  function updateInvoiceTotals() {
-    const items = readItems();
-    const subtotal = calcSubtotal(items);
-    const vatRate = getInvoiceVatRateFromForm();
-    const vat = subtotal * vatRate;
-    const total = subtotal + vat;
-
-    document.getElementById("i_subtotal").textContent = money(subtotal);
-    document.getElementById("i_vat").textContent = money(vat);
-    document.getElementById("i_total").textContent = money(total);
-
-    const hint = (vatRate === 0)
-      ? (state.settings.footer || "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.")
-      : "Rechnung inkl. ausgewiesener Umsatzsteuer.";
-    document.getElementById("i_vatHint").textContent = hint;
-    document.getElementById("i_smallNote").textContent = hint;
-  }
-
-  function nextInvoiceNo() {
-    const prefix = (state.settings.invoicePrefix || "MS").toUpperCase();
-    const year = new Date().getFullYear();
-    const base = `${prefix}-${year}-`;
-    const nums = state.invoices
-      .filter(x => (x.no || "").startsWith(base))
-      .map(x => parseInt(String(x.no).split("-")[2] || "0", 10))
-      .filter(n => Number.isFinite(n));
-
-    const last = nums.length ? Math.max(...nums) : (Number(state.settings.invoiceStart || 1) - 1);
-    return `${base}${String(last + 1).padStart(4, "0")}`;
-  }
-
-  function saveInvoice() {
-    setMsg("i_msg", "");
-    const customerId = document.getElementById("i_customer").value;
-    if (!customerId) return setMsg("i_msg", "Bitte Kunde auswählen.");
-
-    let no = document.getElementById("i_no").value.trim();
-    if (!no) no = nextInvoiceNo();
-
-    const dup = state.invoices.find(x => x.no === no && x.id !== editingInvoiceId);
-    if (dup) return setMsg("i_msg", "Rechnungsnummer existiert bereits.");
-
-    const date = document.getElementById("i_date").value || todayISO();
-    const status = document.getElementById("i_status").value;
-    const items = readItems();
-    const subtotal = calcSubtotal(items);
-    const vatRate = getInvoiceVatRateFromForm();
-    const vat = subtotal * vatRate;
-    const total = subtotal + vat;
-
-    const cust = state.customers.find(x => x.id === customerId);
-
-    const inv = {
-      id: editingInvoiceId || uid(),
-      no,
-      date,
-      status,
-      customerId,
-      customerName: cust ? cust.name : "",
-      customer: cust || null,
-      items,
-      vatRate,
-      subtotal,
-      vat,
-      total
-    };
-
-    const idx = state.invoices.findIndex(x => x.id === inv.id);
-    if (idx >= 0) state.invoices[idx] = inv;
-    else state.invoices.unshift(inv);
-
-    saveState();
-    clearInvoiceForm();
-    setMsg("i_msg", "Gespeichert ✅");
-  }
-
-  function editInvoice(id) {
-    const inv = state.invoices.find(x => x.id === id);
-    if (!inv) return;
-    editingInvoiceId = id;
-
-    document.getElementById("i_no").value = inv.no || "";
-    document.getElementById("i_date").value = inv.date || todayISO();
-    document.getElementById("i_status").value = inv.status || "draft";
-    document.getElementById("i_customer").value = inv.customerId || "";
-
-    // VAT mode display
-    document.getElementById("i_vatMode").value = "custom";
-    document.getElementById("i_vatCustom").style.display = "inline-block";
-    document.getElementById("i_vatCustom").value = (Number(inv.vatRate || 0) * 100).toFixed(2);
-
-    // items
-    document.getElementById("items").innerHTML = "";
-    (inv.items || []).forEach(it => addItem(it.desc, it.qty, it.price));
-    if (!inv.items || inv.items.length === 0) addItem();
-
-    updateInvoiceTotals();
-    setMsg("i_msg", "Bearbeiten…");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function deleteInvoice(id) {
-    if (!confirm("Rechnung wirklich löschen?")) return;
-    state.invoices = state.invoices.filter(x => x.id !== id);
-    saveState();
-  }
-
-  function renderInvoices() {
-    fillCustomerSelect();
-    const q = (document.getElementById("i_search").value || "").toLowerCase().trim();
-    const list = document.getElementById("invoices_list");
-    list.innerHTML = "";
-
-    state.invoices
-      .filter(inv => !q || (inv.no||"").toLowerCase().includes(q) || (inv.customerName||"").toLowerCase().includes(q) || (inv.status||"").toLowerCase().includes(q))
-      .forEach(inv => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div class="grow">
-            <div style="font-weight:800">${escapeHtml(inv.no||"")}</div>
-            <div class="muted">${escapeHtml(inv.date||"")} • ${escapeHtml(inv.customerName||"")} • ${escapeHtml(inv.status||"")}</div>
-            <div style="font-weight:800">Netto ${money(inv.subtotal||0)} • MwSt ${money(inv.vat||0)} • Brutto ${money(inv.total||0)}</div>
-          </div>
-          <button class="btn" onclick="editInvoice('${inv.id}')">Bearbeiten</button>
-          <button class="btn" onclick="downloadInvoicePDFById('${inv.id}')">PDF</button>
-          <button class="btn danger" onclick="deleteInvoice('${inv.id}')">Löschen</button>
-        `;
-        list.appendChild(div);
+      // ---- Routing
+      $$("#nav button").forEach(btn=>{
+        btn.addEventListener("click", ()=>go(btn.dataset.page));
       });
-  }
 
-  // ====== Expenses ======
-  let editingExpenseId = null;
+      // Top actions
+      ui.quickInvoice.addEventListener("click", ()=>go("invoices", {openNew:true}));
+      ui.quickCustomer.addEventListener("click", ()=>go("customers", {openNew:true}));
+      ui.quickExpense.addEventListener("click", ()=>go("expenses", {openNew:true}));
 
-  function clearExpenseForm() {
-    editingExpenseId = null;
-    document.getElementById("e_date").value = todayISO();
-    document.getElementById("e_vendor").value = "";
-    document.getElementById("e_amount").value = "";
-    document.getElementById("e_category").value = "other";
-    document.getElementById("e_note").value = "";
-    setMsg("e_msg", "");
-  }
-
-  function saveExpense() {
-    setMsg("e_msg", "");
-    const date = document.getElementById("e_date").value || todayISO();
-    const vendor = document.getElementById("e_vendor").value.trim();
-    const amount = Number(document.getElementById("e_amount").value || 0);
-    const category = document.getElementById("e_category").value;
-    const note = document.getElementById("e_note").value.trim();
-
-    if (amount <= 0) return setMsg("e_msg", "Betrag muss > 0 sein.");
-
-    const ex = {
-      id: editingExpenseId || uid(),
-      date,
-      vendor,
-      amount,
-      category,
-      note
-    };
-
-    const idx = state.expenses.findIndex(x => x.id === ex.id);
-    if (idx >= 0) state.expenses[idx] = ex;
-    else state.expenses.unshift(ex);
-
-    saveState();
-    clearExpenseForm();
-    setMsg("e_msg", "Gespeichert ✅");
-  }
-
-  function editExpense(id) {
-    const ex = state.expenses.find(x => x.id === id);
-    if (!ex) return;
-    editingExpenseId = id;
-
-    document.getElementById("e_date").value = ex.date || todayISO();
-    document.getElementById("e_vendor").value = ex.vendor || "";
-    document.getElementById("e_amount").value = Number(ex.amount || 0);
-    document.getElementById("e_category").value = ex.category || "other";
-    document.getElementById("e_note").value = ex.note || "";
-
-    setMsg("e_msg", "Bearbeiten…");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function deleteExpense(id) {
-    if (!confirm("Ausgabe wirklich löschen?")) return;
-    state.expenses = state.expenses.filter(x => x.id !== id);
-    saveState();
-  }
-
-  function renderExpenses() {
-    const q = (document.getElementById("e_search").value || "").toLowerCase().trim();
-    const list = document.getElementById("expenses_list");
-    list.innerHTML = "";
-
-    state.expenses
-      .filter(ex => !q || (ex.vendor||"").toLowerCase().includes(q) || (ex.category||"").toLowerCase().includes(q) || (ex.note||"").toLowerCase().includes(q))
-      .forEach(ex => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div class="grow">
-            <div style="font-weight:800">${escapeHtml(ex.date||"")} • ${money(ex.amount||0)}</div>
-            <div class="muted">${escapeHtml([ex.vendor, ex.category].filter(Boolean).join(" • "))}</div>
-            ${ex.note ? `<div class="muted">${escapeHtml(ex.note)}</div>` : ""}
-          </div>
-          <button class="btn" onclick="editExpense('${ex.id}')">Bearbeiten</button>
-          <button class="btn danger" onclick="deleteExpense('${ex.id}')">Löschen</button>
-        `;
-        list.appendChild(div);
+      ui.exportBtn.addEventListener("click", exportJSON);
+      ui.importBtn.addEventListener("click", ()=>{
+        ui.fileInput.value = "";
+        ui.fileInput.click();
       });
-  }
+      ui.fileInput.addEventListener("change", importJSON);
 
-  // ====== Settings ======
-  function toggleVatCustom() {
-    const mode = document.getElementById("s_vatMode").value;
-    document.getElementById("s_vatCustom").style.display = (mode === "custom") ? "inline-block" : "none";
-  }
+      // Initial
+      go("dashboard");
+      refreshPills();
 
-  function loadSettingsForm() {
-    const s = state.settings;
-    document.getElementById("s_company").value = s.company || "";
-    document.getElementById("s_owner").value = s.owner || "";
-    document.getElementById("s_street").value = s.street || "";
-    document.getElementById("s_city").value = s.city || "";
-    document.getElementById("s_phone").value = s.phone || "";
-    document.getElementById("s_email").value = s.email || "";
-    document.getElementById("s_iban").value = s.iban || "";
-    document.getElementById("s_bic").value = s.bic || "";
-    document.getElementById("s_taxId").value = s.taxId || "";
-    document.getElementById("s_invoicePrefix").value = s.invoicePrefix || "MS";
-    document.getElementById("s_invoiceStart").value = Number(s.invoiceStart || 1);
-    document.getElementById("s_vatMode").value = s.vatMode || "0";
-    document.getElementById("s_vatCustom").value = Number(s.vatCustom || 0);
-    document.getElementById("s_footer").value = s.footer || "";
-    toggleVatCustom();
-    setMsg("s_msg", "");
-  }
+      // ===============================
+      // Pages
+      // ===============================
+      function go(page, opts={}){
+        $$("#nav button").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
 
-  function saveSettings() {
-    const s = state.settings;
-    s.company = document.getElementById("s_company").value.trim() || "Firma";
-    s.owner = document.getElementById("s_owner").value.trim();
-    s.street = document.getElementById("s_street").value.trim();
-    s.city = document.getElementById("s_city").value.trim();
-    s.phone = document.getElementById("s_phone").value.trim();
-    s.email = document.getElementById("s_email").value.trim();
-    s.iban = document.getElementById("s_iban").value.trim();
-    s.bic = document.getElementById("s_bic").value.trim();
-    s.taxId = document.getElementById("s_taxId").value.trim();
-    s.invoicePrefix = (document.getElementById("s_invoicePrefix").value.trim() || "MS").toUpperCase();
-    s.invoiceStart = Number(document.getElementById("s_invoiceStart").value || 1);
-    s.vatMode = document.getElementById("s_vatMode").value;
-    s.vatCustom = Number(document.getElementById("s_vatCustom").value || 0);
-    s.footer = document.getElementById("s_footer").value.trim() || s.footer;
+        if(page === "dashboard"){
+          ui.title.textContent = "Übersicht";
+          ui.sub.textContent = "Umsatz • Ausgaben • Kunden • Rechnungen (offline)";
+          ui.view.innerHTML = dashboardHTML();
+          wireDashboard();
+          return;
+        }
 
-    saveState();
-    setMsg("s_msg", "Gespeichert ✅");
-  }
+        if(page === "customers"){
+          ui.title.textContent = "Kunden";
+          ui.sub.textContent = "Kunden anlegen • bearbeiten • löschen";
+          ui.view.innerHTML = customersHTML();
+          wireCustomers(opts);
+          return;
+        }
 
-  // ====== CSV Export ======
-  function csvEscape(v) {
-    const s = String(v ?? "");
-    if (s.includes('"') || s.includes(",") || s.includes("\n")) return `"${s.replaceAll('"', '""')}"`;
-    return s;
-  }
+        if(page === "invoices"){
+          ui.title.textContent = "Rechnungen";
+          ui.sub.textContent = "Rechnungen erstellen • Liste • CSV Export";
+          ui.view.innerHTML = invoicesHTML();
+          wireInvoices(opts);
+          return;
+        }
 
-  function downloadCSV(type) {
-    let headers = [];
-    let rows = [];
+        if(page === "expenses"){
+          ui.title.textContent = "Ausgaben";
+          ui.sub.textContent = "Ausgaben erfassen • Liste • CSV Export";
+          ui.view.innerHTML = expensesHTML();
+          wireExpenses(opts);
+          return;
+        }
 
-    if (type === "customers") {
-      headers = ["Name","E-Mail","Telefon","Straße","PLZ/Stadt"];
-      rows = state.customers.map(c => [c.name, c.email, c.phone, c.street, c.city]);
-    } else if (type === "invoices") {
-      headers = ["Rechnungsnr","Datum","Status","Kunde","Netto","MwSt","Brutto","MwSt_Satz"];
-      rows = state.invoices.map(i => [i.no, i.date, i.status, i.customerName, i.subtotal, i.vat, i.total, (Number(i.vatRate||0)*100)]);
-    } else if (type === "expenses") {
-      headers = ["Datum","Lieferant","Kategorie","Betrag","Notiz"];
-      rows = state.expenses.map(e => [e.date, e.vendor, e.category, e.amount, e.note]);
-    } else return;
+        if(page === "settings"){
+          ui.title.textContent = "Einstellungen";
+          ui.sub.textContent = "Backup/Restore • CSV Export • Reset";
+          ui.view.innerHTML = settingsHTML();
+          wireSettings();
+          return;
+        }
+      }
 
-    const lines = [
-      headers.map(csvEscape).join(","),
-      ...rows.map(r => r.map(csvEscape).join(","))
-    ];
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${type}_${todayISO()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
+      function dashboardHTML(){
+        const k = calcKPIs();
+        const recent = buildRecent();
+        return `
+          <div class="grid">
+            <div class="card">
+              <h2>KPIs</h2>
+              <div class="kpis">
+                <div class="kpi">
+                  <div class="klabel">Umsatz (dieser Monat)</div>
+                  <div class="kval">${fmtEUR(k.revMonth)}</div>
+                  <div class="kmini">MwSt: ${fmtEUR(0)} • Brutto: ${fmtEUR(k.revMonth)}</div>
+                </div>
+                <div class="kpi">
+                  <div class="klabel">Ausgaben (dieser Monat)</div>
+                  <div class="kval">${fmtEUR(k.expMonth)}</div>
+                  <div class="kmini">Belege lokal gespeichert</div>
+                </div>
+                <div class="kpi">
+                  <div class="klabel">Umsatz (dieses Jahr)</div>
+                  <div class="kval">${fmtEUR(k.revYear)}</div>
+                  <div class="kmini">Rechnungen: ${k.invCount}</div>
+                </div>
+              </div>
+            </div>
 
-  // ====== Backup / Restore ======
-  function exportJSON() {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `backup_${todayISO()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
+            <div class="card">
+              <h2>Schnellstart</h2>
+              <p class="muted" style="margin:0 0 10px 0">
+                Wie Lexoffice-Style: Links Navigation, oben Aktionen, Daten offline.
+              </p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <button class="btn primary" id="dashNewInv">＋ Rechnung</button>
+                <button class="btn" id="dashNewCus">＋ Kunde</button>
+                <button class="btn" id="dashNewExp">＋ Ausgabe</button>
+              </div>
 
-  async function importJSON(file) {
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const obj = JSON.parse(text);
-      if (!obj.customers || !obj.invoices || !obj.expenses || !obj.settings) throw new Error("Ungültige Backup-Datei.");
-      state.settings = obj.settings;
-      state.customers = obj.customers;
-      state.invoices = obj.invoices;
-      state.expenses = obj.expenses;
-      saveState();
-      alert("Wiederherstellung abgeschlossen ✅");
-    } catch (e) {
-      alert("Import fehlgeschlagen: " + e.message);
-    }
-  }
+              <div style="margin-top:12px" class="muted">
+                Tipp: Export/Import oben rechts für Backup.
+              </div>
+            </div>
+          </div>
 
-  function resetAll() {
-    if (!confirm("Wirklich ALLES zurücksetzen?")) return;
-    localStorage.removeItem(KEY);
-    location.reload();
-  }
+          <div class="card" style="margin-top:14px">
+            <div class="split">
+              <h2 style="margin:0">Letzte Aktivitäten</h2>
+              <div class="muted" style="font-size:12px">${recent.count} Einträge</div>
+            </div>
+            <div style="margin-top:10px">
+              ${recent.html}
+            </div>
+          </div>
+        `;
+      }
 
-  // ====== PDF (jsPDF) ======
-  function ensureJsPDF() {
-    // CodePen external exposes window.jspdf
-    return (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  }
+      function wireDashboard(){
+        $("#dashNewInv").addEventListener("click", ()=>go("invoices", {openNew:true}));
+        $("#dashNewCus").addEventListener("click", ()=>go("customers", {openNew:true}));
+        $("#dashNewExp").addEventListener("click", ()=>go("expenses", {openNew:true}));
+      }
 
-  function companyLines() {
-    const s = state.settings;
-    const lines = [];
-    lines.push(s.company || "");
-    if (s.owner) lines.push(s.owner);
-    if (s.street) lines.push(s.street);
-    if (s.city) lines.push(s.city);
-    const contact = [s.phone, s.email].filter(Boolean).join(" • ");
-    if (contact) lines.push(contact);
-    const bank = [s.iban ? `IBAN: ${s.iban}` : "", s.bic ? `BIC: ${s.bic}` : ""].filter(Boolean).join(" • ");
-    if (bank) lines.push(bank);
-    if (s.taxId) lines.push(`Steuer/ID: ${s.taxId}`);
-    return lines;
-  }
+      function customersHTML(){
+        const rows = state.customers.map((c)=>`
+          <tr>
+            <td><b>${escapeHTML(c.name)}</b><div class="muted" style="font-size:11px">${escapeHTML(c.email||"")}</div></td>
+            <td>${escapeHTML(c.phone||"")}</td>
+            <td class="muted">${escapeHTML(c.city||"")}</td>
+            <td class="muted">${escapeHTML(c.createdAt.slice(0,10))}</td>
+            <td>
+              <div class="row-actions">
+                <button class="mini" data-act="edit" data-id="${c.id}">Bearbeiten</button>
+                <button class="mini danger" data-act="del" data-id="${c.id}">Löschen</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
 
-  function customerLines(c) {
-    if (!c) return [];
-    const lines = [];
-    lines.push(c.name || "");
-    if (c.street) lines.push(c.street);
-    if (c.city) lines.push(c.city);
-    const contact = [c.email, c.phone].filter(Boolean).join(" • ");
-    if (contact) lines.push(contact);
-    return lines;
-  }
+        return `
+          <div class="grid">
+            <div class="card">
+              <h2>Kundenliste</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Telefon</th>
+                    <th>Ort</th>
+                    <th>Datum</th>
+                    <th style="text-align:right">Aktion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows || `<tr><td colspan="5" class="muted">Noch keine Kunden. Klicke „＋ Kunde“.</td></tr>`}
+                </tbody>
+              </table>
+            </div>
 
-  function downloadCurrentInvoicePDF() {
-    // build invoice object from form (even unsaved)
-    const customerId = document.getElementById("i_customer").value;
-    const cust = state.customers.find(x => x.id === customerId) || null;
+            <div class="card">
+              <h2 id="custFormTitle">Neuer Kunde</h2>
+              <form class="form" id="custForm">
+                <input type="hidden" id="custId" />
+                <div class="field">
+                  <label>Name *</label>
+                  <input id="custName" placeholder="z.B. Beispiel Kunde GmbH" required />
+                </div>
+                <div class="form-row">
+                  <div class="field">
+                    <label>E-Mail</label>
+                    <input id="custEmail" placeholder="kunde@email.de" />
+                  </div>
+                  <div class="field">
+                    <label>Telefon</label>
+                    <input id="custPhone" placeholder="+49 ..." />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="field">
+                    <label>Straße</label>
+                    <input id="custStreet" placeholder="Musterstraße 1" />
+                  </div>
+                  <div class="field">
+                    <label>PLZ/Ort</label>
+                    <input id="custCity" placeholder="28237 Bremen" />
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn good" type="submit" id="custSaveBtn">Speichern</button>
+                  <button class="btn" type="button" id="custResetBtn">Reset</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }
 
-    let no = document.getElementById("i_no").value.trim();
-    if (!no) no = nextInvoiceNo();
+      function wireCustomers(opts){
+        const form = $("#custForm");
+        const title = $("#custFormTitle");
+        const id = $("#custId");
+        const name = $("#custName");
+        const email = $("#custEmail");
+        const phone = $("#custPhone");
+        const street = $("#custStreet");
+        const city = $("#custCity");
 
-    const inv = {
-      no,
-      date: document.getElementById("i_date").value || todayISO(),
-      status: document.getElementById("i_status").value,
-      customer: cust,
-      customerName: cust ? cust.name : "",
-      items: readItems()
-    };
-    const subtotal = calcSubtotal(inv.items);
-    const vatRate = getInvoiceVatRateFromForm();
-    inv.vatRate = vatRate;
-    inv.subtotal = subtotal;
-    inv.vat = subtotal * vatRate;
-    inv.total = inv.subtotal + inv.vat;
+        if(opts.openNew){
+          title.textContent = "Neuer Kunde";
+          id.value = "";
+          form.reset();
+          name.focus();
+        }
 
-    generateInvoicePDF(inv);
-  }
+        $$("#view [data-act]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const act = btn.dataset.act;
+            const cid = btn.dataset.id;
+            if(act === "del"){
+              if(!confirm("Kunde löschen?")) return;
+              state.customers = state.customers.filter(c=>c.id!==cid);
+              // also remove from invoices references (keep data)
+              saveState();
+              toast("Kunde gelöscht.");
+              refreshPills();
+              go("customers");
+            }
+            if(act === "edit"){
+              const c = state.customers.find(x=>x.id===cid);
+              if(!c) return;
+              title.textContent = "Kunde bearbeiten";
+              id.value = c.id;
+              name.value = c.name || "";
+              email.value = c.email || "";
+              phone.value = c.phone || "";
+              street.value = c.street || "";
+              city.value = c.city || "";
+              name.focus();
+            }
+          });
+        });
 
-  function downloadInvoicePDFById(id) {
-    const inv = state.invoices.find(x => x.id === id);
-    if (!inv) return alert("Rechnung nicht gefunden.");
-    generateInvoicePDF(inv);
-  }
+        $("#custResetBtn").addEventListener("click", ()=>{
+          title.textContent = "Neuer Kunde";
+          id.value = "";
+          form.reset();
+        });
 
-  function generateInvoicePDF(inv) {
-    const JsPDF = ensureJsPDF();
-    if (!JsPDF) {
-      alert("jsPDF fehlt. Bitte in CodePen: Settings → JavaScript → Add External Scripts → jsPDF Link hinzufügen.");
-      return;
-    }
+        form.addEventListener("submit", (e)=>{
+          e.preventDefault();
+          if(!name.value.trim()){
+            toast("Name ist Pflicht.", true);
+            return;
+          }
+          const payload = {
+            id: id.value || uid("C"),
+            name: name.value.trim(),
+            email: email.value.trim(),
+            phone: phone.value.trim(),
+            street: street.value.trim(),
+            city: city.value.trim(),
+            createdAt: new Date().toISOString(),
+          };
 
-    const doc = new JsPDF({ unit: "pt", format: "a4" });
-    const margin = 40;
-    let y = 50;
+          if(id.value){
+            const idx = state.customers.findIndex(c=>c.id===id.value);
+            if(idx>=0){
+              payload.createdAt = state.customers[idx].createdAt;
+              state.customers[idx] = payload;
+              toast("Kunde aktualisiert.");
+            }
+          } else {
+            state.customers.unshift(payload);
+            toast("Kunde gespeichert.");
+          }
 
-    // Header company
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text(state.settings.company || "Firma", margin, y);
-    y += 18;
+          saveState();
+          refreshPills();
+          go("customers");
+        });
+      }
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    companyLines().slice(1).forEach(line => {
-      doc.text(String(line), margin, y);
-      y += 12;
-    });
+      function invoicesHTML(){
+        const rows = state.invoices.map(inv=>{
+          const c = state.customers.find(x=>x.id===inv.customerId);
+          return `
+            <tr>
+              <td><b>${escapeHTML(inv.number)}</b><div class="muted" style="font-size:11px">${escapeHTML(inv.date)}</div></td>
+              <td>${escapeHTML(c ? c.name : "(ohne Kunde)")}</td>
+              <td class="muted">${escapeHTML(inv.title || "")}</td>
+              <td><b>${fmtEUR(inv.total)}</b></td>
+              <td>
+                <div class="row-actions">
+                  <button class="mini" data-act="editInv" data-id="${inv.id}">Bearbeiten</button>
+                  <button class="mini" data-act="csvInv" data-id="${inv.id}">CSV</button>
+                  <button class="mini danger" data-act="delInv" data-id="${inv.id}">Löschen</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
 
-    // Invoice box right
-    const rightX = 320;
-    y = 50;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("RECHNUNG", rightX, y);
-    y += 14;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Rechnungsnr: ${inv.no || ""}`, rightX, y); y += 12;
-    doc.text(`Datum: ${inv.date || ""}`, rightX, y); y += 12;
-    doc.text(`Status: ${inv.status || ""}`, rightX, y); y += 12;
+        const customerOptions = state.customers.map(c=>`<option value="${c.id}">${escapeHTML(c.name)}</option>`).join("");
 
-    // Customer address
-    y = 170;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Rechnung an:", margin, y);
-    y += 14;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    customerLines(inv.customer || null).forEach(line => {
-      doc.text(String(line), margin, y);
-      y += 12;
-    });
+        return `
+          <div class="grid">
+            <div class="card">
+              <div class="split">
+                <h2 style="margin:0">Rechnungen</h2>
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn" id="exportInvoicesCsv">Rechnungen CSV</button>
+                </div>
+              </div>
+              <div style="margin-top:10px">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nr / Datum</th>
+                      <th>Kunde</th>
+                      <th>Titel</th>
+                      <th>Summe</th>
+                      <th style="text-align:right">Aktion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows || `<tr><td colspan="5" class="muted">Noch keine Rechnungen. Klicke „＋ Rechnung“.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-    // Items table
-    y += 10;
-    const tableTop = y;
-    doc.setDrawColor(200);
-    doc.line(margin, y, 555, y);
-    y += 16;
+            <div class="card">
+              <h2 id="invFormTitle">Neue Rechnung</h2>
+              <form class="form" id="invForm">
+                <input type="hidden" id="invId" />
+                <div class="form-row">
+                  <div class="field">
+                    <label>Rechnungsnummer *</label>
+                    <input id="invNumber" placeholder="RE-2026-0001" required />
+                  </div>
+                  <div class="field">
+                    <label>Datum *</label>
+                    <input id="invDate" type="date" required />
+                  </div>
+                </div>
 
-    doc.setFont("helvetica", "bold");
-    doc.text("Beschreibung", margin, y);
-    doc.text("Menge", 360, y);
-    doc.text("Einzel", 430, y);
-    doc.text("Summe", 505, y, { align: "right" });
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.line(margin, y, 555, y);
-    y += 14;
+                <div class="field">
+                  <label>Kunde</label>
+                  <select id="invCustomer">
+                    <option value="">(ohne Kunde)</option>
+                    ${customerOptions}
+                  </select>
+                </div>
 
-    (inv.items || []).forEach(it => {
-      const lineTotal = Number(it.qty || 0) * Number(it.price || 0);
-      const desc = String(it.desc || "").slice(0, 60);
-      doc.text(desc, margin, y);
-      doc.text(String(it.qty ?? ""), 370, y, { align: "right" });
-      doc.text(money(it.price || 0), 470, y, { align: "right" });
-      doc.text(money(lineTotal), 555, y, { align: "right" });
-      y += 14;
-      if (y > 700) { doc.addPage(); y = 60; }
-    });
+                <div class="field">
+                  <label>Titel</label>
+                  <input id="invTitle" placeholder="z.B. Sicherheitsdienst – Objektschutz" />
+                </div>
 
-    doc.line(margin, y, 555, y);
-    y += 18;
+                <div class="form-row">
+                  <div class="field">
+                    <label>Netto (EUR) *</label>
+                    <input id="invNet" type="number" step="0.01" placeholder="480.00" required />
+                  </div>
+                  <div class="field">
+                    <label>Notiz</label>
+                    <input id="invNote" placeholder="Kleinunternehmer §19 UStG" />
+                  </div>
+                </div>
 
-    // Totals
-    const vatRatePct = Number(inv.vatRate || 0) * 100;
-    doc.setFont("helvetica", "bold");
-    doc.text(`Netto: ${money(inv.subtotal || 0)}`, 555, y, { align: "right" }); y += 14;
-    doc.text(`MwSt (${vatRatePct.toFixed(2)}%): ${money(inv.vat || 0)}`, 555, y, { align: "right" }); y += 14;
-    doc.text(`Brutto: ${money(inv.total || 0)}`, 555, y, { align: "right" }); y += 18;
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn good" type="submit">Speichern</button>
+                  <button class="btn" type="button" id="invResetBtn">Reset</button>
+                </div>
 
-    // Footer / Kleinunternehmer note
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const footer = (inv.vatRate === 0)
-      ? (state.settings.footer || "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.")
-      : (state.settings.footer || "Vielen Dank für Ihren Auftrag.");
-    const lines = doc.splitTextToSize(footer, 515);
-    doc.text(lines, margin, Math.min(y + 10, 780));
+                <div class="muted" style="margin-top:10px; font-size:12px">
+                  MwSt wird hier als 0 gerechnet (Kleinunternehmer). Du kannst später erweitern.
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }
 
-    doc.save(`${(inv.no || "rechnung")}.pdf`);
-  }
+      function wireInvoices(opts){
+        const form = $("#invForm");
+        const title = $("#invFormTitle");
+        const id = $("#invId");
+        const number = $("#invNumber");
+        const date = $("#invDate");
+        const customer = $("#invCustomer");
+        const invTitle = $("#invTitle");
+        const net = $("#invNet");
+        const note = $("#invNote");
 
-  // ====== Init / Refresh ======
-  function refreshAll() {
-    renderDashboard();
-    renderCustomers();
-    renderInvoices();
-    renderExpenses();
-    loadSettingsForm();
-  }
+        // defaults
+        if(!date.value) date.value = today();
 
-  // Default dates
-  document.getElementById("i_date").value = todayISO();
-  document.getElementById("e_date").value = todayISO();
+        if(opts.openNew){
+          title.textContent = "Neue Rechnung";
+          id.value = "";
+          form.reset();
+          date.value = today();
+          number.value = nextInvoiceNumber();
+          number.focus();
+        } else {
+          // if empty list, propose next number
+          if(!number.value) number.value = nextInvoiceNumber();
+        }
 
-  // first invoice item + totals
-  clearInvoiceForm();
-  clearExpenseForm();
-  refreshAll();
-</script>
-    <script src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'></script><script  src="./script.js"></script>
+        $("#exportInvoicesCsv").addEventListener("click", ()=>{
+          const csv = makeInvoicesCSV();
+          downloadText(csv, "rechnungen.csv", "text/csv;charset=utf-8");
+        });
 
-  </body>
-  
+        $$("#view [data-act]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const act = btn.dataset.act;
+            const iid = btn.dataset.id;
+
+            if(act === "delInv"){
+              if(!confirm("Rechnung löschen?")) return;
+              state.invoices = state.invoices.filter(x=>x.id!==iid);
+              saveState();
+              toast("Rechnung gelöscht.");
+              refreshPills();
+              go("invoices");
+            }
+
+            if(act === "editInv"){
+              const inv = state.invoices.find(x=>x.id===iid);
+              if(!inv) return;
+              title.textContent = "Rechnung bearbeiten";
+              id.value = inv.id;
+              number.value = inv.number;
+              date.value = inv.date;
+              customer.value = inv.customerId || "";
+              invTitle.value = inv.title || "";
+              net.value = inv.net;
+              note.value = inv.note || "";
+              number.focus();
+            }
+
+            if(act === "csvInv"){
+              const inv = state.invoices.find(x=>x.id===iid);
+              if(!inv) return;
+              const c = state.customers.find(x=>x.id===inv.customerId);
+              const header = ["number","date","customer","title","net","total","note"];
+              const row = [
+                inv.number,
+                inv.date,
+                c ? c.name : "",
+                inv.title || "",
+                String(inv.net),
+                String(inv.total),
+                inv.note || ""
+              ].map(csvEscape).join(",");
+              const csv = header.join(",") + "\n" + row + "\n";
+              downloadText(csv, `${inv.number}.csv`, "text/csv;charset=utf-8");
+              toast("CSV erstellt.");
+            }
+          });
+        });
+
+        $("#invResetBtn").addEventListener("click", ()=>{
+          title.textContent = "Neue Rechnung";
+          id.value = "";
+          form.reset();
+          date.value = today();
+          number.value = nextInvoiceNumber();
+        });
+
+        form.addEventListener("submit", (e)=>{
+          e.preventDefault();
+
+          if(!number.value.trim() || !date.value){
+            toast("Nummer & Datum sind Pflicht.", true);
+            return;
+          }
+          const netVal = Number(net.value);
+          if(!isFinite(netVal) || netVal < 0){
+            toast("Netto Betrag ist ungültig.", true);
+            return;
+          }
+
+          const payload = {
+            id: id.value || uid("I"),
+            number: number.value.trim(),
+            date: date.value,
+            customerId: customer.value || "",
+            title: invTitle.value.trim(),
+            note: note.value.trim(),
+            net: round2(netVal),
+            total: round2(netVal), // MwSt 0
+            createdAt: new Date().toISOString(),
+          };
+
+          if(id.value){
+            const idx = state.invoices.findIndex(x=>x.id===id.value);
+            if(idx>=0){
+              payload.createdAt = state.invoices[idx].createdAt;
+              state.invoices[idx] = payload;
+              toast("Rechnung aktualisiert.");
+            }
+          } else {
+            state.invoices.unshift(payload);
+            toast("Rechnung gespeichert.");
+          }
+
+          saveState();
+          refreshPills();
+          go("invoices");
+        });
+      }
+
+      function expensesHTML(){
+        const rows = state.expenses.map(ex=>`
+          <tr>
+            <td><b>${escapeHTML(ex.title)}</b><div class="muted" style="font-size:11px">${escapeHTML(ex.date)}</div></td>
+            <td class="muted">${escapeHTML(ex.category||"")}</td>
+            <td><b>${fmtEUR(ex.amount)}</b></td>
+            <td>
+              <div class="row-actions">
+                <button class="mini" data-act="editEx" data-id="${ex.id}">Bearbeiten</button>
+                <button class="mini danger" data-act="delEx" data-id="${ex.id}">Löschen</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+
+        return `
+          <div class="grid">
+            <div class="card">
+              <div class="split">
+                <h2 style="margin:0">Ausgaben</h2>
+                <button class="btn" id="exportExpensesCsv">Ausgaben CSV</button>
+              </div>
+
+              <div style="margin-top:10px">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Bezeichnung / Datum</th>
+                      <th>Kategorie</th>
+                      <th>Betrag</th>
+                      <th style="text-align:right">Aktion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows || `<tr><td colspan="4" class="muted">Noch keine Ausgaben. Klicke „＋ Ausgabe“.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2 id="exFormTitle">Neue Ausgabe</h2>
+              <form class="form" id="exForm">
+                <input type="hidden" id="exId" />
+                <div class="form-row">
+                  <div class="field">
+                    <label>Datum *</label>
+                    <input id="exDate" type="date" required />
+                  </div>
+                  <div class="field">
+                    <label>Betrag (EUR) *</label>
+                    <input id="exAmount" type="number" step="0.01" placeholder="29.90" required />
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Bezeichnung *</label>
+                  <input id="exTitle" placeholder="z.B. Büromaterial" required />
+                </div>
+                <div class="field">
+                  <label>Kategorie</label>
+                  <input id="exCategory" placeholder="z.B. Büro / Fahrt / Telefon" />
+                </div>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn good" type="submit">Speichern</button>
+                  <button class="btn" type="button" id="exResetBtn">Reset</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+
+      function wireExpenses(opts){
+        const form = $("#exForm");
+        const title = $("#exFormTitle");
+        const id = $("#exId");
+        const date = $("#exDate");
+        const amount = $("#exAmount");
+        const exTitle = $("#exTitle");
+        const category = $("#exCategory");
+
+        if(!date.value) date.value = today();
+
+        if(opts.openNew){
+          title.textContent = "Neue Ausgabe";
+          id.value = "";
+          form.reset();
+          date.value = today();
+          exTitle.focus();
+        }
+
+        $("#exportExpensesCsv").addEventListener("click", ()=>{
+          const csv = makeExpensesCSV();
+          downloadText(csv, "ausgaben.csv", "text/csv;charset=utf-8");
+        });
+
+        $$("#view [data-act]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const act = btn.dataset.act;
+            const eid = btn.dataset.id;
+
+            if(act === "delEx"){
+              if(!confirm("Ausgabe löschen?")) return;
+              state.expenses = state.expenses.filter(x=>x.id!==eid);
+              saveState();
+              toast("Ausgabe gelöscht.");
+              refreshPills();
+              go("expenses");
+            }
+
+            if(act === "editEx"){
+              const ex = state.expenses.find(x=>x.id===eid);
+              if(!ex) return;
+              title.textContent = "Ausgabe bearbeiten";
+              id.value = ex.id;
+              date.value = ex.date;
+              amount.value = ex.amount;
+              exTitle.value = ex.title;
+              category.value = ex.category || "";
+              exTitle.focus();
+            }
+          });
+        });
+
+        $("#exResetBtn").addEventListener("click", ()=>{
+          title.textContent = "Neue Ausgabe";
+          id.value = "";
+          form.reset();
+          date.value = today();
+        });
+
+        form.addEventListener("submit", (e)=>{
+          e.preventDefault();
+
+          if(!date.value || !exTitle.value.trim()){
+            toast("Datum & Bezeichnung sind Pflicht.", true);
+            return;
+          }
+
+          const amt = Number(amount.value);
+          if(!isFinite(amt) || amt < 0){
+            toast("Betrag ist ungültig.", true);
+            return;
+          }
+
+          const payload = {
+            id: id.value || uid("E"),
+            date: date.value,
+            amount: round2(amt),
+            title: exTitle.value.trim(),
+            category: category.value.trim(),
+            createdAt: new Date().toISOString(),
+          };
+
+          if(id.value){
+            const idx = state.expenses.findIndex(x=>x.id===id.value);
+            if(idx>=0){
+              payload.createdAt = state.expenses[idx].createdAt;
+              state.expenses[idx] = payload;
+              toast("Ausgabe aktualisiert.");
+            }
+          } else {
+            state.expenses.unshift(payload);
+            toast("Ausgabe gespeichert.");
+          }
+
+          saveState();
+          refreshPills();
+          go("expenses");
+        });
+      }
+
+      function settingsHTML(){
+        return `
+          <div class="grid">
+            <div class="card">
+              <h2>Backup / Restore</h2>
+              <p class="muted" style="margin-top:0">
+                Export/Import speichert alle Daten (Kunden, Rechnungen, Ausgaben) als JSON.
+              </p>
+
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <button class="btn primary" id="doExport">Export JSON</button>
+                <button class="btn" id="doImport">Import JSON</button>
+              </div>
+
+              <div class="card" style="margin-top:12px; background:rgba(15,26,51,.35)">
+                <div class="split">
+                  <div>
+                    <div style="font-weight:700">CSV Export</div>
+                    <div class="muted" style="font-size:12px">Für Excel / Lexoffice Import später</div>
+                  </div>
+                  <div class="code">UTF-8 • comma</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px">
+                  <button class="btn" id="csvCustomers">Kunden CSV</button>
+                  <button class="btn" id="csvInvoices">Rechnungen CSV</button>
+                  <button class="btn" id="csvExpenses">Ausgaben CSV</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Danger Zone</h2>
+              <p class="muted" style="margin-top:0">
+                Setzt lokale Daten zurück (localStorage).
+              </p>
+              <button class="btn danger" id="resetAll">Alles zurücksetzen</button>
+
+              <div style="margin-top:12px" class="muted">
+                <b>Hinweis:</b> Wenn Netlify “app” nicht updatet, mach Hard-Refresh (Ctrl+F5) oder lösche Site-Daten im Browser.
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function wireSettings(){
+        $("#doExport").addEventListener("click", exportJSON);
+        $("#doImport").addEventListener("click", ()=>{
+          ui.fileInput.value = "";
+          ui.fileInput.click();
+        });
+
+        $("#csvCustomers").addEventListener("click", ()=>{
+          downloadText(makeCustomersCSV(), "kunden.csv", "text/csv;charset=utf-8");
+          toast("Kunden CSV erstellt.");
+        });
+        $("#csvInvoices").addEventListener("click", ()=>{
+          downloadText(makeInvoicesCSV(), "rechnungen.csv", "text/csv;charset=utf-8");
+          toast("Rechnungen CSV erstellt.");
+        });
+        $("#csvExpenses").addEventListener("click", ()=>{
+          downloadText(makeExpensesCSV(), "ausgaben.csv", "text/csv;charset=utf-8");
+          toast("Ausgaben CSV erstellt.");
+        });
+
+        $("#resetAll").addEventListener("click", ()=>{
+          if(!confirm("Wirklich ALLES löschen?")) return;
+          localStorage.removeItem(LS_KEY);
+          state.customers = [];
+          state.invoices = [];
+          state.expenses = [];
+          saveState();
+          refreshPills();
+          toast("Zurückgesetzt.");
+          go("dashboard");
+        });
+      }
+
+      // ===============================
+      // Storage
+      // ===============================
+      function loadState(){
+        try{
+          const raw = localStorage.getItem(LS_KEY);
+          if(!raw) return seed();
+          const data = JSON.parse(raw);
+          return normalize(data);
+        } catch(e){
+          return seed();
+        }
+      }
+
+      function saveState(){
+        localStorage.setItem(LS_KEY, JSON.stringify(state));
+      }
+
+      function seed(){
+        // Small demo data (you can delete later)
+        return normalize({
+          customers: [
+            { id: "C_demo", name: "Beispiel Kunde GmbH", email: "", phone:"", street:"", city:"Bremen", createdAt: new Date().toISOString() }
+          ],
+          invoices: [
+            { id:"I_demo", number:"RE-2026-0001", date: today(), customerId:"C_demo", title:"Sicherheitsdienst", note:"Kleinunternehmer §19 UStG", net:480, total:480, createdAt: new Date().toISOString() }
+          ],
+          expenses: [
+            { id:"E_demo", date: today(), amount:29.90, title:"Büromaterial", category:"Büro", createdAt: new Date().toISOString() }
+          ]
+        });
+      }
+
+      function normalize(data){
+        return {
+          customers: Array.isArray(data.customers) ? data.customers : [],
+          invoices: Array.isArray(data.invoices) ? data.invoices : [],
+          expenses: Array.isArray(data.expenses) ? data.expenses : []
+        };
+      }
+
+      function exportJSON(){
+        const blob = JSON.stringify(state, null, 2);
+        downloadText(blob, "ms-backup.json", "application/json;charset=utf-8");
+        toast("Export fertig.");
+      }
+
+      function importJSON(ev){
+        const file = ev.target.files && ev.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          try{
+            const data = JSON.parse(String(reader.result || ""));
+            const clean = normalize(data);
+            state.customers = clean.customers;
+            state.invoices = clean.invoices;
+            state.expenses = clean.expenses;
+            saveState();
+            refreshPills();
+            toast("Import erfolgreich.");
+            go("dashboard");
+          } catch(e){
+            toast("Import fehlgeschlagen: JSON ungültig.", true);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // ===============================
+      // KPIs & helpers
+      // ===============================
+      function calcKPIs(){
+        const now = new Date();
+        const ym = now.toISOString().slice(0,7);
+        const year = now.getFullYear();
+
+        const invMonth = state.invoices.filter(i=>String(i.date||"").slice(0,7)===ym);
+        const expMonth = state.expenses.filter(e=>String(e.date||"").slice(0,7)===ym);
+
+        const invYear = state.invoices.filter(i=>Number(String(i.date||"").slice(0,4))===year);
+
+        const revMonth = invMonth.reduce((s,i)=>s+Number(i.total||0),0);
+        const expMonthSum = expMonth.reduce((s,e)=>s+Number(e.amount||0),0);
+        const revYear = invYear.reduce((s,i)=>s+Number(i.total||0),0);
+
+        return {
+          revMonth: round2(revMonth),
+          expMonth: round2(expMonthSum),
+          revYear: round2(revYear),
+          invCount: state.invoices.length
+        };
+      }
+
+      function buildRecent(){
+        const items = [];
+        for(const inv of state.invoices.slice(0,6)){
+          items.push({
+            type:"invoice",
+            date: inv.date,
+            label: `${inv.number} • ${inv.title || "Rechnung"} • ${fmtEUR(inv.total)}`
+          });
+        }
+        for(const ex of state.expenses.slice(0,6)){
+          items.push({
+            type:"expense",
+            date: ex.date,
+            label: `${ex.title} • ${fmtEUR(ex.amount)}`
+          });
+        }
+        items.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+        const top = items.slice(0,8);
+
+        const html = top.length ? `
+          <table>
+            <thead><tr><th>Typ</th><th>Eintrag</th><th>Datum</th></tr></thead>
+            <tbody>
+              ${top.map(x=>`
+                <tr>
+                  <td class="muted">${x.type==="invoice" ? "Rechnung" : "Ausgabe"}</td>
+                  <td><b>${escapeHTML(x.label)}</b></td>
+                  <td class="muted">${escapeHTML(String(x.date||""))}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        ` : `<div class="muted">Noch keine Aktivitäten.</div>`;
+
+        return { count: top.length, html };
+      }
+
+      function refreshPills(){
+        ui.pillCustomers.textContent = String(state.customers.length);
+        ui.pillInvoices.textContent = String(state.invoices.length);
+        ui.pillExpenses.textContent = String(state.expenses.length);
+      }
+
+      function nextInvoiceNumber(){
+        // simple: find max numeric tail
+        const year = new Date().getFullYear();
+        const prefix = `RE-${year}-`;
+        let max = 0;
+        for(const inv of state.invoices){
+          if(typeof inv.number !== "string") continue;
+          if(inv.number.startsWith(prefix)){
+            const tail = inv.number.slice(prefix.length);
+            const n = parseInt(tail, 10);
+            if(Number.isFinite(n)) max = Math.max(max, n);
+          }
+        }
+        const next = String(max + 1).padStart(4,"0");
+        return `${prefix}${next}`;
+      }
+
+      function makeCustomersCSV(){
+        const header = ["id","name","email","phone","street","city","createdAt"];
+        const rows = state.customers.map(c=>[
+          c.id, c.name, c.email||"", c.phone||"", c.street||"", c.city||"", c.createdAt||""
+        ].map(csvEscape).join(","));
+        return header.join(",") + "\n" + rows.join("\n") + "\n";
+      }
+
+      function makeInvoicesCSV(){
+        const header = ["id","number","date","customerId","customerName","title","net","total","note","createdAt"];
+        const rows = state.invoices.map(i=>{
+          const c = state.customers.find(x=>x.id===i.customerId);
+          return [
+            i.id, i.number, i.date, i.customerId||"", c?c.name:"", i.title||"",
+            String(i.net||0), String(i.total||0), i.note||"", i.createdAt||""
+          ].map(csvEscape).join(",");
+        });
+        return header.join(",") + "\n" + rows.join("\n") + "\n";
+      }
+
+      function makeExpensesCSV(){
+        const header = ["id","date","title","category","amount","createdAt"];
+        const rows = state.expenses.map(e=>[
+          e.id, e.date, e.title, e.category||"", String(e.amount||0), e.createdAt||""
+        ].map(csvEscape).join(","));
+        return header.join(",") + "\n" + rows.join("\n") + "\n";
+      }
+
+      function downloadText(text, filename, mime){
+        const blob = new Blob([text], {type: mime || "text/plain;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function toast(msg, isError=false){
+        ui.toast.textContent = msg;
+        ui.toast.style.borderColor = isError ? "rgba(239,68,68,.45)" : "rgba(255,255,255,.12)";
+        ui.toast.style.background = isError ? "rgba(239,68,68,.12)" : "rgba(0,0,0,.55)";
+        ui.toast.classList.add("show");
+        clearTimeout(toast._t);
+        toast._t = setTimeout(()=>ui.toast.classList.remove("show"), 2200);
+      }
+
+      function uid(prefix){
+        return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
+      }
+      function today(){
+        const d = new Date();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        return `${d.getFullYear()}-${mm}-${dd}`;
+      }
+      function fmtEUR(n){
+        const v = Number(n||0);
+        return v.toLocaleString("de-DE", {style:"currency", currency:"EUR"});
+      }
+      function round2(n){ return Math.round((Number(n)||0)*100)/100; }
+      function csvEscape(v){
+        const s = String(v ?? "");
+        if(/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+        return s;
+      }
+      function escapeHTML(s){
+        return String(s ?? "").replace(/[&<>"']/g, (m)=>({
+          "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+        }[m]));
+      }
+    })();
+  </script>
+</body>
 </html>
-
-{ 
-  "name": "Masculine Security", 
-  "short_name": "Security", 
-  "start_url": "/index.html", 
-  "display": "standalone", 
-  "background_color": "#ffffff", 
-  "theme_color": "#0b1f3a", 
-  "icons": [ 
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }, 
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" } 
-  ] 
-} 
-
-
-let customers = [];
-let invoices = [];
-let expenses = [];
-
-function showPage(id, btn) {
-  document.querySelectorAll(".page").forEach(p =>
-    p.classList.add("hidden")
-  );
-
-  document.getElementById(id).classList.remove("hidden");
-
-  document.querySelectorAll(".tab").forEach(t =>
-    t.classList.remove("active")
-  );
-
-  if (btn) btn.classList.add("active");
-}
-
-/* ===== Kunden ===== */
-function saveCustomer() {
-  const name = document.getElementById("c_name").value;
-  const email = document.getElementById("c_email").value;
-
-  if (!name) return alert("Name ist erforderlich!");
-
-  customers.push({ name, email });
-  renderCustomers();
-}
-
-function renderCustomers() {
-  const ul = document.getElementById("customers_list");
-  ul.innerHTML = "";
-
-  customers.forEach(c => {
-    const li = document.createElement("li");
-    li.textContent = c.name + " – " + c.email;
-    ul.appendChild(li);
-  });
-}
-
-/* ===== Rechnungen ===== */
-function saveInvoice() {
-  const no = document.getElementById("i_no").value;
-  invoices.push({ no });
-  renderInvoices();
-}
-
-function renderInvoices() {
-  const ul = document.getElementById("invoices_list");
-  ul.innerHTML = "";
-
-  invoices.forEach(i => {
-    const li = document.createElement("li");
-    li.textContent = i.no;
-    ul.appendChild(li);
-  });
-}
-
-/* ===== Ausgaben ===== */
-function saveExpense() {
-  const amount = document.getElementById("e_amount").value;
-  expenses.push({ amount });
-  renderExpenses();
-}
-
-function renderExpenses() {
-  const ul = document.getElementById("expenses_list");
-  ul.innerHTML = "";
-
-  expenses.forEach(e => {
-    const li = document.createElement("li");
-    li.textContent = e.amount + " €";
-    ul.appendChild(li);
-  });
-}
-:root { --b:#ddd; --bg:#f7f7f7; --card:#fff; --txt:#111; --mut:#666; }
-* { box-sizing: border-box; }
-body { margin:0; font-family: system-ui, Arial, sans-serif; background: var(--bg); color: var(--txt); }
-.top { position: sticky; top:0; background:#fff; border-bottom:1px solid var(--b); padding:12px; z-index: 10; }
-.brand h1 { margin:0; font-size:18px; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f6f6f6;
-}
-
-.top {
-  background: white;
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-}
-
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.tab {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  background: white;
-  cursor: pointer;
-}
-
-.tab.active {
-  background: #eee;
-}
-
-.wrap {
-  padding: 15px;
-}
-
-.page {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.hidden {
-  display: none;
-}
-
-input {
-  display: block;
-  margin: 6px 0;
-  padding: 8px;
-}
