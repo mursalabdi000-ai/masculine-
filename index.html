@@ -2,1530 +2,1838 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Masculine Security — Mini Office</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Masculine Security – Mini Office (Single File)</title>
+
+  <!-- =========================
+       SINGLE-FILE: CSS HERE
+       ========================= -->
   <style>
     :root{
-      --bg:#0b1220; --panel:#0f1a2f; --panel2:#0c1629; --card:#10203a;
-      --muted:#93a4c6; --text:#e7eeff; --line:#1a2a4b;
-      --accent:#3aa6ff; --accent2:#2bd4bd; --danger:#ff4d6d; --warn:#ffc857;
-      --shadow:0 14px 40px rgba(0,0,0,.45);
-      --radius:16px;
-      --radius2:12px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      --bg:#061523;
+      --panel:#0b2236;
+      --panel2:#0c2a42;
+      --card:#0e314e;
+      --line:rgba(255,255,255,.08);
+      --text:#e8f1ff;
+      --muted:rgba(232,241,255,.72);
+      --muted2:rgba(232,241,255,.55);
+      --brand:#2dd4bf;
+      --brand2:#38bdf8;
+      --danger:#ef4444;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:14px;
+      --radius2:18px;
+      --focus:0 0 0 3px rgba(56,189,248,.25);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      margin:0; font-family:var(--font); background:
-        radial-gradient(1200px 700px at 30% -10%, rgba(58,166,255,.22), transparent 55%),
-        radial-gradient(1000px 600px at 90% 10%, rgba(43,212,189,.18), transparent 55%),
-        linear-gradient(180deg, #07101f 0%, #070d18 100%);
+      margin:0;
+      font-family:var(--font);
+      background: radial-gradient(1200px 800px at 15% 10%, rgba(56,189,248,.15), transparent 60%),
+                  radial-gradient(900px 700px at 85% 15%, rgba(45,212,191,.12), transparent 55%),
+                  linear-gradient(180deg, #04111c, var(--bg));
       color:var(--text);
     }
     a{color:inherit}
     .app{
-      min-height:100vh;
       display:grid;
       grid-template-columns: 280px 1fr;
       gap:18px;
       padding:18px;
-      max-width: 1320px;
-      margin:0 auto;
+      min-height:100%;
     }
     .sidebar{
-      background: linear-gradient(180deg, rgba(16,32,58,.78), rgba(12,22,41,.78));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px;
-      position:sticky; top:14px; height: calc(100vh - 28px);
-      display:flex; flex-direction:column;
+      background: linear-gradient(180deg, rgba(11,34,54,.92), rgba(9,26,41,.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius2);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
     }
-    .brand{
+    .sideTop{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--line);
       display:flex; gap:12px; align-items:center;
-      padding:10px;
-      border-radius: var(--radius2);
-      background: rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.05);
     }
     .logo{
-      width:42px; height:42px; border-radius: 14px;
-      background: linear-gradient(135deg, rgba(58,166,255,.9), rgba(43,212,189,.9));
-      display:grid; place-items:center;
-      color:#06101f; font-weight:900;
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(45,212,191,.35), rgba(56,189,248,.25));
+      border:1px solid rgba(255,255,255,.10);
+      display:grid;place-items:center;
+      font-weight:800;
       letter-spacing:.5px;
-      box-shadow: 0 10px 30px rgba(58,166,255,.18);
+      color:#c8fbff;
+      text-shadow:0 2px 18px rgba(56,189,248,.25);
+      flex:0 0 auto;
     }
-    .brand h1{margin:0; font-size:14px; line-height:1.2}
-    .brand small{display:block; color:var(--muted); font-size:12px; margin-top:2px}
+    .brand h1{
+      margin:0;font-size:14px;line-height:1.2
+    }
+    .brand p{
+      margin:4px 0 0;
+      font-size:12px;color:var(--muted2)
+    }
     .nav{
-      margin-top:12px;
-      display:flex; flex-direction:column; gap:8px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    .nav button{
-      all:unset;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
+    .navBtn{
+      width:100%;
+      background:transparent;
+      border:1px solid transparent;
+      color:var(--text);
       padding:10px 12px;
-      border-radius: 14px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       cursor:pointer;
-      border:1px solid rgba(255,255,255,.06);
-      background: rgba(255,255,255,.02);
-      transition: .15s ease;
+      text-align:left;
+      transition:.15s ease;
     }
-    .nav button:hover{
-      transform: translateY(-1px);
-      border-color: rgba(58,166,255,.35);
-      background: rgba(58,166,255,.08);
+    .navBtn:hover{
+      background:rgba(255,255,255,.04);
+      border-color:rgba(255,255,255,.06);
     }
-    .nav button.active{
-      border-color: rgba(58,166,255,.55);
-      background: rgba(58,166,255,.14);
-      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+    .navBtn.active{
+      background:linear-gradient(135deg, rgba(56,189,248,.12), rgba(45,212,191,.10));
+      border-color:rgba(56,189,248,.22);
     }
-    .nav .left{
-      display:flex; align-items:center; gap:10px;
-      font-weight:700; font-size:13px;
+    .navLeft{
+      display:flex; gap:10px; align-items:center;
+      font-weight:650;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background:rgba(255,255,255,.15);
+      box-shadow:0 0 0 3px rgba(255,255,255,.05);
+    }
+    .navBtn.active .dot{
+      background:var(--brand2);
+      box-shadow:0 0 0 3px rgba(56,189,248,.18);
     }
     .pill{
-      font-size:12px; color:var(--muted);
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.16);
-    }
-    .foot{
-      margin-top:auto;
-      padding:10px;
-      border-top:1px solid rgba(255,255,255,.06);
-      color:var(--muted);
       font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+    }
+    .sideBottom{
+      margin-top:auto;
+      padding:14px 16px;
+      border-top:1px solid var(--line);
+      color:var(--muted2);
+      font-size:12px;
+      line-height:1.35;
     }
     .main{
-      background: linear-gradient(180deg, rgba(16,32,58,.55), rgba(12,22,41,.55));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      display:flex; flex-direction:column;
-      min-height: calc(100vh - 36px);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-width:0;
     }
     .topbar{
-      padding:14px;
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex;
       gap:12px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.12);
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      border-radius:var(--radius2);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(12,42,66,.85), rgba(10,34,54,.85));
+      box-shadow:var(--shadow);
+      overflow:auto;
     }
-    .crumb{
-      display:flex; flex-direction:column; gap:2px;
+    .crumbs{
+      display:flex; flex-direction:column;
+      gap:4px;
+      min-width:240px;
     }
-    .crumb h2{margin:0; font-size:14px}
-    .crumb small{color:var(--muted)}
+    .crumbs .title{
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .crumbs .sub{
+      font-size:12px;color:var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
     .actions{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+      display:flex; gap:10px; align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      min-width:280px;
     }
     .btn{
+      background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
       color:var(--text);
       padding:9px 12px;
-      border-radius: 12px;
+      border-radius:999px;
       cursor:pointer;
       transition:.15s ease;
-      font-weight:700;
+      font-weight:650;
       font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      white-space:nowrap;
     }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(58,166,255,.4);
-      background: rgba(58,166,255,.10);
-    }
+    .btn:hover{background:rgba(255,255,255,.07)}
+    .btn:focus{outline:none; box-shadow:var(--focus)}
     .btn.primary{
-      border-color: rgba(58,166,255,.55);
-      background: rgba(58,166,255,.16);
-    }
-    .btn.good{
-      border-color: rgba(43,212,189,.55);
-      background: rgba(43,212,189,.14);
+      background:linear-gradient(135deg, rgba(56,189,248,.20), rgba(45,212,191,.18));
+      border-color:rgba(56,189,248,.28);
     }
     .btn.danger{
-      border-color: rgba(255,77,109,.45);
-      background: rgba(255,77,109,.10);
+      background:rgba(239,68,68,.12);
+      border-color:rgba(239,68,68,.25);
+    }
+    .btn.ok{
+      background:rgba(34,197,94,.12);
+      border-color:rgba(34,197,94,.25);
     }
     .content{
-      padding:14px;
       display:grid;
+      grid-template-columns: 1.2fr .9fr;
       gap:14px;
+      min-width:0;
     }
-    .grid2{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
-    .grid3{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;}
+    @media (max-width: 1050px){
+      .app{grid-template-columns:1fr}
+      .content{grid-template-columns:1fr}
+    }
+    .panel{
+      border-radius:var(--radius2);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(14,49,78,.70), rgba(10,34,54,.70));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      min-width:0;
+    }
+    .panelHead{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .panelHead h2{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .panelHead .hint{
+      font-size:12px;
+      color:var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .panelBody{padding:14px 16px}
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 1050px){
+      .cards{grid-template-columns:1fr}
+    }
     .card{
-      background: rgba(16,32,58,.55);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius2);
-      padding:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px;
+      min-width:0;
     }
-    .card h3{margin:0 0 10px 0; font-size:14px}
-    .muted{color:var(--muted)}
-    .kpi{
-      display:flex; align-items:flex-end; justify-content:space-between;
-      gap:10px;
-    }
-    .kpi .value{font-size:22px; font-weight:900}
-    .kpi .label{color:var(--muted); font-size:12px; font-weight:700}
+    .card .k{font-size:12px;color:var(--muted2);margin:0 0 6px}
+    .card .v{font-size:18px;font-weight:900;margin:0}
+    .card .s{font-size:12px;color:var(--muted2);margin:6px 0 0}
     .table{
       width:100%;
-      border-collapse:collapse;
+      border-collapse:separate;
+      border-spacing:0;
       overflow:hidden;
-      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      background:rgba(255,255,255,.02);
     }
-    .table th, .table td{
+    .table th,.table td{
       padding:10px 10px;
       border-bottom:1px solid rgba(255,255,255,.06);
-      text-align:left;
       font-size:13px;
+      vertical-align:top;
     }
-    .table th{color:var(--muted); font-weight:800; font-size:12px}
-    .row-actions{display:flex; gap:8px; justify-content:flex-end}
+    .table th{
+      font-size:12px;
+      color:var(--muted2);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      background:rgba(255,255,255,.03);
+    }
+    .table tr:last-child td{border-bottom:none}
+    .rowActions{display:flex; gap:8px; flex-wrap:wrap}
     .mini{
-      padding:6px 10px; border-radius:10px; font-size:12px; font-weight:800;
-    }
-    .mini:hover{transform:none}
-    .field{
-      display:flex; flex-direction:column; gap:6px; margin-bottom:10px;
-    }
-    .field label{font-size:12px; color:var(--muted); font-weight:800}
-    .field input, .field select, .field textarea{
-      width:100%;
-      padding:10px 12px;
-      border-radius: 12px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .mini:hover{background:rgba(255,255,255,.06)}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .badge.ok{border-color:rgba(34,197,94,.25); background:rgba(34,197,94,.10); color:#bff7d2}
+    .badge.warn{border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.10); color:#ffe1b2}
+    .badge.danger{border-color:rgba(239,68,68,.25); background:rgba(239,68,68,.10); color:#ffd0d0}
+
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 1050px){
+      .formGrid{grid-template-columns:1fr}
+    }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted2);
+      margin:0 0 6px;
+    }
+    input, select, textarea{
+      width:100%;
+      padding:10px 11px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
       color:var(--text);
       outline:none;
-    }
-    .field textarea{min-height:96px; resize:vertical}
-    .split{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    .notice{
-      border:1px dashed rgba(58,166,255,.45);
-      background: rgba(58,166,255,.08);
-      padding:12px;
-      border-radius: 12px;
-      color: var(--text);
+      transition:.15s ease;
+      font-family:inherit;
       font-size:13px;
     }
-    .tag{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      font-size:12px; font-weight:800; color:var(--muted);
+    textarea{min-height:92px; resize:vertical}
+    input:focus, select:focus, textarea:focus{box-shadow:var(--focus); border-color:rgba(56,189,248,.35)}
+    .formRow{min-width:0}
+    .helper{
+      font-size:12px;color:var(--muted2);
+      margin-top:8px;
     }
-    .right{ text-align:right }
-    .hide{display:none !important}
-    .hr{height:1px; background: rgba(255,255,255,.06); margin:10px 0}
-    @media (max-width: 980px){
-      .app{grid-template-columns: 1fr}
-      .sidebar{position:relative; height:auto}
-      .grid2,.grid3{grid-template-columns: 1fr}
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 1050px){
+      .split{grid-template-columns:1fr}
+    }
+    .hr{
+      height:1px;background:rgba(255,255,255,.08);
+      margin:12px 0;
+    }
+
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      min-width:260px;
+      max-width:420px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(10,26,41,.92);
+      box-shadow:var(--shadow);
+      color:var(--text);
+      display:none;
+      z-index:9999;
+    }
+    .toast.show{display:block}
+    .toast .t{font-weight:900;margin:0 0 4px}
+    .toast .m{margin:0;color:var(--muted);font-size:13px}
+    .smallNote{
+      font-size:12px;color:var(--muted2);
+      margin-top:10px;
+    }
+    .kbd{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      padding:2px 6px;
+      border-radius:8px;
+      font-size:12px;
+      color:var(--muted);
     }
   </style>
 </head>
+
 <body>
-  <div class="app">
+  <div class="app" id="appRoot">
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="brand">
+      <div class="sideTop">
         <div class="logo">MS</div>
-        <div>
-          <h1>Masculine Security</h1>
-          <small>Mini Office • Offline (local)</small>
+        <div class="brand">
+          <h1 id="sideBrand">Masculine Security</h1>
+          <p id="sideSub">Mini Office • Offline (local)</p>
         </div>
       </div>
 
-      <div class="nav" id="nav">
-        <button data-page="overview" class="active">
-          <div class="left">🏠 Übersicht <span class="pill">KPIs</span></div>
-          <span class="pill" id="countOverview">–</span>
+      <nav class="nav" id="nav">
+        <button class="navBtn active" data-page="dashboard">
+          <div class="navLeft"><span class="dot"></span>Übersicht</div>
+          <span class="pill" id="pillKpi">KPIs</span>
         </button>
-        <button data-page="customers">
-          <div class="left">👤 Kunden</div>
-          <span class="pill" id="countCustomers">0</span>
+
+        <button class="navBtn" data-page="customers">
+          <div class="navLeft"><span class="dot"></span>Kunden</div>
+          <span class="pill" id="pillCustomers">0</span>
         </button>
-        <button data-page="invoices">
-          <div class="left">🧾 Rechnungen</div>
-          <span class="pill" id="countInvoices">0</span>
+
+        <button class="navBtn" data-page="invoices">
+          <div class="navLeft"><span class="dot"></span>Rechnungen</div>
+          <span class="pill" id="pillInvoices">0</span>
         </button>
-        <button data-page="expenses">
-          <div class="left">💳 Ausgaben</div>
-          <span class="pill" id="countExpenses">0</span>
+
+        <button class="navBtn" data-page="expenses">
+          <div class="navLeft"><span class="dot"></span>Ausgaben</div>
+          <span class="pill" id="pillExpenses">0</span>
         </button>
-        <button data-page="payroll">
-          <div class="left">💼 Lohnabrechnung</div>
-          <span class="pill" id="countPayroll">0</span>
+
+        <button class="navBtn" data-page="lohn">
+          <div class="navLeft"><span class="dot"></span>Lohnabrechnung</div>
+          <span class="pill" id="pillLohn">0</span>
         </button>
-        <button data-page="tax">
-          <div class="left">🧾 Einkommensteuer</div>
-          <span class="pill" id="taxYear">2026</span>
+
+        <button class="navBtn" data-page="tax">
+          <div class="navLeft"><span class="dot"></span>Einkommensteuer</div>
+          <span class="pill" id="pillTaxYear">2026</span>
         </button>
-        <button data-page="emailpdf">
-          <div class="left">✉️ Email + PDF</div>
+
+        <button class="navBtn" data-page="emailpdf">
+          <div class="navLeft"><span class="dot"></span>Email + PDF</div>
           <span class="pill">Export</span>
         </button>
-        <button data-page="settings">
-          <div class="left">⚙️ Einstellungen</div>
+
+        <button class="navBtn" data-page="settings">
+          <div class="navLeft"><span class="dot"></span>Einstellungen</div>
           <span class="pill">Backup</span>
         </button>
-      </div>
+      </nav>
 
-      <div class="foot">
-        <div><b>Tipp:</b> GitHub commit → Netlify auto deploy.</div>
-        <div class="muted">Update: Ctrl+Shift+R haddii aan isbeddel muuqan.</div>
-        <div class="muted" id="versionLabel"></div>
+      <div class="sideBottom" id="sideBottom">
+        Tipp: GitHub commit = Netlify auto deploy.<br/>
+        Hard refresh: <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span><br/>
+        Version: <b id="appVersion">v1.0 (single-file)</b>
       </div>
     </aside>
 
+    <!-- MAIN -->
     <main class="main">
       <div class="topbar">
-        <div class="crumb">
-          <h2 id="pageTitle">Übersicht</h2>
-          <small id="pageSub" class="muted">Umsatz • Ausgaben • Kunden • Rechnungen (offline)</small>
+        <div class="crumbs">
+          <div class="title" id="pageTitle">Übersicht</div>
+          <div class="sub" id="pageSub">Umsatz • Ausgaben • Kunden • Rechnungen (offline)</div>
         </div>
-        <div class="actions" id="topActions">
+        <div class="actions">
           <button class="btn primary" id="quickInvoice">+ Rechnung</button>
-          <button class="btn" id="quickCustomer">+ Kunde</button>
-          <button class="btn" id="quickExpense">+ Ausgabe</button>
-          <button class="btn good" id="btnExport">Export JSON</button>
-          <button class="btn" id="btnImport">Import JSON</button>
+          <button class="btn primary" id="quickCustomer">+ Kunde</button>
+          <button class="btn primary" id="quickExpense">+ Ausgabe</button>
+          <button class="btn" id="quickExport">Export</button>
+          <button class="btn" id="quickImport">Import</button>
         </div>
       </div>
 
       <div class="content">
-        <!-- OVERVIEW -->
-        <section id="page-overview">
-          <div class="grid3">
-            <div class="card">
-              <div class="kpi">
-                <div>
-                  <div class="label">Umsatz (dieser Monat)</div>
-                  <div class="value" id="kpiMonthRevenue">0,00 €</div>
-                  <div class="muted" style="font-size:12px">MwSt: <span id="kpiMonthVat">0,00 €</span> • Brutto: <span id="kpiMonthGross">0,00 €</span></div>
-                </div>
-                <span class="tag">📈</span>
-              </div>
-            </div>
-            <div class="card">
-              <div class="kpi">
-                <div>
-                  <div class="label">Ausgaben (dieser Monat)</div>
-                  <div class="value" id="kpiMonthExpenses">0,00 €</div>
-                  <div class="muted" style="font-size:12px">Betrag total gespeichert</div>
-                </div>
-                <span class="tag">💳</span>
-              </div>
-            </div>
-            <div class="card">
-              <div class="kpi">
-                <div>
-                  <div class="label">Umsatz (dieses Jahr)</div>
-                  <div class="value" id="kpiYearRevenue">0,00 €</div>
-                  <div class="muted" style="font-size:12px">Rechnungen: <span id="kpiInvoiceCount">0</span></div>
-                </div>
-                <span class="tag">🧾</span>
-              </div>
-            </div>
+        <section class="panel" id="leftPanel">
+          <div class="panelHead">
+            <h2 id="leftTitle">KPIs</h2>
+            <div class="hint" id="leftHint">Lexoffice-Style Navigation, Aktionen, Daten offline.</div>
           </div>
-
-          <div class="grid2">
-            <div class="card">
-              <h3>Letzte Aktivitäten</h3>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Typ</th>
-                    <th>Beschreibung</th>
-                    <th>Datum</th>
-                    <th class="right">Betrag</th>
-                  </tr>
-                </thead>
-                <tbody id="recentList"></tbody>
-              </table>
-              <div class="muted" style="margin-top:10px">Hinweis: Alles läuft offline via localStorage (Browser).</div>
-            </div>
-
-            <div class="card">
-              <h3>Schnellstart</h3>
-              <div class="notice">
-                Wie Lexoffice-Style: links Navigation, oben Aktionen, Daten offline.<br/>
-                <b>Tipp:</b> Export/Import oben rechts für Backup.
-              </div>
-              <div class="hr"></div>
-              <div class="split">
-                <button class="btn primary" onclick="UI.go('invoices')">+ Rechnung</button>
-                <button class="btn" onclick="UI.go('customers')">+ Kunde</button>
-              </div>
-              <div class="split" style="margin-top:10px">
-                <button class="btn" onclick="UI.go('expenses')">+ Ausgabe</button>
-                <button class="btn good" onclick="UI.go('emailpdf')">Email + PDF</button>
-              </div>
-            </div>
-          </div>
+          <div class="panelBody" id="leftBody"></div>
         </section>
 
-        <!-- CUSTOMERS -->
-        <section id="page-customers" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Kunde hinzufügen</h3>
-              <div class="field"><label>Firmenname / Name</label><input id="c_name" placeholder="z.B. Beispiel Kunde GmbH"></div>
-              <div class="field"><label>Email</label><input id="c_email" placeholder="kunde@email.de"></div>
-              <div class="field"><label>Adresse</label><input id="c_addr" placeholder="Straße, PLZ Ort"></div>
-              <button class="btn primary" onclick="Customers.add()">Speichern</button>
-              <button class="btn danger" onclick="Customers.clearForm()">Leeren</button>
-              <div class="muted" style="margin-top:10px">Tipp: Kundendaten werden in Rechnungen auswählbar.</div>
-            </div>
-            <div class="card">
-              <h3>Kundenliste</h3>
-              <table class="table">
-                <thead><tr><th>Name</th><th>Email</th><th>Adresse</th><th class="right">Aktion</th></tr></thead>
-                <tbody id="customersList"></tbody>
-              </table>
-            </div>
+        <section class="panel" id="rightPanel">
+          <div class="panelHead">
+            <h2 id="rightTitle">Letzte Aktivitäten</h2>
+            <div class="hint" id="rightHint"><span id="activityCount">0</span> Einträge</div>
           </div>
+          <div class="panelBody" id="rightBody"></div>
         </section>
-
-        <!-- INVOICES -->
-        <section id="page-invoices" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Rechnung erstellen</h3>
-              <div class="split">
-                <div class="field"><label>Rechnungs-Nr.</label><input id="i_no" placeholder="RE-2026-0001"></div>
-                <div class="field"><label>Datum</label><input id="i_date" type="date"></div>
-              </div>
-              <div class="field">
-                <label>Kunde</label>
-                <select id="i_customer"></select>
-              </div>
-              <div class="split">
-                <div class="field"><label>Leistung / Beschreibung</label><input id="i_desc" placeholder="z.B. Objektschutz 12h"></div>
-                <div class="field"><label>Netto (€)</label><input id="i_net" type="number" step="0.01" placeholder="0.00"></div>
-              </div>
-              <div class="split">
-                <div class="field"><label>USt % (0 für Kleinunternehmer)</label><input id="i_vatRate" type="number" step="0.01" value="0"></div>
-                <div class="field"><label>Status</label>
-                  <select id="i_status">
-                    <option value="Entwurf">Entwurf</option>
-                    <option value="Gesendet">Gesendet</option>
-                    <option value="Bezahlt">Bezahlt</option>
-                  </select>
-                </div>
-              </div>
-              <button class="btn primary" onclick="Invoices.add()">Speichern</button>
-              <button class="btn" onclick="Invoices.print()">PDF öffnen</button>
-              <button class="btn danger" onclick="Invoices.clearForm()">Leeren</button>
-              <div class="muted" style="margin-top:10px">PDF = Browser Print (Save as PDF).</div>
-            </div>
-
-            <div class="card">
-              <h3>Rechnungen</h3>
-              <table class="table">
-                <thead><tr><th>Nr.</th><th>Kunde</th><th>Datum</th><th>Status</th><th class="right">Netto</th><th class="right">Aktion</th></tr></thead>
-                <tbody id="invoicesList"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- EXPENSES -->
-        <section id="page-expenses" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Ausgabe hinzufügen</h3>
-              <div class="split">
-                <div class="field"><label>Datum</label><input id="e_date" type="date"></div>
-                <div class="field"><label>Betrag (€)</label><input id="e_amount" type="number" step="0.01" placeholder="0.00"></div>
-              </div>
-              <div class="field"><label>Kategorie</label>
-                <select id="e_cat">
-                  <option>Büromaterial</option>
-                  <option>Fahrtkosten</option>
-                  <option>Versicherung</option>
-                  <option>Telefon/Internet</option>
-                  <option>Sonstiges</option>
-                </select>
-              </div>
-              <div class="field"><label>Notiz</label><input id="e_note" placeholder="z.B. Quittung #123"></div>
-              <button class="btn primary" onclick="Expenses.add()">Speichern</button>
-              <button class="btn danger" onclick="Expenses.clearForm()">Leeren</button>
-            </div>
-
-            <div class="card">
-              <h3>Ausgabenliste</h3>
-              <table class="table">
-                <thead><tr><th>Datum</th><th>Kategorie</th><th>Notiz</th><th class="right">Betrag</th><th class="right">Aktion</th></tr></thead>
-                <tbody id="expensesList"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- PAYROLL -->
-        <section id="page-payroll" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Lohnabrechnung (einfach)</h3>
-              <div class="split">
-                <div class="field"><label>Mitarbeiter Name</label><input id="p_name" placeholder="Name"></div>
-                <div class="field"><label>Monat (YYYY-MM)</label><input id="p_month" placeholder="2026-02"></div>
-              </div>
-              <div class="split">
-                <div class="field"><label>Stunden</label><input id="p_hours" type="number" step="0.01" placeholder="0"></div>
-                <div class="field"><label>Stundenlohn (€)</label><input id="p_rate" type="number" step="0.01" placeholder="16.00"></div>
-              </div>
-              <div class="split">
-                <div class="field"><label>Abzüge (€)</label><input id="p_deduct" type="number" step="0.01" value="0"></div>
-                <div class="field"><label>Notiz</label><input id="p_note" placeholder="z.B. SV/Steuer Schätzung"></div>
-              </div>
-              <button class="btn primary" onclick="Payroll.add()">Speichern</button>
-              <button class="btn" onclick="Payroll.print()">PDF öffnen</button>
-              <button class="btn danger" onclick="Payroll.clearForm()">Leeren</button>
-              <div class="muted" style="margin-top:10px">Hinweis: Dies ist eine einfache interne Lohnliste (nicht offiziell).</div>
-            </div>
-
-            <div class="card">
-              <h3>Lohnliste</h3>
-              <table class="table">
-                <thead><tr><th>Monat</th><th>Name</th><th>Stunden</th><th class="right">Brutto</th><th class="right">Netto</th><th class="right">Aktion</th></tr></thead>
-                <tbody id="payrollList"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- TAX -->
-        <section id="page-tax" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Einkommensteuer (Übersicht)</h3>
-              <div class="field">
-                <label>Steuerjahr</label>
-                <select id="t_year" onchange="Tax.refresh()">
-                  <option>2026</option>
-                  <option>2025</option>
-                  <option>2024</option>
-                </select>
-              </div>
-              <div class="notice">
-                Das ist eine <b>interne</b> Übersicht: Einnahmen − Ausgaben = Gewinn (Schätzung).<br/>
-                Für Elster brauchst du die richtigen Formulare/Angaben.
-              </div>
-              <div class="hr"></div>
-              <div class="grid3">
-                <div class="card" style="padding:12px">
-                  <div class="label">Einnahmen (Jahr)</div>
-                  <div class="value" id="t_income" style="font-size:20px;font-weight:900">0,00 €</div>
-                </div>
-                <div class="card" style="padding:12px">
-                  <div class="label">Ausgaben (Jahr)</div>
-                  <div class="value" id="t_costs" style="font-size:20px;font-weight:900">0,00 €</div>
-                </div>
-                <div class="card" style="padding:12px">
-                  <div class="label">Gewinn (Schätzung)</div>
-                  <div class="value" id="t_profit" style="font-size:20px;font-weight:900">0,00 €</div>
-                </div>
-              </div>
-              <button class="btn" onclick="Tax.print()">PDF öffnen</button>
-            </div>
-
-            <div class="card">
-              <h3>Notizen / Belege</h3>
-              <div class="field">
-                <label>Steuer-Notizen (wird gespeichert)</label>
-                <textarea id="t_notes" placeholder="z.B. wichtige Infos, Belege, Fahrtenbuch..."></textarea>
-              </div>
-              <button class="btn good" onclick="Tax.saveNotes()">Speichern</button>
-              <div class="muted" style="margin-top:10px">Notizen werden im localStorage gespeichert.</div>
-            </div>
-          </div>
-        </section>
-
-        <!-- EMAIL + PDF -->
-        <section id="page-emailpdf" class="hide">
-          <div class="card">
-            <h3>Email (mailto) + PDF</h3>
-            <div class="muted" style="margin-bottom:10px">
-              Browser-ka ma diri karo email si toos ah, laakiin wuxuu furaa Email app-kaaga (mailto). PDF-na waa “Print → Save as PDF”.
-            </div>
-
-            <div class="grid2">
-              <div class="card">
-                <h3>Email</h3>
-                <div class="field"><label>To</label><input id="m_to" placeholder="z.B. buchhaltung@firma.de"></div>
-                <div class="field"><label>Subject</label><input id="m_subject" value="Dokumente – Lohnabrechnung / Einkommensteuer / Rechnung"></div>
-                <div class="field"><label>Template</label>
-                  <select id="m_tpl">
-                    <option value="lohn">Lohnabrechnung (letzte)</option>
-                    <option value="tax">Einkommensteuer (Übersicht)</option>
-                    <option value="invoice">Rechnung (letzte)</option>
-                    <option value="custom">Custom Text</option>
-                  </select>
-                </div>
-                <div class="field"><label>Message</label><textarea id="m_msg">Guten Tag,
-
-anbei die gewünschten Unterlagen.
-
-Viele Grüße</textarea></div>
-                <button class="btn primary" onclick="Mail.open()">Email öffnen</button>
-              </div>
-
-              <div class="card">
-                <h3>PDF</h3>
-                <div class="field"><label>PDF Template</label>
-                  <select id="p_tpl">
-                    <option value="invoice">Rechnung (letzte)</option>
-                    <option value="payroll">Lohnabrechnung (letzte)</option>
-                    <option value="tax">Einkommensteuer (Übersicht)</option>
-                    <option value="customers">Kundenliste</option>
-                    <option value="expenses">Ausgabenliste</option>
-                  </select>
-                </div>
-                <button class="btn" onclick="PDF.open()">PDF öffnen</button>
-                <div class="muted" style="margin-top:10px">
-                  PDF = Print dialog. Ka dib “Save as PDF”.  
-                  Kadib Email-ka ku attach-garee.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- SETTINGS -->
-        <section id="page-settings" class="hide">
-          <div class="grid2">
-            <div class="card">
-              <h3>Backup / Restore</h3>
-              <div class="notice">
-                Export/Import waxay kaydisaa dhammaan data (Kunden, Rechnungen, Ausgaben, Lohn, Steuer-notizen) JSON.
-              </div>
-              <div class="hr"></div>
-              <div style="display:flex; gap:10px; flex-wrap:wrap">
-                <button class="btn good" onclick="Storage.exportJSON()">Export JSON</button>
-                <label class="btn" style="display:inline-flex;align-items:center;gap:8px">
-                  Import JSON <input id="importFile" type="file" accept="application/json" style="display:none" onchange="Storage.importJSON(this.files[0])">
-                </label>
-                <button class="btn danger" onclick="Storage.resetAll()">Alles zurücksetzen</button>
-              </div>
-              <div class="muted" style="margin-top:10px">Haddii app-ka duugoobay muuqdo: Ctrl+Shift+R.</div>
-            </div>
-
-            <div class="card">
-              <h3>CSV Export</h3>
-              <div class="muted" style="margin-bottom:10px">Für Excel / späterer Import.</div>
-              <div style="display:flex; gap:10px; flex-wrap:wrap">
-                <button class="btn" onclick="CSV.customers()">Kunden CSV</button>
-                <button class="btn" onclick="CSV.invoices()">Rechnungen CSV</button>
-                <button class="btn" onclick="CSV.expenses()">Ausgaben CSV</button>
-                <button class="btn" onclick="CSV.payroll()">Lohn CSV</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
       </div>
     </main>
   </div>
 
+  <div class="toast" id="toast">
+    <p class="t" id="toastTitle">OK</p>
+    <p class="m" id="toastMsg">Gespeichert.</p>
+  </div>
+
+  <!-- =========================
+       SINGLE-FILE: JS HERE
+       (Protected from redeclare)
+       ========================= -->
   <script>
-    // ====== SINGLE-FILE MINI OFFICE (Lexoffice-like UI) ======
-    // Fixes "Identifier already declared": everything is wrapped in an IIFE (private scope).
-    (function(){
-      "use strict";
+  (function(){
+    // Prevent "Identifier already declared" if CodePen injects/re-runs.
+    if (window.__MS_MINIOFFICE_INIT__) return;
+    window.__MS_MINIOFFICE_INIT__ = true;
 
-      const APP_VERSION = "v1.0 (single-file)";
-      const LS_KEY = "ms_office_singlefile_v1";
+    const APP_VERSION = "1.0-singlefile";
+    const LS_KEY = "ms_mini_office_singlefile_v1";
 
-      const $ = (id)=>document.getElementById(id);
-      const fmtEUR = (n)=> (Number(n||0)).toLocaleString("de-DE",{style:"currency",currency:"EUR"});
-      const todayISO = ()=> new Date().toISOString().slice(0,10);
-      const monthKey = (iso)=> (iso||todayISO()).slice(0,7);
-      const yearKey = (iso)=> (iso||todayISO()).slice(0,4);
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-      const defaultState = ()=>({
-        customers: [],
-        invoices: [],
-        expenses: [],
-        payroll: [],
-        taxNotes: {
-          "2026": ""
-        },
-        meta:{
-          lastId: 0
-        }
-      });
+    function nowISO(){ return new Date().toISOString(); }
+    function toDateInputValue(d=new Date()){
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function euro(n){
+      const x = Number(n||0);
+      return x.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+    }
+    function safeParseJSON(text){
+      try{ return JSON.parse(text); }catch(e){ return null; }
+    }
+    function toast(title, msg){
+      const t = $("#toast");
+      $("#toastTitle").textContent = title;
+      $("#toastMsg").textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>t.classList.remove("show"), 2200);
+    }
 
-      function loadState(){
-        try{
-          const raw = localStorage.getItem(LS_KEY);
-          if(!raw) return defaultState();
-          const obj = JSON.parse(raw);
-          return { ...defaultState(), ...obj };
-        }catch(e){
-          console.error(e);
-          return defaultState();
+    const defaultState = () => ({
+      meta: {
+        version: APP_VERSION,
+        createdAt: nowISO(),
+        updatedAt: nowISO()
+      },
+      profile: {
+        company: "Masculine Security",
+        email: "kontakt.mass.bremen@hotmail.com",
+        phone: "",
+        address: "Werschenregerstraße 6\n28237 Bremen",
+        iban: "DE98 1001 1001 2333 0146 96",
+        bic: "NTSBDEB1XXX",
+        bank: "N26",
+        taxId: "",
+        ustId: "",
+        kleinunternehmer: true,  // default: Kleinunternehmerregelung
+        steuernummer: ""
+      },
+      counters: {
+        invoiceSeq: 1
+      },
+      customers: [],
+      invoices: [],
+      expenses: [],
+      payroll: [], // lohnabrechnung entries
+      tax: {
+        year: new Date().getFullYear(),
+        notes: ""
+      },
+      ui: {
+        page: "dashboard"
+      }
+    });
+
+    function loadState(){
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return defaultState();
+      const parsed = safeParseJSON(raw);
+      if(!parsed) return defaultState();
+      // minimal merge
+      const base = defaultState();
+      return deepMerge(base, parsed);
+    }
+
+    function deepMerge(target, source){
+      if(typeof target !== "object" || target === null) return source;
+      if(typeof source !== "object" || source === null) return target;
+      for(const k of Object.keys(source)){
+        const sv = source[k];
+        const tv = target[k];
+        if(Array.isArray(sv)){
+          target[k] = sv.slice();
+        } else if(typeof sv === "object" && sv !== null){
+          target[k] = deepMerge((typeof tv==="object" && tv!==null && !Array.isArray(tv)) ? tv : {}, sv);
+        } else {
+          target[k] = sv;
         }
       }
-      function saveState(){
-        localStorage.setItem(LS_KEY, JSON.stringify(state));
+      return target;
+    }
+
+    let state = loadState();
+
+    function saveState(){
+      state.meta.updatedAt = nowISO();
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      updateBadges();
+    }
+
+    // NAV
+    const nav = $("#nav");
+    nav.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".navBtn");
+      if(!btn) return;
+      showPage(btn.dataset.page);
+    });
+
+    // Topbar quick actions
+    $("#quickInvoice").addEventListener("click", ()=>{ showPage("invoices"); focusFirst("#invNumber"); });
+    $("#quickCustomer").addEventListener("click", ()=>{ showPage("customers"); focusFirst("#custName"); });
+    $("#quickExpense").addEventListener("click", ()=>{ showPage("expenses"); focusFirst("#expTitle"); });
+
+    $("#quickExport").addEventListener("click", ()=>{ showPage("settings"); doExportJSON(); });
+    $("#quickImport").addEventListener("click", ()=>{ showPage("settings"); $("#importFile").click(); });
+
+    function setActiveNav(page){
+      $$(".navBtn").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
+    }
+
+    function showPage(page){
+      state.ui.page = page;
+      saveState();
+      setActiveNav(page);
+      render();
+    }
+
+    function updateBadges(){
+      $("#pillCustomers").textContent = state.customers.length;
+      $("#pillInvoices").textContent = state.invoices.length;
+      $("#pillExpenses").textContent = state.expenses.length;
+      $("#pillLohn").textContent = state.payroll.length;
+      $("#pillTaxYear").textContent = state.tax.year || new Date().getFullYear();
+    }
+
+    function focusFirst(sel){
+      setTimeout(()=>{
+        const el = $(sel);
+        if(el) el.focus();
+      }, 60);
+    }
+
+    // KPI calculations
+    function monthKey(d){ // yyyy-mm
+      const dt = new Date(d);
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      return `${y}-${m}`;
+    }
+
+    function getMonthTotals(){
+      const mk = monthKey(new Date());
+      const inv = state.invoices.filter(x=>monthKey(x.date)===mk && x.status!=="storniert");
+      const exp = state.expenses.filter(x=>monthKey(x.date)===mk);
+      const revenueNet = inv.reduce((a,x)=>a+Number(x.net||0),0);
+      const revenueVat = inv.reduce((a,x)=>a+Number(x.vatAmount||0),0);
+      const revenueGross = inv.reduce((a,x)=>a+Number(x.gross||0),0);
+      const expenseSum = exp.reduce((a,x)=>a+Number(x.amount||0),0);
+      return { revenueNet, revenueVat, revenueGross, expenseSum, invCount: inv.length };
+    }
+
+    function getYearTotals(){
+      const y = new Date().getFullYear();
+      const inv = state.invoices.filter(x=> new Date(x.date).getFullYear()===y && x.status!=="storniert");
+      const exp = state.expenses.filter(x=> new Date(x.date).getFullYear()===y);
+      const revenueNet = inv.reduce((a,x)=>a+Number(x.net||0),0);
+      const revenueVat = inv.reduce((a,x)=>a+Number(x.vatAmount||0),0);
+      const revenueGross = inv.reduce((a,x)=>a+Number(x.gross||0),0);
+      const expenseSum = exp.reduce((a,x)=>a+Number(x.amount||0),0);
+      return { revenueNet, revenueVat, revenueGross, expenseSum, invCount: inv.length };
+    }
+
+    // Render
+    function render(){
+      $("#appVersion").textContent = "v"+APP_VERSION+" (single-file)";
+      $("#sideBrand").textContent = state.profile.company || "Masculine Security";
+
+      updateBadges();
+
+      const page = state.ui.page || "dashboard";
+      setActiveNav(page);
+
+      if(page==="dashboard"){
+        $("#pageTitle").textContent = "Übersicht";
+        $("#pageSub").textContent = "Umsatz • Ausgaben • Kunden • Rechnungen (offline)";
+        $("#leftTitle").textContent = "KPIs";
+        $("#leftHint").textContent = "Übersicht für diesen Monat & dieses Jahr.";
+        $("#leftBody").innerHTML = renderDashboardLeft();
+        $("#rightTitle").textContent = "Letzte Aktivitäten";
+        $("#rightHint").textContent = `${getActivities().length} Einträge`;
+        $("#rightBody").innerHTML = renderActivities();
+        bindActivitiesActions();
+        return;
       }
 
-      const state = loadState();
-
-      // ===== UI Router =====
-      const UI = window.UI = {
-        go(page){
-          // pages
-          ["overview","customers","invoices","expenses","payroll","tax","emailpdf","settings"].forEach(p=>{
-            const el = document.getElementById("page-"+p);
-            if(el) el.classList.toggle("hide", p!==page);
-          });
-
-          // nav active
-          document.querySelectorAll("#nav button").forEach(b=>{
-            b.classList.toggle("active", b.dataset.page===page);
-          });
-
-          // title/sub
-          const titles = {
-            overview:["Übersicht","Umsatz • Ausgaben • Kunden • Rechnungen (offline)"],
-            customers:["Kunden","Kunden anlegen und verwalten"],
-            invoices:["Rechnungen","Rechnung erstellen • PDF öffnen • Status"],
-            expenses:["Ausgaben","Ausgaben erfassen • Kategorien • CSV"],
-            payroll:["Lohnabrechnung","Einfache interne Lohnliste • PDF"],
-            tax:["Einkommensteuer","Interne Jahresübersicht (Schätzung)"],
-            emailpdf:["Email + PDF","Email (mailto) + PDF (Print)"],
-            settings:["Einstellungen","Backup/Restore • CSV Export • Reset"]
-          };
-          $("pageTitle").textContent = titles[page][0];
-          $("pageSub").textContent = titles[page][1];
-
-          // top actions visibility
-          const showQuick = (page==="overview" || page==="invoices" || page==="customers" || page==="expenses");
-          $("quickInvoice").classList.toggle("hide", !showQuick);
-          $("quickCustomer").classList.toggle("hide", !showQuick);
-          $("quickExpense").classList.toggle("hide", !showQuick);
-
-          // refresh page-specific dropdowns
-          if(page==="invoices") Invoices.refreshCustomerSelect();
-          if(page==="tax") Tax.refresh();
-          if(page==="emailpdf") {
-            // nothing
-          }
-
-          renderAll();
-        }
-      };
-
-      // ===== Navigation Click =====
-      document.querySelectorAll("#nav button").forEach(btn=>{
-        btn.addEventListener("click", ()=>UI.go(btn.dataset.page));
-      });
-
-      // ===== Quick buttons =====
-      $("quickInvoice").addEventListener("click", ()=>{ UI.go("invoices"); });
-      $("quickCustomer").addEventListener("click", ()=>{ UI.go("customers"); });
-      $("quickExpense").addEventListener("click", ()=>{ UI.go("expenses"); });
-
-      $("btnExport").addEventListener("click", ()=>Storage.exportJSON());
-      $("btnImport").addEventListener("click", ()=>document.getElementById("importFile").click());
-
-      // ===== Customers =====
-      const Customers = window.Customers = {
-        add(){
-          const name = $("c_name").value.trim();
-          if(!name) return alert("Bitte Name eingeben.");
-          const customer = {
-            id: ++state.meta.lastId,
-            name,
-            email: $("c_email").value.trim(),
-            addr: $("c_addr").value.trim(),
-            createdAt: Date.now()
-          };
-          state.customers.push(customer);
-          saveState();
-          Customers.clearForm();
-          renderAll();
-          UI.go("customers");
-        },
-        del(id){
-          if(!confirm("Kunde löschen?")) return;
-          state.customers = state.customers.filter(c=>c.id!==id);
-          // keep invoices but mark as unknown if deleted
-          saveState();
-          renderAll();
-        },
-        clearForm(){
-          $("c_name").value="";
-          $("c_email").value="";
-          $("c_addr").value="";
-        }
-      };
-
-      // ===== Invoices =====
-      const Invoices = window.Invoices = {
-        refreshCustomerSelect(){
-          const sel = $("i_customer");
-          sel.innerHTML = "";
-          const opt0 = document.createElement("option");
-          opt0.value = "";
-          opt0.textContent = "— Kunde wählen —";
-          sel.appendChild(opt0);
-          state.customers
-            .slice()
-            .sort((a,b)=>a.name.localeCompare(b.name))
-            .forEach(c=>{
-              const o = document.createElement("option");
-              o.value = String(c.id);
-              o.textContent = c.name + (c.email? " • "+c.email:"");
-              sel.appendChild(o);
-            });
-        },
-        add(){
-          const no = $("i_no").value.trim() || Invoices.suggestNo();
-          const date = $("i_date").value || todayISO();
-          const customerId = Number($("i_customer").value||0);
-          const desc = $("i_desc").value.trim() || "Leistung";
-          const net = Number($("i_net").value||0);
-          const vatRate = Number($("i_vatRate").value||0);
-          const status = $("i_status").value;
-
-          if(!customerId) return alert("Bitte Kunde auswählen.");
-          if(net<=0) return alert("Netto Betrag muss > 0 sein.");
-
-          const vat = net * (vatRate/100);
-          const gross = net + vat;
-
-          const inv = {
-            id: ++state.meta.lastId,
-            no,
-            date,
-            customerId,
-            desc,
-            net,
-            vatRate,
-            vat,
-            gross,
-            status,
-            createdAt: Date.now()
-          };
-          state.invoices.push(inv);
-          saveState();
-          Invoices.clearForm(false);
-          renderAll();
-          UI.go("invoices");
-        },
-        clearForm(keepCustomer=true){
-          if(!keepCustomer) $("i_customer").value="";
-          $("i_no").value="";
-          $("i_date").value=todayISO();
-          $("i_desc").value="";
-          $("i_net").value="";
-          $("i_vatRate").value="0";
-          $("i_status").value="Entwurf";
-        },
-        suggestNo(){
-          // RE-YYYY-0001
-          const y = new Date().getFullYear();
-          const countY = state.invoices.filter(i=>String(i.date).startsWith(String(y))).length + 1;
-          return `RE-${y}-${String(countY).padStart(4,"0")}`;
-        },
-        del(id){
-          if(!confirm("Rechnung löschen?")) return;
-          state.invoices = state.invoices.filter(i=>i.id!==id);
-          saveState();
-          renderAll();
-        },
-        setStatus(id, status){
-          const inv = state.invoices.find(i=>i.id===id);
-          if(!inv) return;
-          inv.status = status;
-          saveState();
-          renderAll();
-        },
-        print(id){
-          const inv = id ? state.invoices.find(i=>i.id===id) : Invoices.last();
-          if(!inv) return alert("Keine Rechnung vorhanden.");
-          const c = state.customers.find(x=>x.id===inv.customerId);
-          const html = `
-            <html><head><meta charset="utf-8">
-            <title>Rechnung ${inv.no}</title>
-            <style>
-              body{font-family:Arial; padding:24px; color:#111}
-              .box{max-width:820px;margin:0 auto}
-              h1{margin:0 0 6px 0}
-              .muted{color:#666}
-              table{width:100%;border-collapse:collapse;margin-top:16px}
-              td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left}
-              .right{text-align:right}
-              .top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
-              .card{border:1px solid #ddd;border-radius:12px;padding:14px}
-              @media print { .noprint{display:none} }
-            </style></head>
-            <body>
-              <div class="box">
-                <div class="top">
-                  <div>
-                    <h1>Rechnung ${inv.no}</h1>
-                    <div class="muted">Datum: ${inv.date}</div>
-                    <div class="muted">Status: ${inv.status}</div>
-                  </div>
-                  <div class="card">
-                    <b>Masculine Security</b><br/>
-                    <span class="muted">Mini Office (offline)</span>
-                  </div>
-                </div>
-
-                <div style="margin-top:14px" class="card">
-                  <b>Kunde</b><br/>
-                  ${escapeHtml(c?.name||"—")}<br/>
-                  <span class="muted">${escapeHtml(c?.email||"")}</span><br/>
-                  <span class="muted">${escapeHtml(c?.addr||"")}</span>
-                </div>
-
-                <table>
-                  <thead><tr><th>Beschreibung</th><th class="right">Netto</th><th class="right">USt</th><th class="right">Brutto</th></tr></thead>
-                  <tbody>
-                    <tr>
-                      <td>${escapeHtml(inv.desc)}</td>
-                      <td class="right">${fmtEUR(inv.net)}</td>
-                      <td class="right">${inv.vatRate}% (${fmtEUR(inv.vat)})</td>
-                      <td class="right"><b>${fmtEUR(inv.gross)}</b></td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <p class="muted" style="margin-top:10px">
-                  Hinweis: Bei Kleinunternehmer (§19 UStG) USt = 0%.
-                </p>
-
-                <div class="noprint" style="margin-top:14px">
-                  <button onclick="window.print()">Print / Save as PDF</button>
-                  <button onclick="window.close()">Close</button>
-                </div>
-              </div>
-            </body></html>
-          `;
-          openPrintWindow(html);
-        },
-        last(){
-          return state.invoices.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
-        }
-      };
-
-      // ===== Expenses =====
-      const Expenses = window.Expenses = {
-        add(){
-          const date = $("e_date").value || todayISO();
-          const amount = Number($("e_amount").value||0);
-          const cat = $("e_cat").value;
-          const note = $("e_note").value.trim();
-          if(amount<=0) return alert("Betrag muss > 0 sein.");
-          state.expenses.push({
-            id: ++state.meta.lastId,
-            date, amount, cat, note,
-            createdAt: Date.now()
-          });
-          saveState();
-          Expenses.clearForm();
-          renderAll();
-          UI.go("expenses");
-        },
-        del(id){
-          if(!confirm("Ausgabe löschen?")) return;
-          state.expenses = state.expenses.filter(e=>e.id!==id);
-          saveState();
-          renderAll();
-        },
-        clearForm(){
-          $("e_date").value=todayISO();
-          $("e_amount").value="";
-          $("e_cat").value="Büromaterial";
-          $("e_note").value="";
-        },
-        last(){
-          return state.expenses.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
-        }
-      };
-
-      // ===== Payroll =====
-      const Payroll = window.Payroll = {
-        add(){
-          const name = $("p_name").value.trim();
-          const month = $("p_month").value.trim() || monthKey();
-          const hours = Number($("p_hours").value||0);
-          const rate = Number($("p_rate").value||0);
-          const deduct = Number($("p_deduct").value||0);
-          const note = $("p_note").value.trim();
-
-          if(!name) return alert("Name eingeben.");
-          if(hours<=0 || rate<=0) return alert("Stunden & Stundenlohn müssen > 0 sein.");
-
-          const gross = hours * rate;
-          const net = Math.max(0, gross - deduct);
-
-          state.payroll.push({
-            id: ++state.meta.lastId,
-            name, month, hours, rate, deduct, gross, net, note,
-            createdAt: Date.now()
-          });
-          saveState();
-          Payroll.clearForm();
-          renderAll();
-          UI.go("payroll");
-        },
-        del(id){
-          if(!confirm("Eintrag löschen?")) return;
-          state.payroll = state.payroll.filter(p=>p.id!==id);
-          saveState();
-          renderAll();
-        },
-        clearForm(){
-          $("p_name").value="";
-          $("p_month").value=monthKey();
-          $("p_hours").value="";
-          $("p_rate").value="";
-          $("p_deduct").value="0";
-          $("p_note").value="";
-        },
-        last(){
-          return state.payroll.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
-        },
-        print(id){
-          const p = id ? state.payroll.find(x=>x.id===id) : Payroll.last();
-          if(!p) return alert("Keine Lohnabrechnung vorhanden.");
-          const html = `
-            <html><head><meta charset="utf-8">
-            <title>Lohnabrechnung ${escapeHtml(p.name)} ${p.month}</title>
-            <style>
-              body{font-family:Arial; padding:24px; color:#111}
-              .box{max-width:820px;margin:0 auto}
-              h1{margin:0 0 6px 0}
-              .muted{color:#666}
-              .card{border:1px solid #ddd;border-radius:12px;padding:14px;margin-top:12px}
-              table{width:100%;border-collapse:collapse;margin-top:12px}
-              td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left}
-              .right{text-align:right}
-              @media print { .noprint{display:none} }
-            </style></head>
-            <body>
-              <div class="box">
-                <h1>Lohnabrechnung (intern)</h1>
-                <div class="muted">Monat: ${p.month}</div>
-
-                <div class="card">
-                  <b>Mitarbeiter:</b> ${escapeHtml(p.name)}<br/>
-                  <b>Stunden:</b> ${p.hours}<br/>
-                  <b>Stundenlohn:</b> ${fmtEUR(p.rate)}<br/>
-                  <b>Notiz:</b> <span class="muted">${escapeHtml(p.note||"")}</span>
-                </div>
-
-                <table>
-                  <tr><th>Brutto</th><td class="right">${fmtEUR(p.gross)}</td></tr>
-                  <tr><th>Abzüge</th><td class="right">${fmtEUR(p.deduct)}</td></tr>
-                  <tr><th><b>Netto</b></th><td class="right"><b>${fmtEUR(p.net)}</b></td></tr>
-                </table>
-
-                <p class="muted">Hinweis: Diese Liste ist eine interne Berechnung und ersetzt keine offizielle Lohnabrechnung.</p>
-
-                <div class="noprint">
-                  <button onclick="window.print()">Print / Save as PDF</button>
-                  <button onclick="window.close()">Close</button>
-                </div>
-              </div>
-            </body></html>
-          `;
-          openPrintWindow(html);
-        }
-      };
-
-      // ===== Tax =====
-      const Tax = window.Tax = {
-        refresh(){
-          const y = $("t_year").value || "2026";
-          document.getElementById("taxYear").textContent = y;
-
-          const income = sumYearInvoices(y);
-          const costs  = sumYearExpenses(y);
-          const profit = income - costs;
-
-          $("t_income").textContent = fmtEUR(income);
-          $("t_costs").textContent  = fmtEUR(costs);
-          $("t_profit").textContent = fmtEUR(profit);
-
-          $("t_notes").value = state.taxNotes[y] || "";
-        },
-        saveNotes(){
-          const y = $("t_year").value || "2026";
-          state.taxNotes[y] = $("t_notes").value || "";
-          saveState();
-          alert("Gespeichert.");
-        },
-        print(){
-          const y = $("t_year").value || "2026";
-          const income = sumYearInvoices(y);
-          const costs  = sumYearExpenses(y);
-          const profit = income - costs;
-          const notes = state.taxNotes[y] || "";
-
-          const html = `
-            <html><head><meta charset="utf-8">
-            <title>Einkommensteuer Übersicht ${y}</title>
-            <style>
-              body{font-family:Arial; padding:24px; color:#111}
-              .box{max-width:820px;margin:0 auto}
-              h1{margin:0 0 6px 0}
-              .muted{color:#666}
-              .card{border:1px solid #ddd;border-radius:12px;padding:14px;margin-top:12px}
-              table{width:100%;border-collapse:collapse;margin-top:12px}
-              td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left}
-              .right{text-align:right}
-              pre{white-space:pre-wrap}
-              @media print { .noprint{display:none} }
-            </style></head>
-            <body>
-              <div class="box">
-                <h1>Einkommensteuer (intern) — ${y}</h1>
-                <div class="muted">Schätzung: Einnahmen − Ausgaben = Gewinn</div>
-
-                <table>
-                  <tr><th>Einnahmen (Rechnungen)</th><td class="right">${fmtEUR(income)}</td></tr>
-                  <tr><th>Ausgaben</th><td class="right">${fmtEUR(costs)}</td></tr>
-                  <tr><th><b>Gewinn (Schätzung)</b></th><td class="right"><b>${fmtEUR(profit)}</b></td></tr>
-                </table>
-
-                <div class="card">
-                  <b>Notizen</b>
-                  <pre class="muted">${escapeHtml(notes)}</pre>
-                </div>
-
-                <p class="muted">Hinweis: Für Elster bitte die offiziellen Formulare/Angaben nutzen.</p>
-
-                <div class="noprint">
-                  <button onclick="window.print()">Print / Save as PDF</button>
-                  <button onclick="window.close()">Close</button>
-                </div>
-              </div>
-            </body></html>
-          `;
-          openPrintWindow(html);
-        }
-      };
-
-      // ===== Mail + PDF =====
-      const Mail = window.Mail = {
-        open(){
-          const to = $("m_to").value.trim();
-          if(!to) return alert("Bitte To Email eingeben.");
-          const subject = $("m_subject").value.trim();
-          const tpl = $("m_tpl").value;
-          let body = $("m_msg").value || "";
-
-          if(tpl !== "custom"){
-            body += "\n\n---\n";
-            body += templateText(tpl);
-          }
-
-          const url = "mailto:" + encodeURIComponent(to)
-            + "?subject=" + encodeURIComponent(subject)
-            + "&body=" + encodeURIComponent(body);
-
-          window.location.href = url;
-        }
-      };
-
-      const PDF = window.PDF = {
-        open(){
-          const tpl = $("p_tpl").value;
-          if(tpl==="invoice") return Invoices.print();
-          if(tpl==="payroll") return Payroll.print();
-          if(tpl==="tax") return Tax.print();
-          if(tpl==="customers") return printList("Kundenliste", customersToRows());
-          if(tpl==="expenses") return printList("Ausgabenliste", expensesToRows());
-        }
-      };
-
-      // ===== Storage / Export =====
-      const Storage = window.Storage = {
-        exportJSON(){
-          const data = JSON.stringify(state, null, 2);
-          download("ms-office-backup.json", data, "application/json");
-        },
-        importJSON(file){
-          if(!file) return;
-          const reader = new FileReader();
-          reader.onload = ()=>{
-            try{
-              const obj = JSON.parse(reader.result);
-              // merge carefully
-              const merged = defaultState();
-              if(obj.customers) merged.customers = obj.customers;
-              if(obj.invoices) merged.invoices = obj.invoices;
-              if(obj.expenses) merged.expenses = obj.expenses;
-              if(obj.payroll) merged.payroll = obj.payroll;
-              if(obj.taxNotes) merged.taxNotes = obj.taxNotes;
-              merged.meta = obj.meta || merged.meta;
-              // replace
-              Object.assign(state, merged);
-              saveState();
-              alert("Import OK.");
-              renderAll();
-            }catch(e){
-              console.error(e);
-              alert("Import Fehler: falsches JSON.");
-            }
-          };
-          reader.readAsText(file);
-        },
-        resetAll(){
-          if(!confirm("ALLES löschen? (Kunden, Rechnungen, Ausgaben, Lohn, Steuer)")) return;
-          localStorage.removeItem(LS_KEY);
-          Object.assign(state, defaultState());
-          saveState();
-          renderAll();
-          alert("Reset OK.");
-        }
-      };
-
-      // ===== CSV =====
-      const CSV = window.CSV = {
-        customers(){
-          const rows = [["id","name","email","addr","createdAt"]].concat(
-            state.customers.map(c=>[c.id,c.name,c.email,c.addr,new Date(c.createdAt).toISOString()])
-          );
-          download("kunden.csv", toCSV(rows), "text/csv");
-        },
-        invoices(){
-          const rows = [["id","no","date","customer","desc","net","vatRate","vat","gross","status","createdAt"]].concat(
-            state.invoices.map(i=>{
-              const c = state.customers.find(x=>x.id===i.customerId);
-              return [i.id,i.no,i.date,(c?.name||""),i.desc,i.net,i.vatRate,i.vat,i.gross,i.status,new Date(i.createdAt).toISOString()];
-            })
-          );
-          download("rechnungen.csv", toCSV(rows), "text/csv");
-        },
-        expenses(){
-          const rows = [["id","date","cat","note","amount","createdAt"]].concat(
-            state.expenses.map(e=>[e.id,e.date,e.cat,e.note,e.amount,new Date(e.createdAt).toISOString()])
-          );
-          download("ausgaben.csv", toCSV(rows), "text/csv");
-        },
-        payroll(){
-          const rows = [["id","month","name","hours","rate","gross","deduct","net","note","createdAt"]].concat(
-            state.payroll.map(p=>[p.id,p.month,p.name,p.hours,p.rate,p.gross,p.deduct,p.net,p.note,new Date(p.createdAt).toISOString()])
-          );
-          download("lohn.csv", toCSV(rows), "text/csv");
-        }
-      };
-
-      // ===== Rendering =====
-      function renderAll(){
-        // counts
-        $("countCustomers").textContent = String(state.customers.length);
-        $("countInvoices").textContent = String(state.invoices.length);
-        $("countExpenses").textContent = String(state.expenses.length);
-        $("countPayroll").textContent = String(state.payroll.length);
-        $("countOverview").textContent = String(state.invoices.length + state.expenses.length);
-
-        // init default form values once
-        if(!$("i_date").value) $("i_date").value = todayISO();
-        if(!$("e_date").value) $("e_date").value = todayISO();
-        if(!$("p_month").value) $("p_month").value = monthKey();
-
-        // lists
-        renderCustomers();
-        renderInvoices();
-        renderExpenses();
-        renderPayroll();
-
-        // KPIs
-        renderKPIs();
-        renderRecent();
-
-        // version
-        $("versionLabel").textContent = "Version: " + APP_VERSION;
+      if(page==="customers"){
+        $("#pageTitle").textContent = "Kunden";
+        $("#pageSub").textContent = "Kunden anlegen • bearbeiten • exportieren";
+        $("#leftTitle").textContent = "Kunde anlegen";
+        $("#leftHint").textContent = "Daten werden lokal gespeichert (LocalStorage).";
+        $("#leftBody").innerHTML = renderCustomersForm();
+        $("#rightTitle").textContent = "Kundenliste";
+        $("#rightHint").textContent = `${state.customers.length} Kunden`;
+        $("#rightBody").innerHTML = renderCustomersTable();
+        bindCustomers();
+        return;
       }
 
-      function renderCustomers(){
-        const tbody = $("customersList");
-        if(!tbody) return;
-        const rows = state.customers.slice().sort((a,b)=>b.createdAt-a.createdAt).map(c=>{
-          return `<tr>
-            <td>${escapeHtml(c.name)}</td>
-            <td>${escapeHtml(c.email||"")}</td>
-            <td>${escapeHtml(c.addr||"")}</td>
-            <td class="right">
-              <div class="row-actions">
-                <button class="btn mini danger" onclick="Customers.del(${c.id})">Löschen</button>
-              </div>
-            </td>
-          </tr>`;
-        }).join("");
-        tbody.innerHTML = rows || `<tr><td colspan="4" class="muted">Keine Kunden vorhanden.</td></tr>`;
-        // update select for invoices
-        if(document.getElementById("i_customer")) Invoices.refreshCustomerSelect();
+      if(page==="invoices"){
+        $("#pageTitle").textContent = "Rechnungen";
+        $("#pageSub").textContent = "Rechnung erstellen • PDF öffnen • Status";
+        $("#leftTitle").textContent = "Rechnung erstellen";
+        $("#leftHint").textContent = state.profile.kleinunternehmer
+          ? "Kleinunternehmer: Brutto = Netto, USt = 0%."
+          : "Regelbesteuerung: Netto + USt = Brutto.";
+        $("#leftBody").innerHTML = renderInvoiceForm();
+        $("#rightTitle").textContent = "Rechnungen";
+        $("#rightHint").textContent = `${state.invoices.length} Einträge`;
+        $("#rightBody").innerHTML = renderInvoicesTable();
+        bindInvoices();
+        return;
       }
 
-      function renderInvoices(){
-        const tbody = $("invoicesList");
-        if(!tbody) return;
-        const rows = state.invoices.slice().sort((a,b)=>b.createdAt-a.createdAt).map(i=>{
-          const c = state.customers.find(x=>x.id===i.customerId);
-          const statusSel = `
-            <select style="padding:6px 10px;border-radius:10px;background:rgba(0,0,0,.18);color:#e7eeff;border:1px solid rgba(255,255,255,.10)"
-              onchange="Invoices.setStatus(${i.id}, this.value)">
-              ${["Entwurf","Gesendet","Bezahlt"].map(s=>`<option ${i.status===s?"selected":""}>${s}</option>`).join("")}
-            </select>`;
-          return `<tr>
-            <td><b>${escapeHtml(i.no)}</b></td>
-            <td>${escapeHtml(c?.name||"—")}</td>
-            <td>${escapeHtml(i.date)}</td>
-            <td>${statusSel}</td>
-            <td class="right">${fmtEUR(i.net)}</td>
-            <td class="right">
-              <div class="row-actions">
-                <button class="btn mini" onclick="Invoices.print(${i.id})">PDF</button>
-                <button class="btn mini danger" onclick="Invoices.del(${i.id})">Löschen</button>
-              </div>
-            </td>
-          </tr>`;
-        }).join("");
-        tbody.innerHTML = rows || `<tr><td colspan="6" class="muted">Keine Rechnungen vorhanden.</td></tr>`;
+      if(page==="expenses"){
+        $("#pageTitle").textContent = "Ausgaben";
+        $("#pageSub").textContent = "Ausgaben erfassen • Kategorien • Export";
+        $("#leftTitle").textContent = "Ausgabe erfassen";
+        $("#leftHint").textContent = "Für Büro, Fahrt, Material, Subunternehmer etc.";
+        $("#leftBody").innerHTML = renderExpenseForm();
+        $("#rightTitle").textContent = "Ausgabenliste";
+        $("#rightHint").textContent = `${state.expenses.length} Einträge`;
+        $("#rightBody").innerHTML = renderExpensesTable();
+        bindExpenses();
+        return;
       }
 
-      function renderExpenses(){
-        const tbody = $("expensesList");
-        if(!tbody) return;
-        const rows = state.expenses.slice().sort((a,b)=>b.createdAt-a.createdAt).map(e=>{
-          return `<tr>
-            <td>${escapeHtml(e.date)}</td>
-            <td>${escapeHtml(e.cat)}</td>
-            <td>${escapeHtml(e.note||"")}</td>
-            <td class="right">${fmtEUR(e.amount)}</td>
-            <td class="right">
-              <div class="row-actions">
-                <button class="btn mini danger" onclick="Expenses.del(${e.id})">Löschen</button>
-              </div>
-            </td>
-          </tr>`;
-        }).join("");
-        tbody.innerHTML = rows || `<tr><td colspan="5" class="muted">Keine Ausgaben vorhanden.</td></tr>`;
+      if(page==="lohn"){
+        $("#pageTitle").textContent = "Lohnabrechnung";
+        $("#pageSub").textContent = "Einträge • Notizen • PDF/Export";
+        $("#leftTitle").textContent = "Lohn-Eintrag";
+        $("#leftHint").textContent = "Einfacher Lohnzettel (Demo).";
+        $("#leftBody").innerHTML = renderPayrollForm();
+        $("#rightTitle").textContent = "Lohnliste";
+        $("#rightHint").textContent = `${state.payroll.length} Einträge`;
+        $("#rightBody").innerHTML = renderPayrollTable();
+        bindPayroll();
+        return;
       }
 
-      function renderPayroll(){
-        const tbody = $("payrollList");
-        if(!tbody) return;
-        const rows = state.payroll.slice().sort((a,b)=>b.createdAt-a.createdAt).map(p=>{
-          return `<tr>
-            <td>${escapeHtml(p.month)}</td>
-            <td>${escapeHtml(p.name)}</td>
-            <td>${p.hours}</td>
-            <td class="right">${fmtEUR(p.gross)}</td>
-            <td class="right"><b>${fmtEUR(p.net)}</b></td>
-            <td class="right">
-              <div class="row-actions">
-                <button class="btn mini" onclick="Payroll.print(${p.id})">PDF</button>
-                <button class="btn mini danger" onclick="Payroll.del(${p.id})">Löschen</button>
-              </div>
-            </td>
-          </tr>`;
-        }).join("");
-        tbody.innerHTML = rows || `<tr><td colspan="6" class="muted">Keine Lohnabrechnungen vorhanden.</td></tr>`;
+      if(page==="tax"){
+        $("#pageTitle").textContent = "Einkommensteuer";
+        $("#pageSub").textContent = "Jahr • Notizen • Zusammenfassung";
+        $("#leftTitle").textContent = "Steuer-Notizen";
+        $("#leftHint").textContent = "Dieses Modul ist eine Offline-Notiz + Summen.";
+        $("#leftBody").innerHTML = renderTaxPanel();
+        $("#rightTitle").textContent = "Zusammenfassung";
+        $("#rightHint").textContent = "Umsatz/Ausgaben (Jahr)";
+        $("#rightBody").innerHTML = renderTaxSummary();
+        bindTax();
+        return;
       }
 
-      function renderKPIs(){
-        // Month sums
-        const m = monthKey();
-        const y = String(new Date().getFullYear());
-
-        const monthInvoices = state.invoices.filter(i=>monthKey(i.date)===m);
-        const monthNet = monthInvoices.reduce((s,i)=>s+Number(i.net||0),0);
-        const monthVat = monthInvoices.reduce((s,i)=>s+Number(i.vat||0),0);
-        const monthGross = monthInvoices.reduce((s,i)=>s+Number(i.gross||0),0);
-
-        const monthExpenses = state.expenses.filter(e=>monthKey(e.date)===m).reduce((s,e)=>s+Number(e.amount||0),0);
-
-        const yearNet = sumYearInvoices(y);
-        $("kpiMonthRevenue").textContent = fmtEUR(monthNet);
-        $("kpiMonthVat").textContent = fmtEUR(monthVat);
-        $("kpiMonthGross").textContent = fmtEUR(monthGross);
-        $("kpiMonthExpenses").textContent = fmtEUR(monthExpenses);
-        $("kpiYearRevenue").textContent = fmtEUR(yearNet);
-        $("kpiInvoiceCount").textContent = String(state.invoices.length);
+      if(page==="emailpdf"){
+        $("#pageTitle").textContent = "Email + PDF";
+        $("#pageSub").textContent = "PDF speichern + Email (mailto) öffnen";
+        $("#leftTitle").textContent = "Email (mailto) + PDF";
+        $("#leftHint").textContent = "Browser öffnet Email-App. PDF per Drucken speichern.";
+        $("#leftBody").innerHTML = renderEmailPdf();
+        $("#rightTitle").textContent = "Dokumente";
+        $("#rightHint").textContent = "Vorlagen";
+        $("#rightBody").innerHTML = renderTemplatesList();
+        bindEmailPdf();
+        return;
       }
 
-      function renderRecent(){
-        const list = $("recentList");
-        if(!list) return;
+      if(page==="settings"){
+        $("#pageTitle").textContent = "Einstellungen";
+        $("#pageSub").textContent = "Profil • Kleinunternehmer • Backup/Restore • CSV • Reset";
+        $("#leftTitle").textContent = "Profil";
+        $("#leftHint").textContent = "Firma, Bank, Adresse, Kleinunternehmer.";
+        $("#leftBody").innerHTML = renderSettingsProfile();
+        $("#rightTitle").textContent = "Backup / Restore";
+        $("#rightHint").textContent = "JSON / CSV / Reset";
+        $("#rightBody").innerHTML = renderSettingsBackup();
+        bindSettings();
+        return;
+      }
 
-        const items = [];
-        state.invoices.forEach(i=>{
-          items.push({
-            type:"Rechnung",
-            desc:`${i.no} • ${customerName(i.customerId)} • ${i.status}`,
-            date:i.date,
-            amount:i.net,
-            createdAt:i.createdAt
-          });
+      // fallback
+      showPage("dashboard");
+    }
+
+    function getActivities(){
+      const list = [];
+      // recent invoices
+      state.invoices.slice().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6).forEach(inv=>{
+        list.push({
+          type:"Rechnung",
+          title:`${inv.number} • ${getCustomerName(inv.customerId)} • ${euro(inv.gross)} • ${formatDate(inv.date)}`,
+          date: inv.date,
+          id: inv.id,
+          kind:"invoice"
         });
-        state.expenses.forEach(e=>{
-          items.push({
-            type:"Ausgabe",
-            desc:`${e.cat}${e.note? " • "+e.note:""}`,
-            date:e.date,
-            amount:-Math.abs(e.amount),
-            createdAt:e.createdAt
-          });
+      });
+      state.expenses.slice().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6).forEach(ex=>{
+        list.push({
+          type:"Ausgabe",
+          title:`${ex.title} • ${euro(ex.amount)} • ${formatDate(ex.date)}`,
+          date: ex.date,
+          id: ex.id,
+          kind:"expense"
         });
-        items.sort((a,b)=>b.createdAt-a.createdAt);
-        const rows = items.slice(0,8).map(it=>{
-          return `<tr>
-            <td>${it.type}</td>
-            <td>${escapeHtml(it.desc)}</td>
-            <td>${escapeHtml(it.date)}</td>
-            <td class="right">${fmtEUR(it.amount)}</td>
-          </tr>`;
-        }).join("");
-        list.innerHTML = rows || `<tr><td colspan="4" class="muted">Noch keine Aktivitäten.</td></tr>`;
-      }
+      });
+      // sort combined
+      list.sort((a,b)=>new Date(b.date)-new Date(a.date));
+      return list.slice(0,10);
+    }
 
-      // ===== Helpers =====
-      function customerName(id){
-        const c = state.customers.find(x=>x.id===id);
-        return c?.name || "—";
-      }
-      function sumYearInvoices(year){
-        return state.invoices
-          .filter(i=>yearKey(i.date)===String(year))
-          .reduce((s,i)=>s+Number(i.net||0),0);
-      }
-      function sumYearExpenses(year){
-        return state.expenses
-          .filter(e=>yearKey(e.date)===String(year))
-          .reduce((s,e)=>s+Number(e.amount||0),0);
-      }
-      function escapeHtml(str){
-        return String(str||"").replace(/[&<>"']/g, m=>({
-          "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-        }[m]));
-      }
-      function download(filename, content, type){
-        const blob = new Blob([content], {type});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(()=>URL.revokeObjectURL(url), 500);
-      }
-      function toCSV(rows){
-        return rows.map(r=>r.map(v=>{
-          const s = String(v ?? "");
-          const safe = s.includes(",")||s.includes('"')||s.includes("\n")
-            ? `"${s.replace(/"/g,'""')}"`
-            : s;
-          return safe;
-        }).join(",")).join("\n");
-      }
-      function openPrintWindow(html){
-        const w = window.open("", "_blank", "width=980,height=720");
-        if(!w) return alert("Popup blocked. Bitte Popups erlauben.");
-        w.document.open();
-        w.document.write(html);
-        w.document.close();
-      }
-      function templateText(tpl){
-        if(tpl==="invoice"){
-          const inv = Invoices.last();
-          if(!inv) return "Keine Rechnung vorhanden.";
-          const c = state.customers.find(x=>x.id===inv.customerId);
-          return `Rechnung: ${inv.no}\nKunde: ${c?.name||"—"}\nDatum: ${inv.date}\nNetto: ${fmtEUR(inv.net)}\nStatus: ${inv.status}\nBeschreibung: ${inv.desc}\n\nHinweis: PDF bitte über Print → Save as PDF erstellen und anhängen.`;
-        }
-        if(tpl==="lohn"){
-          const p = Payroll.last();
-          if(!p) return "Keine Lohnabrechnung vorhanden.";
-          return `Lohnabrechnung (intern)\nMonat: ${p.month}\nName: ${p.name}\nStunden: ${p.hours}\nStundenlohn: ${fmtEUR(p.rate)}\nBrutto: ${fmtEUR(p.gross)}\nAbzüge: ${fmtEUR(p.deduct)}\nNetto: ${fmtEUR(p.net)}\n\nHinweis: PDF bitte über Print → Save as PDF erstellen und anhängen.`;
-        }
-        if(tpl==="tax"){
-          const y = $("t_year")?.value || String(new Date().getFullYear());
-          const income = sumYearInvoices(y);
-          const costs = sumYearExpenses(y);
-          const profit = income - costs;
-          return `Einkommensteuer Übersicht (intern) — ${y}\nEinnahmen: ${fmtEUR(income)}\nAusgaben: ${fmtEUR(costs)}\nGewinn (Schätzung): ${fmtEUR(profit)}\n\nHinweis: PDF bitte über Print → Save as PDF erstellen und anhängen.`;
-        }
-        return "";
-      }
-      function customersToRows(){
-        const rows = state.customers.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(c=>[
-          c.name, c.email||"", c.addr||""
-        ]);
-        return {
-          head:["Name","Email","Adresse"],
-          rows
-        };
-      }
-      function expensesToRows(){
-        const rows = state.expenses.slice().sort((a,b)=>b.createdAt-a.createdAt).map(e=>[
-          e.date, e.cat, e.note||"", fmtEUR(e.amount)
-        ]);
-        return {
-          head:["Datum","Kategorie","Notiz","Betrag"],
-          rows
-        };
-      }
-      function printList(title, data){
-        const html = `
-          <html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
-          <style>
-            body{font-family:Arial; padding:24px; color:#111}
-            .box{max-width:980px;margin:0 auto}
-            h1{margin:0 0 10px 0}
-            table{width:100%;border-collapse:collapse}
-            td,th{border-bottom:1px solid #ddd;padding:10px;text-align:left}
-            th{background:#f4f4f4}
-            @media print { .noprint{display:none} }
-          </style></head>
-          <body><div class="box">
-            <h1>${escapeHtml(title)}</h1>
-            <table>
-              <thead><tr>${data.head.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr></thead>
-              <tbody>
-                ${data.rows.map(r=>`<tr>${r.map(c=>`<td>${escapeHtml(c)}</td>`).join("")}</tr>`).join("")}
-              </tbody>
-            </table>
-            <div class="noprint" style="margin-top:14px">
-              <button onclick="window.print()">Print / Save as PDF</button>
-              <button onclick="window.close()">Close</button>
+    function formatDate(d){
+      try{
+        const dt = new Date(d);
+        return dt.toLocaleDateString("de-DE");
+      }catch{ return d; }
+    }
+
+    function renderDashboardLeft(){
+      const m = getMonthTotals();
+      const y = getYearTotals();
+
+      return `
+        <div class="cards">
+          <div class="card">
+            <p class="k">Umsatz (diesen Monat)</p>
+            <p class="v">${euro(m.revenueGross)}</p>
+            <p class="s">${state.profile.kleinunternehmer ? "Kleinunternehmer: Brutto=Netto" : ("USt: "+euro(m.revenueVat)+" • Netto: "+euro(m.revenueNet))}</p>
+          </div>
+          <div class="card">
+            <p class="k">Ausgaben (diesen Monat)</p>
+            <p class="v">${euro(m.expenseSum)}</p>
+            <p class="s">Einträge: ${state.expenses.filter(x=>monthKey(x.date)===monthKey(new Date())).length}</p>
+          </div>
+          <div class="card">
+            <p class="k">Umsatz (dieses Jahr)</p>
+            <p class="v">${euro(y.revenueGross)}</p>
+            <p class="s">${state.profile.kleinunternehmer ? "USt: 0,00 €" : ("USt: "+euro(y.revenueVat)+" • Netto: "+euro(y.revenueNet))}</p>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="panel" style="border:none;background:transparent;box-shadow:none">
+          <div class="panelHead" style="padding:0 0 10px;border:none">
+            <h2 style="margin:0;font-size:13px">Schnellstart</h2>
+            <div class="hint">Aktionen</div>
+          </div>
+          <div class="panelBody" style="padding:0">
+            <div class="actions" style="justify-content:flex-start">
+              <button class="btn primary" id="dashNewInvoice">+ Rechnung</button>
+              <button class="btn primary" id="dashNewCustomer">+ Kunde</button>
+              <button class="btn primary" id="dashNewExpense">+ Ausgabe</button>
             </div>
-          </div></body></html>
-        `;
-        openPrintWindow(html);
+            <div class="smallNote">Tipp: Export/Import oben rechts für Backup.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActivities(){
+      const acts = getActivities();
+      $("#activityCount").textContent = acts.length;
+      if(!acts.length){
+        return `<div class="helper">Noch keine Aktivitäten. Erstelle zuerst Kunden/Rechnungen/Ausgaben.</div>`;
+      }
+      return `
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:90px">Typ</th>
+              <th>Eintrag</th>
+              <th style="width:110px">Datum</th>
+              <th style="width:170px">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${acts.map(a=>`
+              <tr>
+                <td><span class="badge">${a.type}</span></td>
+                <td>${escapeHtml(a.title)}</td>
+                <td>${formatDate(a.date)}</td>
+                <td class="rowActions">
+                  <button class="mini" data-go="${a.kind}">Öffnen</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindActivitiesActions(){
+      const tbody = $("#rightBody");
+      if(!tbody) return;
+      tbody.addEventListener("click",(e)=>{
+        const btn = e.target.closest("button[data-go]");
+        if(!btn) return;
+        const kind = btn.dataset.go;
+        if(kind==="invoice") showPage("invoices");
+        if(kind==="expense") showPage("expenses");
+      }, { once:true });
+      // bind dashboard quick buttons
+      const a = $("#dashNewInvoice"); if(a) a.onclick = ()=>{ showPage("invoices"); focusFirst("#invNumber"); };
+      const b = $("#dashNewCustomer"); if(b) b.onclick = ()=>{ showPage("customers"); focusFirst("#custName"); };
+      const c = $("#dashNewExpense"); if(c) c.onclick = ()=>{ showPage("expenses"); focusFirst("#expTitle"); };
+    }
+
+    // CUSTOMERS
+    function renderCustomersForm(){
+      return `
+        <div class="formGrid">
+          <div class="formRow">
+            <label for="custName">Name / Firma</label>
+            <input id="custName" name="custName" placeholder="z.B. Beispiel Kunde GmbH" />
+          </div>
+          <div class="formRow">
+            <label for="custEmail">Email</label>
+            <input id="custEmail" name="custEmail" placeholder="z.B. kunde@firma.de" />
+          </div>
+          <div class="formRow">
+            <label for="custPhone">Telefon</label>
+            <input id="custPhone" name="custPhone" placeholder="+49 ..." />
+          </div>
+          <div class="formRow">
+            <label for="custVat">USt-Id / Hinweis</label>
+            <input id="custVat" name="custVat" placeholder="optional" />
+          </div>
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="custAddr">Adresse</label>
+            <textarea id="custAddr" name="custAddr" placeholder="Straße, PLZ Ort"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="custSave">Speichern</button>
+          <button class="btn" id="custClear">Leeren</button>
+          <button class="btn" id="custCsv">Kunden CSV</button>
+        </div>
+        <div class="helper">Hinweis: Daten bleiben lokal im Browser gespeichert.</div>
+      `;
+    }
+
+    function renderCustomersTable(){
+      if(!state.customers.length){
+        return `<div class="helper">Keine Kunden vorhanden.</div>`;
+      }
+      return `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th style="width:210px">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${state.customers.map(c=>`
+              <tr>
+                <td><b>${escapeHtml(c.name)}</b><div class="smallNote">${escapeHtml((c.address||"").split("\n")[0]||"")}</div></td>
+                <td>${c.email ? `<a href="mailto:${escapeAttr(c.email)}">${escapeHtml(c.email)}</a>` : `<span class="helper">–</span>`}</td>
+                <td>${c.phone ? escapeHtml(c.phone) : `<span class="helper">–</span>`}</td>
+                <td class="rowActions">
+                  <button class="mini" data-edit-cust="${c.id}">Bearbeiten</button>
+                  <button class="mini" data-del-cust="${c.id}">Löschen</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindCustomers(){
+      $("#custSave").onclick = ()=>{
+        const name = $("#custName").value.trim();
+        if(!name){ toast("Fehler","Name ist Pflicht."); return; }
+        const cust = {
+          id: cryptoId(),
+          name,
+          email: $("#custEmail").value.trim(),
+          phone: $("#custPhone").value.trim(),
+          vat: $("#custVat").value.trim(),
+          address: $("#custAddr").value.trim(),
+          createdAt: nowISO()
+        };
+        state.customers.push(cust);
+        saveState();
+        toast("OK","Kunde gespeichert.");
+        render();
+        focusFirst("#custName");
+      };
+      $("#custClear").onclick = ()=> clearCustomerForm();
+      $("#custCsv").onclick = ()=> downloadCSV("kunden.csv", customersToCSV());
+
+      $("#rightBody").onclick = (e)=>{
+        const ed = e.target.closest("[data-edit-cust]");
+        const dl = e.target.closest("[data-del-cust]");
+        if(ed){
+          const id = ed.getAttribute("data-edit-cust");
+          const c = state.customers.find(x=>x.id===id);
+          if(!c) return;
+          $("#custName").value = c.name||"";
+          $("#custEmail").value = c.email||"";
+          $("#custPhone").value = c.phone||"";
+          $("#custVat").value = c.vat||"";
+          $("#custAddr").value = c.address||"";
+          // replace save to update
+          $("#custSave").textContent = "Aktualisieren";
+          $("#custSave").classList.add("primary");
+          $("#custSave").onclick = ()=>{
+            c.name = $("#custName").value.trim();
+            if(!c.name){ toast("Fehler","Name ist Pflicht."); return; }
+            c.email = $("#custEmail").value.trim();
+            c.phone = $("#custPhone").value.trim();
+            c.vat = $("#custVat").value.trim();
+            c.address = $("#custAddr").value.trim();
+            saveState();
+            toast("OK","Kunde aktualisiert.");
+            render();
+          };
+          toast("Info","Kunde geladen.");
+          focusFirst("#custName");
+        }
+        if(dl){
+          const id = dl.getAttribute("data-del-cust");
+          if(!confirm("Kunde löschen?")) return;
+          state.customers = state.customers.filter(x=>x.id!==id);
+          // also detach from invoices
+          state.invoices.forEach(inv=>{ if(inv.customerId===id) inv.customerId=""; });
+          saveState();
+          toast("OK","Kunde gelöscht.");
+          render();
+        }
+      };
+    }
+
+    function clearCustomerForm(){
+      $("#custName").value = "";
+      $("#custEmail").value = "";
+      $("#custPhone").value = "";
+      $("#custVat").value = "";
+      $("#custAddr").value = "";
+      toast("OK","Formular geleert.");
+    }
+
+    // INVOICES
+    function nextInvoiceNumber(){
+      const year = new Date().getFullYear();
+      const seq = state.counters.invoiceSeq || 1;
+      return `RE-${year}-${String(seq).padStart(4,"0")}`;
+    }
+
+    function renderInvoiceForm(){
+      const number = nextInvoiceNumber();
+      const date = toDateInputValue();
+      const custOptions = state.customers.length
+        ? state.customers.map(c=>`<option value="${escapeAttr(c.id)}">${escapeHtml(c.name)}</option>`).join("")
+        : `<option value="">(Keine Kunden – zuerst Kunden anlegen)</option>`;
+
+      const klein = !!state.profile.kleinunternehmer;
+      return `
+        <div class="formGrid">
+          <div class="formRow">
+            <label for="invNumber">Rechnungs-Nr.</label>
+            <input id="invNumber" value="${escapeAttr(number)}" />
+          </div>
+          <div class="formRow">
+            <label for="invDate">Datum</label>
+            <input id="invDate" type="date" value="${escapeAttr(date)}" />
+          </div>
+
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="invCustomer">Kunde</label>
+            <select id="invCustomer">
+              <option value="">— Kunde wählen —</option>
+              ${custOptions}
+            </select>
+          </div>
+
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="invDesc">Leistung / Beschreibung</label>
+            <input id="invDesc" placeholder="z.B. Objektschutz 12h" />
+          </div>
+
+          <div class="formRow">
+            <label for="invNet">Betrag ${klein ? "(Brutto/Netto gleich)" : "Netto (€)"}</label>
+            <input id="invNet" type="number" step="0.01" value="0.00" />
+          </div>
+
+          <div class="formRow">
+            <label for="invVatRate">USt % ${klein ? "(0% Kleinunternehmer)" : ""}</label>
+            <select id="invVatRate" ${klein ? "disabled" : ""}>
+              <option value="0" ${klein ? "selected" : ""}>0</option>
+              <option value="7">7</option>
+              <option value="19">19</option>
+            </select>
+          </div>
+
+          <div class="formRow">
+            <label for="invStatus">Status</label>
+            <select id="invStatus">
+              <option value="entwurf">Entwurf</option>
+              <option value="gesendet">Gesendet</option>
+              <option value="bezahlt">Bezahlt</option>
+              <option value="storniert">Storniert</option>
+            </select>
+          </div>
+
+          <div class="formRow">
+            <label>Hinweis</label>
+            <div class="badge ${klein ? "ok" : "warn"}">
+              ${klein ? "Kleinunternehmerregelung aktiv" : "Regelbesteuerung aktiv"}
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="invSave">Speichern</button>
+          <button class="btn" id="invPdf">PDF öffnen</button>
+          <button class="btn" id="invClear">Leeren</button>
+        </div>
+
+        <div class="helper">
+          ${klein
+            ? `Kleinunternehmer: <b>Netto = Brutto</b> und <b>USt = 0%</b>. Rechnungstext enthält den Hinweis.`
+            : `Regelbesteuerung: <b>Brutto = Netto + USt</b>.`
+          }
+        </div>
+      `;
+    }
+
+    function renderInvoicesTable(){
+      if(!state.invoices.length){
+        return `<div class="helper">Keine Rechnungen vorhanden.</div>`;
+      }
+      return `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nr.</th>
+              <th>Kunde</th>
+              <th>Datum</th>
+              <th>Betrag</th>
+              <th>Status</th>
+              <th style="width:260px">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${state.invoices.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(inv=>{
+              const st = inv.status || "entwurf";
+              const badgeClass = st==="bezahlt" ? "ok" : (st==="gesendet" ? "warn" : (st==="storniert" ? "danger" : ""));
+              return `
+                <tr>
+                  <td><b>${escapeHtml(inv.number)}</b></td>
+                  <td>${escapeHtml(getCustomerName(inv.customerId) || "—")}</td>
+                  <td>${formatDate(inv.date)}</td>
+                  <td><b>${euro(inv.gross)}</b><div class="smallNote">${state.profile.kleinunternehmer ? "USt: 0,00 €" : ("USt: "+euro(inv.vatAmount))}</div></td>
+                  <td><span class="badge ${badgeClass}">${escapeHtml(cap(st))}</span></td>
+                  <td class="rowActions">
+                    <button class="mini" data-open-inv="${inv.id}">Öffnen</button>
+                    <button class="mini" data-pdf-inv="${inv.id}">PDF</button>
+                    <button class="mini" data-del-inv="${inv.id}">Löschen</button>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindInvoices(){
+      const klein = !!state.profile.kleinunternehmer;
+
+      function calcAmounts(net, vatRate){
+        const n = Number(net||0);
+        const r = Number(vatRate||0);
+        const vatAmount = klein ? 0 : (n * (r/100));
+        const gross = klein ? n : (n + vatAmount);
+        return { net:n, vatRate:r, vatAmount, gross };
       }
 
-      // ===== Init =====
-      // Ensure dropdown is filled and default dates
-      Invoices.refreshCustomerSelect();
-      Invoices.clearForm(false);
-      Expenses.clearForm();
-      Payroll.clearForm();
-      if(!$("t_year").value) $("t_year").value = "2026";
-      Tax.refresh();
+      $("#invClear").onclick = ()=>{ render(); toast("OK","Leeren."); };
+      $("#invSave").onclick = ()=>{
+        const number = $("#invNumber").value.trim() || nextInvoiceNumber();
+        const date = $("#invDate").value || toDateInputValue();
+        const customerId = $("#invCustomer").value || "";
+        const desc = $("#invDesc").value.trim();
+        const netIn = $("#invNet").value;
+        const vatRate = klein ? 0 : Number($("#invVatRate").value || 0);
+        const status = $("#invStatus").value || "entwurf";
 
-      // Start on overview
-      renderAll();
-      UI.go("overview");
-    })();
-  </script>
+        if(!desc){ toast("Fehler","Beschreibung ist Pflicht."); return; }
+        if(!number){ toast("Fehler","Rechnungsnummer fehlt."); return; }
+
+        const { net, vatAmount, gross } = calcAmounts(netIn, vatRate);
+
+        const inv = {
+          id: cryptoId(),
+          number,
+          date,
+          customerId,
+          desc,
+          net,
+          vatRate,
+          vatAmount,
+          gross,
+          status,
+          createdAt: nowISO()
+        };
+        state.invoices.push(inv);
+        // increment seq if this looks like our pattern for current year
+        state.counters.invoiceSeq = (state.counters.invoiceSeq||1) + 1;
+        saveState();
+        toast("OK","Rechnung gespeichert.");
+        render();
+      };
+
+      $("#invPdf").onclick = ()=>{
+        // build a temporary preview from current form values
+        const tmp = {
+          id: "tmp",
+          number: $("#invNumber").value.trim() || nextInvoiceNumber(),
+          date: $("#invDate").value || toDateInputValue(),
+          customerId: $("#invCustomer").value || "",
+          desc: $("#invDesc").value.trim() || "—",
+          net: Number($("#invNet").value||0),
+          vatRate: klein ? 0 : Number($("#invVatRate").value||0),
+          status: $("#invStatus").value || "entwurf"
+        };
+        const c = calcAmounts(tmp.net, tmp.vatRate);
+        tmp.vatAmount = c.vatAmount;
+        tmp.gross = c.gross;
+        openInvoicePrint(tmp);
+      };
+
+      $("#rightBody").onclick = (e)=>{
+        const open = e.target.closest("[data-open-inv]");
+        const pdf = e.target.closest("[data-pdf-inv]");
+        const del = e.target.closest("[data-del-inv]");
+        if(open){
+          const id = open.getAttribute("data-open-inv");
+          const inv = state.invoices.find(x=>x.id===id);
+          if(!inv) return;
+          // load into form
+          $("#invNumber").value = inv.number||"";
+          $("#invDate").value = inv.date || toDateInputValue();
+          $("#invCustomer").value = inv.customerId || "";
+          $("#invDesc").value = inv.desc || "";
+          $("#invNet").value = String(inv.net ?? 0);
+          if(!klein && $("#invVatRate")) $("#invVatRate").value = String(inv.vatRate ?? 0);
+          $("#invStatus").value = inv.status || "entwurf";
+
+          $("#invSave").textContent = "Aktualisieren";
+          $("#invSave").classList.add("primary");
+          $("#invSave").onclick = ()=>{
+            inv.number = $("#invNumber").value.trim() || inv.number;
+            inv.date = $("#invDate").value || inv.date;
+            inv.customerId = $("#invCustomer").value || "";
+            inv.desc = $("#invDesc").value.trim();
+            const netIn = $("#invNet").value;
+            inv.vatRate = klein ? 0 : Number($("#invVatRate").value||0);
+            const c = calcAmounts(netIn, inv.vatRate);
+            inv.net = c.net;
+            inv.vatAmount = c.vatAmount;
+            inv.gross = c.gross;
+            inv.status = $("#invStatus").value || inv.status;
+            saveState();
+            toast("OK","Rechnung aktualisiert.");
+            render();
+          };
+
+          toast("Info","Rechnung geladen.");
+          focusFirst("#invDesc");
+        }
+        if(pdf){
+          const id = pdf.getAttribute("data-pdf-inv");
+          const inv = state.invoices.find(x=>x.id===id);
+          if(!inv) return;
+          openInvoicePrint(inv);
+        }
+        if(del){
+          const id = del.getAttribute("data-del-inv");
+          if(!confirm("Rechnung löschen?")) return;
+          state.invoices = state.invoices.filter(x=>x.id!==id);
+          saveState();
+          toast("OK","Rechnung gelöscht.");
+          render();
+        }
+      };
+    }
+
+    function openInvoicePrint(inv){
+      const cust = state.customers.find(c=>c.id===inv.customerId) || null;
+      const p = state.profile;
+      const klein = !!p.kleinunternehmer;
+
+      // Important: Kleinunternehmer -> show amount as "Betrag" and VAT 0, but invoice still needs amounts.
+      const vatLine = klein
+        ? `<div><b>USt:</b> 0,00 € (Kleinunternehmerregelung)</div>`
+        : `<div><b>USt (${inv.vatRate||0}%):</b> ${euro(inv.vatAmount)}</div>`;
+
+      const kleinText = klein
+        ? `<p style="margin:10px 0 0;color:#444;font-size:12px">
+             Hinweis: Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
+           </p>`
+        : "";
+
+      const html = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rechnung ${escapeHtml(inv.number)}</title>
+<style>
+  body{font-family:Arial, sans-serif; margin:30px; color:#111}
+  .top{display:flex; justify-content:space-between; gap:18px}
+  .box{border:1px solid #ddd; padding:14px; border-radius:10px}
+  h1{margin:0 0 8px; font-size:18px}
+  h2{margin:0 0 8px; font-size:14px}
+  .muted{color:#555; font-size:12px}
+  table{width:100%; border-collapse:collapse; margin-top:18px}
+  th,td{border-bottom:1px solid #eee; padding:10px 6px; text-align:left}
+  th{text-transform:uppercase; letter-spacing:.08em; font-size:11px; color:#555}
+  .sum{margin-top:14px; display:flex; justify-content:flex-end}
+  .sum .box{min-width:320px}
+  .right{text-align:right}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div style="flex:1" class="box">
+      <h1>${escapeHtml(p.company||"Masculine Security")}</h1>
+      <div class="muted" style="white-space:pre-line">${escapeHtml(p.address||"")}</div>
+      <div class="muted" style="margin-top:8px">
+        Email: ${escapeHtml(p.email||"")}<br/>
+        Bank: ${escapeHtml(p.bank||"")} • IBAN: ${escapeHtml(p.iban||"")} • BIC: ${escapeHtml(p.bic||"")}
+      </div>
+    </div>
+
+    <div style="width:320px" class="box">
+      <h2>Rechnung</h2>
+      <div><b>Nr.:</b> ${escapeHtml(inv.number)}</div>
+      <div><b>Datum:</b> ${escapeHtml(formatDate(inv.date))}</div>
+      <div><b>Status:</b> ${escapeHtml(cap(inv.status||"entwurf"))}</div>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:14px">
+    <h2>Kunde</h2>
+    ${cust ? `
+      <div><b>${escapeHtml(cust.name||"")}</b></div>
+      <div class="muted" style="white-space:pre-line">${escapeHtml(cust.address||"")}</div>
+      <div class="muted">${cust.email?("Email: "+escapeHtml(cust.email)):""}</div>
+    ` : `<div class="muted">Kein Kunde ausgewählt.</div>`}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Leistung</th>
+        <th class="right">Betrag</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>${escapeHtml(inv.desc||"")}</td>
+        <td class="right">${euro(inv.net)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sum">
+    <div class="box">
+      <div><b>Netto:</b> ${euro(inv.net)}</div>
+      ${vatLine}
+      <div style="margin-top:8px;font-size:16px"><b>Brutto:</b> ${euro(inv.gross)}</div>
+      ${kleinText}
+    </div>
+  </div>
+
+  <p class="muted" style="margin-top:16px">
+    Zahlungsziel: 7 Tage • Bitte geben Sie die Rechnungsnummer als Verwendungszweck an.
+  </p>
 </body>
 </html>
+      `.trim();
+
+      const w = window.open("", "_blank");
+      if(!w){ toast("Blockiert","Popup blockiert. Erlaube Popups."); return; }
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      setTimeout(()=>{ w.print(); }, 350);
+    }
+
+    function getCustomerName(id){
+      if(!id) return "";
+      const c = state.customers.find(x=>x.id===id);
+      return c ? c.name : "";
+    }
+
+    // EXPENSES
+    function renderExpenseForm(){
+      return `
+        <div class="formGrid">
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="expTitle">Titel</label>
+            <input id="expTitle" placeholder="z.B. Büromaterial / Fahrtkosten" />
+          </div>
+          <div class="formRow">
+            <label for="expDate">Datum</label>
+            <input id="expDate" type="date" value="${escapeAttr(toDateInputValue())}" />
+          </div>
+          <div class="formRow">
+            <label for="expAmount">Betrag (€)</label>
+            <input id="expAmount" type="number" step="0.01" value="0.00" />
+          </div>
+          <div class="formRow">
+            <label for="expCat">Kategorie</label>
+            <select id="expCat">
+              <option value="Büro">Büro</option>
+              <option value="Fahrt">Fahrt</option>
+              <option value="Material">Material</option>
+              <option value="Subunternehmer">Subunternehmer</option>
+              <option value="Versicherung">Versicherung</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
+          <div class="formRow">
+            <label for="expPay">Zahlungsart</label>
+            <select id="expPay">
+              <option value="Bar">Bar</option>
+              <option value="Karte">Karte</option>
+              <option value="Überweisung">Überweisung</option>
+            </select>
+          </div>
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="expNote">Notiz</label>
+            <textarea id="expNote" placeholder="optional"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="expSave">Speichern</button>
+          <button class="btn" id="expClear">Leeren</button>
+          <button class="btn" id="expCsv">Ausgaben CSV</button>
+        </div>
+        <div class="helper">Ausgaben zählen automatisch in KPIs.</div>
+      `;
+    }
+
+    function renderExpensesTable(){
+      if(!state.expenses.length){
+        return `<div class="helper">Keine Ausgaben vorhanden.</div>`;
+      }
+      return `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Titel</th>
+              <th>Kategorie</th>
+              <th>Datum</th>
+              <th>Betrag</th>
+              <th style="width:210px">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${state.expenses.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(ex=>`
+              <tr>
+                <td><b>${escapeHtml(ex.title)}</b><div class="smallNote">${escapeHtml(ex.note||"")}</div></td>
+                <td><span class="badge">${escapeHtml(ex.category||"")}</span></td>
+                <td>${formatDate(ex.date)}</td>
+                <td><b>${euro(ex.amount)}</b></td>
+                <td class="rowActions">
+                  <button class="mini" data-edit-exp="${ex.id}">Bearbeiten</button>
+                  <button class="mini" data-del-exp="${ex.id}">Löschen</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindExpenses(){
+      $("#expSave").onclick = ()=>{
+        const title = $("#expTitle").value.trim();
+        if(!title){ toast("Fehler","Titel ist Pflicht."); return; }
+        const ex = {
+          id: cryptoId(),
+          title,
+          date: $("#expDate").value || toDateInputValue(),
+          amount: Number($("#expAmount").value||0),
+          category: $("#expCat").value,
+          pay: $("#expPay").value,
+          note: $("#expNote").value.trim(),
+          createdAt: nowISO()
+        };
+        state.expenses.push(ex);
+        saveState();
+        toast("OK","Ausgabe gespeichert.");
+        render();
+      };
+      $("#expClear").onclick = ()=>{ render(); toast("OK","Leeren."); };
+      $("#expCsv").onclick = ()=> downloadCSV("ausgaben.csv", expensesToCSV());
+
+      $("#rightBody").onclick = (e)=>{
+        const ed = e.target.closest("[data-edit-exp]");
+        const dl = e.target.closest("[data-del-exp]");
+        if(ed){
+          const id = ed.getAttribute("data-edit-exp");
+          const ex = state.expenses.find(x=>x.id===id);
+          if(!ex) return;
+          $("#expTitle").value = ex.title||"";
+          $("#expDate").value = ex.date||toDateInputValue();
+          $("#expAmount").value = String(ex.amount??0);
+          $("#expCat").value = ex.category||"Sonstiges";
+          $("#expPay").value = ex.pay||"Bar";
+          $("#expNote").value = ex.note||"";
+          $("#expSave").textContent = "Aktualisieren";
+          $("#expSave").classList.add("primary");
+          $("#expSave").onclick = ()=>{
+            ex.title = $("#expTitle").value.trim();
+            if(!ex.title){ toast("Fehler","Titel ist Pflicht."); return; }
+            ex.date = $("#expDate").value || ex.date;
+            ex.amount = Number($("#expAmount").value||0);
+            ex.category = $("#expCat").value;
+            ex.pay = $("#expPay").value;
+            ex.note = $("#expNote").value.trim();
+            saveState();
+            toast("OK","Ausgabe aktualisiert.");
+            render();
+          };
+          toast("Info","Ausgabe geladen.");
+          focusFirst("#expTitle");
+        }
+        if(dl){
+          const id = dl.getAttribute("data-del-exp");
+          if(!confirm("Ausgabe löschen?")) return;
+          state.expenses = state.expenses.filter(x=>x.id!==id);
+          saveState();
+          toast("OK","Ausgabe gelöscht.");
+          render();
+        }
+      };
+    }
+
+    // PAYROLL
+    function renderPayrollForm(){
+      return `
+        <div class="formGrid">
+          <div class="formRow">
+            <label for="payEmp">Mitarbeiter</label>
+            <input id="payEmp" placeholder="Name" />
+          </div>
+          <div class="formRow">
+            <label for="payMonth">Monat</label>
+            <input id="payMonth" type="month" value="${escapeAttr(monthKey(new Date()))}" />
+          </div>
+          <div class="formRow">
+            <label for="payHours">Stunden</label>
+            <input id="payHours" type="number" step="0.01" value="0.00" />
+          </div>
+          <div class="formRow">
+            <label for="payRate">€ / Stunde</label>
+            <input id="payRate" type="number" step="0.01" value="0.00" />
+          </div>
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="payNote">Notiz</label>
+            <textarea id="payNote" placeholder="z.B. SV/Abzüge später"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="paySave">Speichern</button>
+          <button class="btn" id="payPdf">PDF öffnen</button>
+          <button class="btn" id="payClear">Leeren</button>
+        </div>
+        <div class="helper">Dies ist eine Demo-Lohnabrechnung (offline).</div>
+      `;
+    }
+
+    function renderPayrollTable(){
+      if(!state.payroll.length){
+        return `<div class="helper">Keine Lohn-Einträge vorhanden.</div>`;
+      }
+      return `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mitarbeiter</th>
+              <th>Monat</th>
+              <th>Stunden</th>
+              <th>Brutto</th>
+              <th style="width:260px">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${state.payroll.slice().sort((a,b)=> (b.month||"").localeCompare(a.month||"")).map(p=>`
+              <tr>
+                <td><b>${escapeHtml(p.employee)}</b><div class="smallNote">${escapeHtml(p.note||"")}</div></td>
+                <td>${escapeHtml(p.month)}</td>
+                <td>${Number(p.hours||0).toLocaleString("de-DE",{maximumFractionDigits:2})}</td>
+                <td><b>${euro(p.gross)}</b></td>
+                <td class="rowActions">
+                  <button class="mini" data-pdf-pay="${p.id}">PDF</button>
+                  <button class="mini" data-del-pay="${p.id}">Löschen</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindPayroll(){
+      $("#paySave").onclick = ()=>{
+        const employee = $("#payEmp").value.trim();
+        if(!employee){ toast("Fehler","Mitarbeiter ist Pflicht."); return; }
+        const hours = Number($("#payHours").value||0);
+        const rate = Number($("#payRate").value||0);
+        const gross = hours * rate;
+
+        const item = {
+          id: cryptoId(),
+          employee,
+          month: $("#payMonth").value || monthKey(new Date()),
+          hours,
+          rate,
+          gross,
+          note: $("#payNote").value.trim(),
+          createdAt: nowISO()
+        };
+        state.payroll.push(item);
+        saveState();
+        toast("OK","Lohn gespeichert.");
+        render();
+      };
+      $("#payClear").onclick = ()=>{ render(); toast("OK","Leeren."); };
+      $("#payPdf").onclick = ()=>{
+        const tmp = {
+          id:"tmp",
+          employee: $("#payEmp").value.trim() || "—",
+          month: $("#payMonth").value || monthKey(new Date()),
+          hours: Number($("#payHours").value||0),
+          rate: Number($("#payRate").value||0),
+          note: $("#payNote").value.trim()
+        };
+        tmp.gross = tmp.hours*tmp.rate;
+        openPayrollPrint(tmp);
+      };
+
+      $("#rightBody").onclick = (e)=>{
+        const pdf = e.target.closest("[data-pdf-pay]");
+        const del = e.target.closest("[data-del-pay]");
+        if(pdf){
+          const id = pdf.getAttribute("data-pdf-pay");
+          const item = state.payroll.find(x=>x.id===id);
+          if(!item) return;
+          openPayrollPrint(item);
+        }
+        if(del){
+          const id = del.getAttribute("data-del-pay");
+          if(!confirm("Eintrag löschen?")) return;
+          state.payroll = state.payroll.filter(x=>x.id!==id);
+          saveState();
+          toast("OK","Gelöscht.");
+          render();
+        }
+      };
+    }
+
+    function openPayrollPrint(p){
+      const prof = state.profile;
+      const html = `
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Lohnabrechnung ${escapeHtml(p.employee)}</title>
+<style>
+body{font-family:Arial,sans-serif;margin:30px;color:#111}
+.box{border:1px solid #ddd;border-radius:10px;padding:14px}
+h1{margin:0 0 10px;font-size:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.muted{color:#555;font-size:12px}
+</style></head>
+<body>
+  <div class="box">
+    <h1>Lohnabrechnung</h1>
+    <div class="muted">${escapeHtml(prof.company||"")}</div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="box">
+      <b>Mitarbeiter:</b> ${escapeHtml(p.employee)}<br/>
+      <b>Monat:</b> ${escapeHtml(p.month)}<br/>
+      <b>Stunden:</b> ${Number(p.hours||0).toLocaleString("de-DE",{maximumFractionDigits:2})}<br/>
+      <b>€ / Stunde:</b> ${euro(p.rate)}<br/>
+    </div>
+    <div class="box">
+      <b>Brutto:</b> <span style="font-size:18px">${euro(p.gross)}</span><br/>
+      <div class="muted" style="margin-top:8px">Hinweis (Demo): Abzüge/SV separat erfassen.</div>
+    </div>
+  </div>
+  ${p.note ? `<div class="box" style="margin-top:12px"><b>Notiz:</b><div class="muted" style="white-space:pre-line;margin-top:6px">${escapeHtml(p.note)}</div></div>` : ""}
+</body></html>
+      `.trim();
+
+      const w = window.open("", "_blank");
+      if(!w){ toast("Blockiert","Popup blockiert. Erlaube Popups."); return; }
+      w.document.open(); w.document.write(html); w.document.close(); w.focus();
+      setTimeout(()=>w.print(), 350);
+    }
+
+    // TAX
+    function renderTaxPanel(){
+      const y = new Date().getFullYear();
+      const yearVal = state.tax.year || y;
+      return `
+        <div class="formGrid">
+          <div class="formRow">
+            <label for="taxYear">Steuerjahr</label>
+            <input id="taxYear" type="number" value="${escapeAttr(yearVal)}" />
+          </div>
+          <div class="formRow">
+            <label>Hinweis</label>
+            <div class="badge">Offline Notiz + Summen</div>
+          </div>
+          <div class="formRow" style="grid-column:1/-1">
+            <label for="taxNotes">Notizen</label>
+            <textarea id="taxNotes" placeholder="z.B. Werbungskosten, Fahrten, Belege...">${escapeHtml(state.tax.notes||"")}</textarea>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="taxSave">Speichern</button>
+          <button class="btn" id="taxPdf">PDF öffnen</button>
+        </div>
+        <div class="helper">Tipp: Export/Import in Einstellungen für Backup.</div>
+      `;
+    }
+
+    function renderTaxSummary(){
+      const year = Number(state.tax.year || new Date().getFullYear());
+      const inv = state.invoices.filter(x=> new Date(x.date).getFullYear()===year && x.status!=="storniert");
+      const exp = state.expenses.filter(x=> new Date(x.date).getFullYear()===year);
+      const revGross = inv.reduce((a,x)=>a+Number(x.gross||0),0);
+      const revNet = inv.reduce((a,x)=>a+Number(x.net||0),0);
+      const vat = inv.reduce((a,x)=>a+Number(x.vatAmount||0),0);
+      const exSum = exp.reduce((a,x)=>a+Number(x.amount||0),0);
+
+      return `
+        <div class="cards" style="grid-template-columns:1fr">
+          <div class="card">
+            <p class="k">Umsatz (${year})</p>
+            <p class="v">${euro(revGross)}</p>
+            <p class="s">${state.profile.kleinunternehmer ? "USt: 0,00 €" : ("USt: "+euro(vat)+" • Netto: "+euro(revNet))}</p>
+          </div>
+          <div class="card">
+            <p class="k">Ausgaben (${year})</p>
+            <p class="v">${euro(exSum)}</p>
+            <p class="s">Einträge: ${exp.length}</p>
+          </div>
+          <div class="card">
+            <p class="k">Überschuss (vereinfachte Rechnung)</p>
+            <p class="v">${euro(revGross - exSum)}</p>
+            <p class="s">Hinweis: Keine steuerliche Beratung. Nur Übersicht.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindTax(){
+      $("#taxSave").onclick = ()=>{
+        state.tax.year = Number($("#taxYear").value || new Date().getFullYear());
+        state.tax.notes = $("#taxNotes").value || "";
+        saveState();
+        toast("OK","Gespeichert.");
+        render();
+      };
+      $("#taxPdf").onclick = ()=>{
+        const year = Number($("#taxYear").value || new Date().getFullYear());
+        const notes = $("#taxNotes").value || "";
+        openTaxPrint(year, notes);
+      };
+    }
+
+    function openTaxPrint(year, notes){
+      const sum = getYearTotalsFor(year);
+      const prof = state.profile;
+      const html = `
+<!doctype html><html><head><meta charset="utf-8"><title>Einkommensteuer ${year}</title>
+<style>
+body{font-family:Arial,sans-serif;margin:30px;color:#111}
+.box{border:1px solid #ddd;border-radius:10px;padding:14px}
+h1{margin:0 0 10px;font-size:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.muted{color:#555;font-size:12px}
+</style></head><body>
+  <div class="box">
+    <h1>Einkommensteuer – Notizen & Summen (${year})</h1>
+    <div class="muted">${escapeHtml(prof.company||"")}</div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="box">
+      <b>Umsatz (Brutto):</b> ${euro(sum.revenueGross)}<br/>
+      <b>Ausgaben:</b> ${euro(sum.expenseSum)}<br/>
+      <b>Überschuss:</b> ${euro(sum.revenueGross - sum.expenseSum)}<br/>
+      <div class="muted" style="margin-top:8px">${prof.kleinunternehmer ? "Kleinunternehmer: USt 0" : ("USt: "+euro(sum.revenueVat))}</div>
+    </div>
+    <div class="box">
+      <b>Notizen:</b>
+      <div class="muted" style="white-space:pre-line;margin-top:8px">${escapeHtml(notes||"")}</div>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:12px">Hinweis: Keine steuerliche Beratung. Offline-Dokument.</p>
+</body></html>
+      `.trim();
+      const w = window.open("", "_blank");
+      if(!w){ toast("Blockiert","Popup blockiert. Erlaube Popups."); return; }
+      w.document.open(); w.document.write(html); w.document.close(); w.focus();
+      setTimeout(()=>w.print(), 350);
+    }
+
+    function getYearTotalsFor(year){
+      const inv = state.invoices.filter(x=> new Date(x.date).getFullYear()===year && x.status!=="storniert");
+      const exp = state.expenses.filter(x=
