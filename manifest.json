@@ -1,23 +1,76 @@
+/* ================================
+   FILE: manifest.json
+================================ */
 {
-  "id": "/masculine/",
   "name": "Masculine Security – Mini Office",
   "short_name": "MS Office",
-  "start_url": "/masculine/",
-  "scope": "/masculine/",
+  "description": "Mini Office App – Rechnungen, Kunden, Ausgaben, Lohnabrechnung",
+  "start_url": "/masculine-/",
+  "scope": "/masculine-/",
   "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#0b1220",
-  "description": "Mini Office App – Rechnungen, Kunden, Ausgaben, Lohnabrechnung, Einkommensteuer",
+  "background_color": "#0b2545",
+  "theme_color": "#0b2545",
   "icons": [
     {
-      "src": "/masculine/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/masculine/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
+
+
+/* ================================
+   FILE: service-worker.js
+================================ */
+const CACHE_NAME = "ms-mini-office-v1";
+
+const FILES_TO_CACHE = [
+  "/masculine-/",
+  "/masculine-/index.html",
+  "/masculine-/style.css",
+  "/masculine-/manifest.json",
+  "/masculine-/icon-192.png",
+  "/masculine-/icon-512.png"
+];
+
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+  );
+});
+
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
+    )
+  );
+});
+
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
+  );
+});
+
+
+/* ================================
+   ADD THIS INTO index.html <head>
+================================ */
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js");
+  });
+}
+</script>
