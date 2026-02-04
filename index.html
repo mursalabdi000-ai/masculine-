@@ -1,26 +1,17 @@
-<!-- ===========================
-FILE: index.html
-=========================== -->
 <!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Masculine Security — Mini Office</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json?v=1.2">
-  <meta name="theme-color" content="#0b1220">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
   <style>
     :root{
       --bg:#0b1220; --panel:#0f1a2f; --panel2:#0c1629; --card:#10203a;
       --muted:#93a4c6; --text:#e7eeff; --line:#1a2a4b;
       --accent:#3aa6ff; --accent2:#2bd4bd; --danger:#ff4d6d; --warn:#ffc857;
       --shadow:0 14px 40px rgba(0,0,0,.45);
-      --radius:16px; --radius2:12px;
+      --radius:16px;
+      --radius2:12px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
     *{box-sizing:border-box}
@@ -31,101 +22,223 @@ FILE: index.html
         linear-gradient(180deg, #07101f 0%, #070d18 100%);
       color:var(--text);
     }
-    .app{min-height:100vh;display:grid;grid-template-columns:280px 1fr;gap:18px;padding:18px;max-width:1320px;margin:0 auto}
+    a{color:inherit}
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:18px;
+      padding:18px;
+      max-width: 1320px;
+      margin:0 auto;
+    }
     .sidebar{
-      background:linear-gradient(180deg, rgba(16,32,58,.78), rgba(12,22,41,.78));
-      border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);
-      padding:14px;position:sticky;top:14px;height:calc(100vh - 28px);display:flex;flex-direction:column;
+      background: linear-gradient(180deg, rgba(16,32,58,.78), rgba(12,22,41,.78));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+      position:sticky; top:14px; height: calc(100vh - 28px);
+      display:flex; flex-direction:column;
     }
-    .brand{display:flex;gap:12px;align-items:center;padding:10px;border-radius:var(--radius2);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
-    .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg, rgba(58,166,255,.9), rgba(43,212,189,.9));display:grid;place-items:center;color:#06101f;font-weight:900;letter-spacing:.5px}
-    .brand h1{margin:0;font-size:14px;line-height:1.2}
-    .brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-    .nav{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      padding:10px;
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.05);
+    }
+    .logo{
+      width:42px; height:42px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(58,166,255,.9), rgba(43,212,189,.9));
+      display:grid; place-items:center;
+      color:#06101f; font-weight:900;
+      letter-spacing:.5px;
+      box-shadow: 0 10px 30px rgba(58,166,255,.18);
+    }
+    .brand h1{margin:0; font-size:14px; line-height:1.2}
+    .brand small{display:block; color:var(--muted); font-size:12px; margin-top:2px}
+    .nav{
+      margin-top:12px;
+      display:flex; flex-direction:column; gap:8px;
+    }
     .nav button{
-      all:unset;display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:10px 12px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.02);transition:.15s ease;
+      all:unset;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+      transition: .15s ease;
     }
-    .nav button:hover{transform:translateY(-1px);border-color:rgba(58,166,255,.35);background:rgba(58,166,255,.08)}
-    .nav button.active{border-color:rgba(58,166,255,.55);background:rgba(58,166,255,.14);box-shadow:0 10px 26px rgba(0,0,0,.25)}
-    .nav .left{display:flex;align-items:center;gap:10px;font-weight:800;font-size:13px}
-    .pill{font-size:12px;color:var(--muted);padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.16)}
-    .foot{margin-top:auto;padding:10px;border-top:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:12px}
+    .nav button:hover{
+      transform: translateY(-1px);
+      border-color: rgba(58,166,255,.35);
+      background: rgba(58,166,255,.08);
+    }
+    .nav button.active{
+      border-color: rgba(58,166,255,.55);
+      background: rgba(58,166,255,.14);
+      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+    }
+    .nav .left{
+      display:flex; align-items:center; gap:10px;
+      font-weight:700; font-size:13px;
+    }
+    .pill{
+      font-size:12px; color:var(--muted);
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.16);
+    }
+    .foot{
+      margin-top:auto;
+      padding:10px;
+      border-top:1px solid rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+    }
     .main{
-      background:linear-gradient(180deg, rgba(16,32,58,.55), rgba(12,22,41,.55));
-      border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);
-      overflow:hidden;display:flex;flex-direction:column;min-height:calc(100vh - 36px)
+      background: linear-gradient(180deg, rgba(16,32,58,.55), rgba(12,22,41,.55));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex; flex-direction:column;
+      min-height: calc(100vh - 36px);
     }
-    .topbar{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.12)}
-    .crumb{display:flex;flex-direction:column;gap:2px}
-    .crumb h2{margin:0;font-size:14px}
+    .topbar{
+      padding:14px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.12);
+    }
+    .crumb{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .crumb h2{margin:0; font-size:14px}
     .crumb small{color:var(--muted)}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    }
     .btn{
-      border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:var(--text);
-      padding:9px 12px;border-radius:12px;cursor:pointer;transition:.15s ease;font-weight:800;font-size:13px
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition:.15s ease;
+      font-weight:700;
+      font-size:13px;
     }
-    .btn:hover{transform:translateY(-1px);border-color:rgba(58,166,255,.4);background:rgba(58,166,255,.10)}
-    .btn.primary{border-color:rgba(58,166,255,.55);background:rgba(58,166,255,.16)}
-    .btn.good{border-color:rgba(43,212,189,.55);background:rgba(43,212,189,.14)}
-    .btn.danger{border-color:rgba(255,77,109,.45);background:rgba(255,77,109,.10)}
-    .content{padding:14px;display:grid;gap:14px}
-    .grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
-    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .card{background:rgba(16,32,58,.55);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius2);padding:14px}
-    .card h3{margin:0 0 10px 0;font-size:14px}
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(58,166,255,.4);
+      background: rgba(58,166,255,.10);
+    }
+    .btn.primary{
+      border-color: rgba(58,166,255,.55);
+      background: rgba(58,166,255,.16);
+    }
+    .btn.good{
+      border-color: rgba(43,212,189,.55);
+      background: rgba(43,212,189,.14);
+    }
+    .btn.danger{
+      border-color: rgba(255,77,109,.45);
+      background: rgba(255,77,109,.10);
+    }
+    .content{
+      padding:14px;
+      display:grid;
+      gap:14px;
+    }
+    .grid2{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
+    .grid3{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;}
+    .card{
+      background: rgba(16,32,58,.55);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius2);
+      padding:14px;
+    }
+    .card h3{margin:0 0 10px 0; font-size:14px}
     .muted{color:var(--muted)}
-    .kpi{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
-    .kpi .value{font-size:22px;font-weight:900}
-    .kpi .label{color:var(--muted);font-size:12px;font-weight:800}
-    .table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
-    .table th,.table td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:13px}
-    .table th{color:var(--muted);font-weight:900;font-size:12px}
-    .row-actions{display:flex;gap:8px;justify-content:flex-end}
-    .mini{padding:6px 10px;border-radius:10px;font-size:12px;font-weight:900}
+    .kpi{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:10px;
+    }
+    .kpi .value{font-size:22px; font-weight:900}
+    .kpi .label{color:var(--muted); font-size:12px; font-weight:700}
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius: 12px;
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:left;
+      font-size:13px;
+    }
+    .table th{color:var(--muted); font-weight:800; font-size:12px}
+    .row-actions{display:flex; gap:8px; justify-content:flex-end}
+    .mini{
+      padding:6px 10px; border-radius:10px; font-size:12px; font-weight:800;
+    }
     .mini:hover{transform:none}
-    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-    .field label{font-size:12px;color:var(--muted);font-weight:900}
-    .field input,.field select,.field textarea{
-      width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);color:var(--text);outline:none
+    .field{
+      display:flex; flex-direction:column; gap:6px; margin-bottom:10px;
     }
-    .field textarea{min-height:96px;resize:vertical}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .notice{border:1px dashed rgba(58,166,255,.45);background:rgba(58,166,255,.08);padding:12px;border-radius:12px;font-size:13px}
-    .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);font-size:12px;font-weight:900;color:var(--muted)}
-    .right{text-align:right}
+    .field label{font-size:12px; color:var(--muted); font-weight:800}
+    .field input, .field select, .field textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+    }
+    .field textarea{min-height:96px; resize:vertical}
+    .split{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .notice{
+      border:1px dashed rgba(58,166,255,.45);
+      background: rgba(58,166,255,.08);
+      padding:12px;
+      border-radius: 12px;
+      color: var(--text);
+      font-size:13px;
+    }
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      font-size:12px; font-weight:800; color:var(--muted);
+    }
+    .right{ text-align:right }
     .hide{display:none !important}
-    .hr{height:1px;background:rgba(255,255,255,.06);margin:10px 0}
+    .hr{height:1px; background: rgba(255,255,255,.06); margin:10px 0}
     @media (max-width: 980px){
-      .app{grid-template-columns:1fr}
-      .sidebar{position:relative;height:auto}
-      .grid2,.grid3{grid-template-columns:1fr}
-    }
-
-    /* Print invoice */
-    @media print{
-      body{background:#fff;color:#000}
-      .no-print{display:none !important}
-      .print-wrap{padding:24px}
-      .print-card{border:1px solid #ddd;border-radius:10px;padding:18px}
-      .print-row{display:flex;justify-content:space-between;gap:18px}
-      .print-muted{color:#555}
-      .print-table{width:100%;border-collapse:collapse;margin-top:12px}
-      .print-table th,.print-table td{border-bottom:1px solid #ddd;padding:8px;text-align:left}
-      .print-right{text-align:right}
+      .app{grid-template-columns: 1fr}
+      .sidebar{position:relative; height:auto}
+      .grid2,.grid3{grid-template-columns: 1fr}
     }
   </style>
 </head>
-
 <body>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="logo">MS</div>
         <div>
-          <h1 id="brandName">Masculine Security</h1>
+          <h1>Masculine Security</h1>
           <small>Mini Office • Offline (local)</small>
         </div>
       </div>
@@ -133,7 +246,7 @@ FILE: index.html
       <div class="nav" id="nav">
         <button data-page="overview" class="active">
           <div class="left">🏠 Übersicht <span class="pill">KPIs</span></div>
-          <span class="pill">–</span>
+          <span class="pill" id="countOverview">–</span>
         </button>
         <button data-page="customers">
           <div class="left">👤 Kunden</div>
@@ -161,15 +274,14 @@ FILE: index.html
         </button>
         <button data-page="settings">
           <div class="left">⚙️ Einstellungen</div>
-          <span class="pill">Save</span>
+          <span class="pill">Backup</span>
         </button>
       </div>
 
       <div class="foot">
         <div><b>Tipp:</b> GitHub commit → Netlify auto deploy.</div>
-        <div class="muted">Wenn Update nicht sichtbar: <b>Ctrl+Shift+R</b></div>
+        <div class="muted">Update: Ctrl+Shift+R haddii aan isbeddel muuqan.</div>
         <div class="muted" id="versionLabel"></div>
-        <div class="muted" id="pwaLabel"></div>
       </div>
     </aside>
 
@@ -179,7 +291,7 @@ FILE: index.html
           <h2 id="pageTitle">Übersicht</h2>
           <small id="pageSub" class="muted">Umsatz • Ausgaben • Kunden • Rechnungen (offline)</small>
         </div>
-        <div class="actions no-print" id="topActions">
+        <div class="actions" id="topActions">
           <button class="btn primary" id="quickInvoice">+ Rechnung</button>
           <button class="btn" id="quickCustomer">+ Kunde</button>
           <button class="btn" id="quickExpense">+ Ausgabe</button>
@@ -197,7 +309,7 @@ FILE: index.html
                 <div>
                   <div class="label">Umsatz (dieser Monat)</div>
                   <div class="value" id="kpiMonthRevenue">0,00 €</div>
-                  <div class="muted" style="font-size:12px">Umsatzsteuer: <span id="kpiMonthVat">0,00 €</span> • Brutto: <span id="kpiMonthGross">0,00 €</span></div>
+                  <div class="muted" style="font-size:12px">MwSt: <span id="kpiMonthVat">0,00 €</span> • Brutto: <span id="kpiMonthGross">0,00 €</span></div>
                 </div>
                 <span class="tag">📈</span>
               </div>
@@ -243,7 +355,10 @@ FILE: index.html
 
             <div class="card">
               <h3>Schnellstart</h3>
-              <div class="notice" id="overviewVatNote"></div>
+              <div class="notice">
+                Wie Lexoffice-Style: links Navigation, oben Aktionen, Daten offline.<br/>
+                <b>Tipp:</b> Export/Import oben rechts für Backup.
+              </div>
               <div class="hr"></div>
               <div class="split">
                 <button class="btn primary" onclick="UI.go('invoices')">+ Rechnung</button>
@@ -292,14 +407,12 @@ FILE: index.html
                 <label>Kunde</label>
                 <select id="i_customer"></select>
               </div>
-
               <div class="split">
                 <div class="field"><label>Leistung / Beschreibung</label><input id="i_desc" placeholder="z.B. Objektschutz 12h"></div>
-                <div class="field"><label>Betrag (€)</label><input id="i_net" type="number" step="0.01" placeholder="0.00"></div>
+                <div class="field"><label>Netto (€)</label><input id="i_net" type="number" step="0.01" placeholder="0.00"></div>
               </div>
-
               <div class="split">
-                <div class="field"><label>USt % (0 für Kleinunternehmer)</label><input id="i_vatRate" type="number" step="0.01"></div>
+                <div class="field"><label>USt % (0 für Kleinunternehmer)</label><input id="i_vatRate" type="number" step="0.01" value="0"></div>
                 <div class="field"><label>Status</label>
                   <select id="i_status">
                     <option value="Entwurf">Entwurf</option>
@@ -308,24 +421,16 @@ FILE: index.html
                   </select>
                 </div>
               </div>
-
               <button class="btn primary" onclick="Invoices.add()">Speichern</button>
               <button class="btn" onclick="Invoices.print()">PDF öffnen</button>
               <button class="btn danger" onclick="Invoices.clearForm()">Leeren</button>
-
-              <div class="notice" id="invoiceVatNote" style="margin-top:10px"></div>
               <div class="muted" style="margin-top:10px">PDF = Browser Print (Save as PDF).</div>
             </div>
 
             <div class="card">
               <h3>Rechnungen</h3>
               <table class="table">
-                <thead>
-                  <tr>
-                    <th>Nr.</th><th>Kunde</th><th>Datum</th><th>Status</th>
-                    <th class="right">Netto/Brutto</th><th class="right">Aktion</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Nr.</th><th>Kunde</th><th>Datum</th><th>Status</th><th class="right">Netto</th><th class="right">Aktion</th></tr></thead>
                 <tbody id="invoicesList"></tbody>
               </table>
             </div>
@@ -385,7 +490,7 @@ FILE: index.html
               <button class="btn primary" onclick="Payroll.add()">Speichern</button>
               <button class="btn" onclick="Payroll.print()">PDF öffnen</button>
               <button class="btn danger" onclick="Payroll.clearForm()">Leeren</button>
-              <div class="muted" style="margin-top:10px">Hinweis: Interne Liste (nicht offiziell).</div>
+              <div class="muted" style="margin-top:10px">Hinweis: Dies ist eine einfache interne Lohnliste (nicht offiziell).</div>
             </div>
 
             <div class="card">
@@ -400,870 +505,11 @@ FILE: index.html
 
         <!-- TAX -->
         <section id="page-tax" class="hide">
-          <div class="card">
-            <h3>Einkommensteuer (Übersicht)</h3>
-            <div class="notice">
-              Tani waa “summary” gudaha app-ka. (Elster/Steuerberater = dibedda)
-            </div>
-            <div class="hr"></div>
-            <div class="split">
-              <div class="field"><label>Steuerjahr</label><input id="t_year" type="number" value="2026" oninput="Tax.refresh()"></div>
-              <div class="field"><label>Notiz</label><input id="t_note" placeholder="z.B. Vorauszahlung/Belege"></div>
-            </div>
-            <button class="btn primary" onclick="Tax.save()">Speichern</button>
-            <button class="btn danger" onclick="Tax.clear()">Leeren</button>
-            <div class="muted" style="margin-top:10px" id="taxPreview"></div>
-          </div>
-        </section>
-
-        <!-- EMAIL + PDF -->
-        <section id="page-emailpdf" class="hide">
-          <div class="card">
-            <h3>Email (mailto) + PDF</h3>
-            <div class="notice">
-              Browser-ku ayuu furaa Email app-ka (mailto). PDF-na waxaad ka sameysaa “Print → Save as PDF”.
-            </div>
-            <div class="hr"></div>
-            <div class="split">
-              <div class="field"><label>To</label><input id="m_to" placeholder="z.B. buchhaltung@firma.de"></div>
-              <div class="field"><label>Subject</label><input id="m_sub" placeholder="Dokumente – Rechnung / Lohn / Steuer"></div>
-            </div>
-            <div class="field"><label>Message</label><textarea id="m_msg" placeholder="Guten Tag, anbei die Unterlagen..."></textarea></div>
-            <button class="btn primary" onclick="Mailto.open()">Email öffnen</button>
-            <button class="btn" onclick="Export.printHelp()">PDF Hilfe</button>
-          </div>
-        </section>
-
-        <!-- SETTINGS -->
-        <section id="page-settings" class="hide">
           <div class="grid2">
             <div class="card">
-              <h3>Einstellungen (Xogtaada)</h3>
-
-              <div class="field"><label>Firmenname</label><input id="s_company" placeholder="Masculine Security"></div>
-              <div class="field"><label>Magacaaga (Inhaber)</label><input id="s_owner" placeholder="Mustafa Abdi"></div>
-              <div class="split">
-                <div class="field"><label>Email</label><input id="s_email" placeholder="kontakt@..."></div>
-                <div class="field"><label>Telefon</label><input id="s_phone" placeholder="+49 ..."></div>
-              </div>
-              <div class="field"><label>Adresse</label><input id="s_addr" placeholder="Straße, PLZ Ort"></div>
-
-              <div class="split">
-                <div class="field"><label>IBAN (Eban)</label><input id="s_iban" placeholder="DE..."></div>
-                <div class="field"><label>BIC</label><input id="s_bic" placeholder="NTSBDEB1XXX"></div>
-              </div>
-
-              <div class="split">
-                <div class="field">
-                  <label>Kleinunternehmerregelung (§19 UStG)</label>
-                  <select id="s_klein">
-                    <option value="yes">Ja (keine Umsatzsteuer)</option>
-                    <option value="no">Nein (USt wird berechnet)</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label>Standard USt % (wenn “Nein”)</label>
-                  <input id="s_vatDefault" type="number" step="0.01" value="19">
-                </div>
-              </div>
-
-              <button class="btn good" onclick="Settings.save()">Save</button>
-              <button class="btn" onclick="Settings.export()">Export JSON</button>
-              <button class="btn" onclick="Settings.import()">Import JSON</button>
-              <button class="btn danger" onclick="Settings.reset()">Reset (alle Daten)</button>
-
-              <div class="muted" style="margin-top:10px">
-                Marka aad “Save” dhahdo → xogta waxaa lagu keydiyaa browser-ka (localStorage).
-              </div>
-            </div>
-
-            <div class="card">
-              <h3>Hinweis / Preview</h3>
-              <div class="notice" id="settingsPreview"></div>
-              <div class="hr"></div>
-              <div class="notice">
-                <b>PWA Install:</b> Netlify https + manifest.json + sw.js waa in ay jiraan.<br>
-                Haddii “Install” uusan muuqan: <b>Ctrl+Shift+R</b> (hard refresh), kadib sug 10-20s.
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
-    </main>
-  </div>
-
-  <script>
-    /* ========= APP CORE (single file) ========= */
-    const APP_VERSION = "v1.2";
-    const LS_KEY = "ms_mini_office_v1_2";
-
-    const Defaults = {
-      settings:{
-        company:"Masculine Security",
-        owner:"Mustafa Abdi",
-        email:"",
-        phone:"",
-        addr:"",
-        iban:"",
-        bic:"",
-        klein:"yes",     // yes=§19 UStG
-        vatDefault:19
-      },
-      customers:[],
-      invoices:[],
-      expenses:[],
-      payroll:[],
-      tax:{ year:2026, note:"" }
-    };
-
-    function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return clone(Defaults);
-        const p = JSON.parse(raw);
-        return {
-          ...clone(Defaults),
-          ...p,
-          settings:{...clone(Defaults).settings, ...(p.settings||{})},
-          tax:{...clone(Defaults).tax, ...(p.tax||{})}
-        };
-      }catch(e){
-        return clone(Defaults);
-      }
-    }
-    function saveState(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-
-    const state = loadState();
-
-    /* ===== Helpers ===== */
-    function $(id){ return document.getElementById(id); }
-    function todayISO(){
-      const d = new Date();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const day = String(d.getDate()).padStart(2,"0");
-      return `${d.getFullYear()}-${m}-${day}`;
-    }
-    function formatEUR(n){
-      const x = Number(n||0);
-      return x.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
-    }
-    function isKlein(){ return (state.settings.klein||"yes")==="yes"; }
-    function vatDefault(){
-      const v = Number(state.settings.vatDefault ?? 19);
-      return isFinite(v) ? v : 19;
-    }
-    function vatNote(){
-      if(isKlein()) return "Umsatzsteuer: 0,00 € — Hinweis: Gemäß §19 UStG wird keine Umsatzsteuer berechnet.";
-      return `Umsatzsteuer: wird berechnet (Standard ${String(vatDefault()).replace(".",",")}%).`;
-    }
-    function calcInvoice(inv){
-      const net = Number(inv.net||0);
-      const rate = Number(inv.vatRate||0);
-      const vat = net * (rate/100);
-      const gross = net + vat;
-      return { net, rate, vat, gross };
-    }
-
-    /* ===== UI Navigation ===== */
-    const UI = {
-      go(page){
-        // sections
-        ["overview","customers","invoices","expenses","payroll","tax","emailpdf","settings"].forEach(p=>{
-          const el = $("page-"+p);
-          if(el) el.classList.toggle("hide", p!==page);
-        });
-        // nav active
-        document.querySelectorAll("#nav button").forEach(b=>{
-          b.classList.toggle("active", b.dataset.page===page);
-        });
-
-        // titles
-        const map = {
-          overview:["Übersicht","Umsatz • Ausgaben • Kunden • Rechnungen (offline)"],
-          customers:["Kunden","Kunden verwalten"],
-          invoices:["Rechnungen","Rechnung erstellen • PDF öffnen • Status"],
-          expenses:["Ausgaben","Ausgaben speichern"],
-          payroll:["Lohnabrechnung","Interne Lohnliste + PDF"],
-          tax:["Einkommensteuer","Notizen / Übersicht"],
-          emailpdf:["Email + PDF","mailto öffnen + PDF-Hilfe"],
-          settings:["Einstellungen","Xogtaada + Kleinunternehmer §19 UStG"]
-        };
-        $("pageTitle").textContent = map[page][0];
-        $("pageSub").textContent = map[page][1];
-
-        // sync special UI
-        Settings.syncInvoiceVatUI();
-        renderAll();
-      }
-    };
-
-    /* ===== Customers ===== */
-    const Customers = {
-      add(){
-        const name = $("c_name").value.trim();
-        if(!name){ alert("Kunde Name fehlt"); return; }
-        state.customers.unshift({
-          id: crypto.randomUUID(),
-          name,
-          email: $("c_email").value.trim(),
-          addr: $("c_addr").value.trim(),
-          createdAt: Date.now()
-        });
-        saveState();
-        Customers.clearForm();
-        UI.go("customers");
-      },
-      del(id){
-        if(!confirm("Kunde löschen?")) return;
-        state.customers = state.customers.filter(c=>c.id!==id);
-        saveState(); renderAll();
-      },
-      clearForm(){
-        $("c_name").value=""; $("c_email").value=""; $("c_addr").value="";
-      }
-    };
-
-    /* ===== Invoices ===== */
-    const Invoices = {
-      nextNo(){
-        const y = new Date().getFullYear();
-        const count = state.invoices.filter(x=>String(x.no||"").includes(String(y))).length + 1;
-        return `RE-${y}-${String(count).padStart(4,"0")}`;
-      },
-      hydrateForm(){
-        if(!$("i_date").value) $("i_date").value = todayISO();
-        if(!$("i_no").value) $("i_no").value = Invoices.nextNo();
-
-        // customer select
-        const sel = $("i_customer");
-        sel.innerHTML = "";
-        const opt0 = document.createElement("option");
-        opt0.value=""; opt0.textContent="— Kunde wählen —";
-        sel.appendChild(opt0);
-        state.customers.forEach(c=>{
-          const o = document.createElement("option");
-          o.value = c.id;
-          o.textContent = c.name;
-          sel.appendChild(o);
-        });
-
-        // vat
-        if(isKlein()){
-          $("i_vatRate").value = 0;
-          $("i_vatRate").setAttribute("disabled","disabled");
-        }else{
-          $("i_vatRate").removeAttribute("disabled");
-          if(!$("i_vatRate").value) $("i_vatRate").value = vatDefault();
-        }
-      },
-      add(){
-        const no = $("i_no").value.trim() || Invoices.nextNo();
-        const date = $("i_date").value || todayISO();
-        const customerId = $("i_customer").value;
-        const desc = $("i_desc").value.trim();
-        const net = Number($("i_net").value||0);
-        const vatRate = Number($("i_vatRate").value||0);
-        const status = $("i_status").value;
-
-        if(!desc){ alert("Beschreibung fehlt"); return; }
-        if(!customerId){ alert("Bitte Kunde wählen"); return; }
-
-        state.invoices.unshift({
-          id: crypto.randomUUID(),
-          no, date, customerId, desc,
-          net, vatRate,
-          status,
-          createdAt: Date.now()
-        });
-        saveState();
-        Invoices.clearForm(true);
-        UI.go("invoices");
-      },
-      del(id){
-        if(!confirm("Rechnung löschen?")) return;
-        state.invoices = state.invoices.filter(i=>i.id!==id);
-        saveState(); renderAll();
-      },
-      clearForm(keepDate=false){
-        $("i_no").value=""; if(!keepDate) $("i_date").value=todayISO();
-        $("i_customer").value=""; $("i_desc").value=""; $("i_net").value="";
-        $("i_status").value="Entwurf";
-        $("i_vatRate").value = isKlein()?0:vatDefault();
-        Invoices.hydrateForm();
-      },
-      print(id){
-        // if id not provided: print current draft fields
-        let inv;
-        if(id){
-          inv = state.invoices.find(x=>x.id===id);
-        }else{
-          inv = {
-            no: $("i_no").value.trim() || Invoices.nextNo(),
-            date: $("i_date").value || todayISO(),
-            customerId: $("i_customer").value,
-            desc: $("i_desc").value.trim(),
-            net: Number($("i_net").value||0),
-            vatRate: Number($("i_vatRate").value||0),
-            status: $("i_status").value
-          };
-        }
-        const cust = state.customers.find(c=>c.id===inv.customerId) || {name:"",email:"",addr:""};
-        const s = state.settings;
-        const c = calcInvoice(inv);
-
-        const note = isKlein()
-          ? "Hinweis: Gemäß §19 UStG wird keine Umsatzsteuer berechnet."
-          : "Umsatzsteuer wird berechnet.";
-
-        const win = window.open("", "_blank");
-        win.document.write(`
-<!doctype html>
-<html><head><meta charset="utf-8"><title>Rechnung ${escapeHtml(inv.no)}</title>
-<style>
-  body{font-family:Arial, sans-serif; padding:24px; color:#000;}
-  .box{border:1px solid #ddd; border-radius:10px; padding:18px;}
-  .row{display:flex; justify-content:space-between; gap:18px;}
-  .muted{color:#555;}
-  table{width:100%; border-collapse:collapse; margin-top:12px;}
-  th,td{border-bottom:1px solid #ddd; padding:8px; text-align:left;}
-  .r{text-align:right;}
-</style>
-</head>
-<body>
-  <div class="box">
-    <div class="row">
-      <div>
-        <h2 style="margin:0 0 6px 0;">Rechnung</h2>
-        <div class="muted">Rechnungs-Nr.: <b>${escapeHtml(inv.no)}</b></div>
-        <div class="muted">Datum: <b>${escapeHtml(inv.date)}</b></div>
-        <div class="muted">Status: <b>${escapeHtml(inv.status||"Entwurf")}</b></div>
-      </div>
-      <div style="text-align:right">
-        <div><b>${escapeHtml(s.company||"")}</b></div>
-        <div>${escapeHtml(s.owner||"")}</div>
-        <div class="muted">${escapeHtml(s.addr||"")}</div>
-        <div class="muted">${escapeHtml(s.email||"")}${s.phone?(" • "+escapeHtml(s.phone)):""}</div>
-        <div class="muted">${escapeHtml(s.iban||"")}${s.bic?(" • "+escapeHtml(s.bic)):""}</div>
-      </div>
-    </div>
-
-    <div style="margin-top:14px">
-      <div class="muted">Rechnung an</div>
-      <div><b>${escapeHtml(cust.name||"")}</b></div>
-      <div class="muted">${escapeHtml(cust.addr||"")}</div>
-      <div class="muted">${escapeHtml(cust.email||"")}</div>
-    </div>
-
-    <table>
-      <thead>
-        <tr><th>Leistung</th><th class="r">Netto</th><th class="r">USt</th><th class="r">Brutto</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>${escapeHtml(inv.desc||"")}</td>
-          <td class="r">${formatEUR(c.net)}</td>
-          <td class="r">${formatEUR(c.vat)}</td>
-          <td class="r"><b>${formatEUR(c.gross)}</b></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div style="margin-top:12px" class="muted">
-      Umsatzsteuer: ${isKlein() ? "0,00 €" : (String(c.rate).replace(".",",")+"%")}<br>
-      ${escapeHtml(note)}
-    </div>
-
-    <div style="margin-top:16px" class="muted">
-      Bitte überweisen Sie den Betrag unter Angabe der Rechnungsnummer.
-    </div>
-  </div>
-
-  <script>window.onload=()=>{setTimeout(()=>window.print(),200)}</script>
-</body></html>
-        `);
-        win.document.close();
-      }
-    };
-
-    function escapeHtml(s){
-      return String(s??"").replace(/[&<>"']/g, m => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-      }[m]));
-    }
-
-    /* ===== Expenses ===== */
-    const Expenses = {
-      add(){
-        const date = $("e_date").value || todayISO();
-        const amount = Number($("e_amount").value||0);
-        const cat = $("e_cat").value;
-        const note = $("e_note").value.trim();
-        if(amount<=0){ alert("Betrag fehlt"); return; }
-        state.expenses.unshift({id:crypto.randomUUID(), date, amount, cat, note, createdAt:Date.now()});
-        saveState();
-        Expenses.clearForm(true);
-        UI.go("expenses");
-      },
-      del(id){
-        if(!confirm("Ausgabe löschen?")) return;
-        state.expenses = state.expenses.filter(e=>e.id!==id);
-        saveState(); renderAll();
-      },
-      clearForm(keepDate=false){
-        if(!keepDate) $("e_date").value=todayISO();
-        $("e_amount").value=""; $("e_note").value="";
-      }
-    };
-
-    /* ===== Payroll ===== */
-    const Payroll = {
-      add(){
-        const name = $("p_name").value.trim();
-        const month = $("p_month").value.trim();
-        const hours = Number($("p_hours").value||0);
-        const rate = Number($("p_rate").value||0);
-        const deduct = Number($("p_deduct").value||0);
-        const note = $("p_note").value.trim();
-        if(!name || !month){ alert("Name/Monat fehlt"); return; }
-        const brutto = hours*rate;
-        const netto = Math.max(0, brutto - deduct);
-        state.payroll.unshift({id:crypto.randomUUID(), name, month, hours, rate, deduct, note, brutto, netto, createdAt:Date.now()});
-        saveState();
-        Payroll.clearForm();
-        UI.go("payroll");
-      },
-      del(id){
-        if(!confirm("Eintrag löschen?")) return;
-        state.payroll = state.payroll.filter(p=>p.id!==id);
-        saveState(); renderAll();
-      },
-      clearForm(){
-        $("p_name").value=""; $("p_month").value="";
-        $("p_hours").value=""; $("p_rate").value=""; $("p_deduct").value=0; $("p_note").value="";
-      },
-      print(id){
-        const p = state.payroll.find(x=>x.id===id);
-        if(!p){ alert("Bitte zuerst speichern"); return; }
-        const s = state.settings;
-        const win = window.open("", "_blank");
-        win.document.write(`
-<!doctype html><html><head><meta charset="utf-8"><title>Lohnabrechnung ${escapeHtml(p.month)}</title>
-<style>
-body{font-family:Arial, sans-serif; padding:24px; color:#000;}
-.box{border:1px solid #ddd; border-radius:10px; padding:18px;}
-.row{display:flex; justify-content:space-between; gap:18px;}
-.muted{color:#555;}
-table{width:100%; border-collapse:collapse; margin-top:12px;}
-th,td{border-bottom:1px solid #ddd; padding:8px; text-align:left;}
-.r{text-align:right;}
-</style></head>
-<body>
-<div class="box">
-  <div class="row">
-    <div>
-      <h2 style="margin:0 0 6px 0;">Lohnabrechnung (intern)</h2>
-      <div class="muted">Monat: <b>${escapeHtml(p.month)}</b></div>
-      <div class="muted">Mitarbeiter: <b>${escapeHtml(p.name)}</b></div>
-    </div>
-    <div style="text-align:right">
-      <div><b>${escapeHtml(s.company||"")}</b></div>
-      <div>${escapeHtml(s.owner||"")}</div>
-      <div class="muted">${escapeHtml(s.addr||"")}</div>
-    </div>
-  </div>
-
-  <table>
-    <thead><tr><th>Position</th><th class="r">Wert</th></tr></thead>
-    <tbody>
-      <tr><td>Stunden</td><td class="r">${escapeHtml(p.hours)}</td></tr>
-      <tr><td>Stundenlohn</td><td class="r">${formatEUR(p.rate)}</td></tr>
-      <tr><td>Brutto</td><td class="r"><b>${formatEUR(p.brutto)}</b></td></tr>
-      <tr><td>Abzüge</td><td class="r">${formatEUR(p.deduct)}</td></tr>
-      <tr><td>Netto</td><td class="r"><b>${formatEUR(p.netto)}</b></td></tr>
-    </tbody>
-  </table>
-
-  <div class="muted" style="margin-top:12px">Notiz: ${escapeHtml(p.note||"-")}</div>
-</div>
-<script>window.onload=()=>{setTimeout(()=>window.print(),200)}</script>
-</body></html>`);
-        win.document.close();
-      }
-    };
-
-    /* ===== Tax ===== */
-    const Tax = {
-      refresh(){
-        const y = Number($("t_year").value||state.tax.year||2026);
-        state.tax.year = y;
-        state.tax.note = $("t_note").value || state.tax.note || "";
-        $("taxYear").textContent = String(y);
-        $("taxPreview").textContent = `Steuerjahr: ${y} • Notiz: ${state.tax.note || "-"}`;
-        saveState();
-      },
-      save(){
-        state.tax.year = Number($("t_year").value||2026);
-        state.tax.note = $("t_note").value.trim();
-        saveState(); Tax.refresh();
-      },
-      clear(){
-        $("t_note").value="";
-        state.tax.note="";
-        saveState(); Tax.refresh();
-      }
-    };
-
-    /* ===== Email ===== */
-    const Mailto = {
-      open(){
-        const to = $("m_to").value.trim();
-        const sub = $("m_sub").value.trim();
-        const msg = $("m_msg").value.trim();
-        const url = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(msg)}`;
-        window.location.href = url;
-      }
-    };
-
-    /* ===== Settings (xogtaada + klein) ===== */
-    const Settings = {
-      hydrate(){
-        $("s_company").value = state.settings.company||"";
-        $("s_owner").value = state.settings.owner||"";
-        $("s_email").value = state.settings.email||"";
-        $("s_phone").value = state.settings.phone||"";
-        $("s_addr").value = state.settings.addr||"";
-        $("s_iban").value = state.settings.iban||"";
-        $("s_bic").value = state.settings.bic||"";
-        $("s_klein").value = isKlein() ? "yes":"no";
-        $("s_vatDefault").value = state.settings.vatDefault ?? 19;
-
-        $("brandName").textContent = state.settings.company || "Masculine Security";
-        $("settingsPreview").textContent =
-          `${vatNote()}\n\nFirma: ${state.settings.company||""}\nInhaber: ${state.settings.owner||""}\nEmail: ${state.settings.email||""}\nAdresse: ${state.settings.addr||""}\nIBAN: ${state.settings.iban||""}  BIC: ${state.settings.bic||""}`;
-      },
-      save(){
-        state.settings.company = $("s_company").value.trim();
-        state.settings.owner = $("s_owner").value.trim();
-        state.settings.email = $("s_email").value.trim();
-        state.settings.phone = $("s_phone").value.trim();
-        state.settings.addr = $("s_addr").value.trim();
-        state.settings.iban = $("s_iban").value.trim();
-        state.settings.bic = $("s_bic").value.trim();
-        state.settings.klein = $("s_klein").value;
-        state.settings.vatDefault = Number($("s_vatDefault").value||19);
-
-        saveState();
-        Settings.hydrate();
-        Settings.syncInvoiceVatUI();
-        renderAll();
-        alert("Saved ✅");
-      },
-      syncInvoiceVatUI(){
-        const vatInput = $("i_vatRate");
-        if(vatInput){
-          if(isKlein()){
-            vatInput.value = 0;
-            vatInput.setAttribute("disabled","disabled");
-          }else{
-            vatInput.removeAttribute("disabled");
-            if(!vatInput.value || Number(vatInput.value)===0) vatInput.value = vatDefault();
-          }
-        }
-        if($("invoiceVatNote")) $("invoiceVatNote").textContent = vatNote();
-        if($("overviewVatNote")) $("overviewVatNote").textContent = vatNote();
-      },
-      export(){
-        const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "ms-mini-office-backup.json";
-        a.click();
-        URL.revokeObjectURL(a.href);
-      },
-      import(){
-        const inp = document.createElement("input");
-        inp.type="file"; inp.accept="application/json";
-        inp.onchange = () => {
-          const f = inp.files?.[0]; if(!f) return;
-          const r = new FileReader();
-          r.onload = () => {
-            try{
-              const p = JSON.parse(String(r.result||"{}"));
-              state.settings = {...clone(Defaults).settings, ...(p.settings||{})};
-              state.customers = p.customers||[];
-              state.invoices = p.invoices||[];
-              state.expenses = p.expenses||[];
-              state.payroll = p.payroll||[];
-              state.tax = {...clone(Defaults).tax, ...(p.tax||{})};
-              saveState();
-              location.reload();
-            }catch(e){
-              alert("Import failed: JSON error");
-            }
-          };
-          r.readAsText(f);
-        };
-        inp.click();
-      },
-      reset(){
-        if(!confirm("Reset: alle Daten löschen?")) return;
-        localStorage.removeItem(LS_KEY);
-        location.reload();
-      }
-    };
-
-    /* ===== Render ===== */
-    function renderAll(){
-      $("versionLabel").textContent = `Version: ${APP_VERSION}`;
-      $("taxYear").textContent = String(state.tax.year||2026);
-
-      // counts
-      $("countCustomers").textContent = String(state.customers.length);
-      $("countInvoices").textContent = String(state.invoices.length);
-      $("countExpenses").textContent = String(state.expenses.length);
-      $("countPayroll").textContent = String(state.payroll.length);
-
-      // overview KPIs (simple)
-      const now = new Date();
-      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
-      const y = now.getFullYear();
-
-      const invMonth = state.invoices.filter(i => (i.date||"").startsWith(ym));
-      const invYear = state.invoices.filter(i => (i.date||"").startsWith(String(y)));
-
-      const monthNet = invMonth.reduce((a,i)=>a+Number(i.net||0),0);
-      const monthVat = invMonth.reduce((a,i)=>a+(Number(i.net||0)*Number(i.vatRate||0)/100),0);
-      const monthGross = monthNet + monthVat;
-
-      const yearNet = invYear.reduce((a,i)=>a+Number(i.net||0),0);
-
-      const expMonth = state.expenses.filter(e => (e.date||"").startsWith(ym));
-      const expMonthSum = expMonth.reduce((a,e)=>a+Number(e.amount||0),0);
-
-      $("kpiMonthRevenue").textContent = formatEUR(monthNet);
-      $("kpiMonthVat").textContent = formatEUR(monthVat);
-      $("kpiMonthGross").textContent = formatEUR(monthGross);
-
-      $("kpiMonthExpenses").textContent = formatEUR(expMonthSum);
-      $("kpiYearRevenue").textContent = formatEUR(yearNet);
-      $("kpiInvoiceCount").textContent = String(invYear.length);
-
-      // recent
-      const acts = [];
-      state.invoices.slice(0,10).forEach(i=>acts.push({type:"Rechnung", desc:i.no+" • "+i.desc, date:i.date, amount:Number(i.net||0)}));
-      state.expenses.slice(0,10).forEach(e=>acts.push({type:"Ausgabe", desc:e.cat+" • "+(e.note||""), date:e.date, amount:-Number(e.amount||0)}));
-      acts.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-      $("recentList").innerHTML = acts.slice(0,8).map(a=>`
-        <tr>
-          <td>${escapeHtml(a.type)}</td>
-          <td>${escapeHtml(a.desc)}</td>
-          <td>${escapeHtml(a.date||"")}</td>
-          <td class="right">${formatEUR(a.amount)}</td>
-        </tr>
-      `).join("") || `<tr><td colspan="4" class="muted">Keine Aktivitäten</td></tr>`;
-
-      // customers list
-      $("customersList").innerHTML = state.customers.map(c=>`
-        <tr>
-          <td>${escapeHtml(c.name)}</td>
-          <td>${escapeHtml(c.email||"")}</td>
-          <td>${escapeHtml(c.addr||"")}</td>
-          <td class="right">
-            <div class="row-actions">
-              <button class="btn mini danger" onclick="Customers.del('${c.id}')">Löschen</button>
-            </div>
-          </td>
-        </tr>
-      `).join("") || `<tr><td colspan="4" class="muted">Keine Kunden</td></tr>`;
-
-      // invoices list
-      $("invoicesList").innerHTML = state.invoices.map(i=>{
-        const cust = state.customers.find(c=>c.id===i.customerId);
-        const calc = calcInvoice(i);
-        return `
-          <tr>
-            <td>${escapeHtml(i.no)}</td>
-            <td>${escapeHtml(cust?cust.name:"")}</td>
-            <td>${escapeHtml(i.date||"")}</td>
-            <td>${escapeHtml(i.status||"")}</td>
-            <td class="right"><b>${formatEUR(isKlein()?calc.net:calc.gross)}</b></td>
-            <td class="right">
-              <div class="row-actions">
-                <button class="btn mini" onclick="Invoices.print('${i.id}')">PDF</button>
-                <button class="btn mini danger" onclick="Invoices.del('${i.id}')">X</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("") || `<tr><td colspan="6" class="muted">Keine Rechnungen</td></tr>`;
-
-      // expenses list
-      $("expensesList").innerHTML = state.expenses.map(e=>`
-        <tr>
-          <td>${escapeHtml(e.date||"")}</td>
-          <td>${escapeHtml(e.cat||"")}</td>
-          <td>${escapeHtml(e.note||"")}</td>
-          <td class="right">${formatEUR(e.amount)}</td>
-          <td class="right"><button class="btn mini danger" onclick="Expenses.del('${e.id}')">X</button></td>
-        </tr>
-      `).join("") || `<tr><td colspan="5" class="muted">Keine Ausgaben</td></tr>`;
-
-      // payroll list
-      $("payrollList").innerHTML = state.payroll.map(p=>`
-        <tr>
-          <td>${escapeHtml(p.month||"")}</td>
-          <td>${escapeHtml(p.name||"")}</td>
-          <td>${escapeHtml(p.hours||"")}</td>
-          <td class="right">${formatEUR(p.brutto)}</td>
-          <td class="right"><b>${formatEUR(p.netto)}</b></td>
-          <td class="right">
-            <div class="row-actions">
-              <button class="btn mini" onclick="Payroll.print('${p.id}')">PDF</button>
-              <button class="btn mini danger" onclick="Payroll.del('${p.id}')">X</button>
-            </div>
-          </td>
-        </tr>
-      `).join("") || `<tr><td colspan="6" class="muted">Keine Einträge</td></tr>`;
-
-      // tax
-      if($("t_year") && $("t_note")){
-        $("t_year").value = String(state.tax.year||2026);
-        $("t_note").value = state.tax.note||"";
-      }
-      if($("taxPreview")) $("taxPreview").textContent = `Steuerjahr: ${state.tax.year||2026} • Notiz: ${state.tax.note||"-"}`;
-
-      // hydrate invoice form every time
-      Invoices.hydrateForm();
-      Settings.syncInvoiceVatUI();
-    }
-
-    /* ===== Export helper ===== */
-    const Export = {
-      printHelp(){
-        alert("PDF: Öffne Rechnung oder Lohn → klick 'PDF öffnen' → dann im Browser: Drucken → 'Als PDF speichern'.");
-      }
-    };
-
-    /* ===== Buttons ===== */
-    function wire(){
-      document.querySelectorAll("#nav button").forEach(b=>{
-        b.addEventListener("click", ()=>UI.go(b.dataset.page));
-      });
-
-      $("quickInvoice").onclick = ()=>UI.go("invoices");
-      $("quickCustomer").onclick = ()=>UI.go("customers");
-      $("quickExpense").onclick = ()=>UI.go("expenses");
-
-      $("btnExport").onclick = ()=>Settings.export();
-      $("btnImport").onclick = ()=>Settings.import();
-
-      // defaults
-      $("e_date").value = todayISO();
-      $("i_date").value = todayISO();
-    }
-
-    /* ===== Service Worker register ===== */
-    async function initPWA(){
-      try{
-        if("serviceWorker" in navigator){
-          const reg = await navigator.serviceWorker.register("./sw.js?v=1.2");
-          $("pwaLabel").textContent = "PWA: Service Worker OK";
-          // auto update check
-          if(reg && reg.update) reg.update();
-        }else{
-          $("pwaLabel").textContent = "PWA: Service Worker NOT supported";
-        }
-      }catch(e){
-        $("pwaLabel").textContent = "PWA: SW error (check sw.js)";
-      }
-    }
-
-    window.addEventListener("load", ()=>{
-      wire();
-      Settings.hydrate();
-      renderAll();
-      UI.go("overview");
-      initPWA();
-    });
-  </script>
-</body>
-</html>
-
-
-<!-- ===========================
-FILE: manifest.json
-(ku samee GitHub file cusub: manifest.json)
-=========================== -->
-{
-  "name": "Masculine Security — Mini Office",
-  "short_name": "MS Office",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#0b1220",
-  "theme_color": "#0b1220",
-  "description": "Mini Office App — Rechnungen, Kunden, Ausgaben, Lohnabrechnung, Einkommensteuer, Email+PDF (offline)",
-  "icons": [
-    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
-}
-
-
-<!-- ===========================
-FILE: sw.js
-(ku samee GitHub file cusub: sw.js)
-=========================== -->
-const CACHE_NAME = "ms-mini-office-cache-v1.2";
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./sw.js"
-  // Icons optional (haddii aad haysato):
-  // "./icons/icon-192.png",
-  // "./icons/icon-512.png"
-];
-
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k !== CACHE_NAME) ? caches.delete(k) : null));
-    await self.clients.claim();
-  })());
-});
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith((async () => {
-    const req = event.request;
-    // Network-first for HTML so updates appear
-    if (req.headers.get("accept")?.includes("text/html")) {
-      try {
-        const fresh = await fetch(req);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(req, fresh.clone());
-        return fresh;
-      } catch (e) {
-        const cached = await caches.match(req);
-        return cached || caches.match("./index.html");
-      }
-    }
-
-    // Cache-first for everything else
-    const cached = await caches.match(req);
-    if (cached) return cached;
-
-    const fresh = await fetch(req);
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(req, fresh.clone());
-    return fresh;
-  })());
-});
+              <h3>Einkommensteuer (Übersicht)</h3>
+              <div class="field">
+                <label>Steuerjahr</label>
+                <select id="t_year" onchange="Tax.refresh()">
+                  <option>2026</option>
+                  <option>2025</option
