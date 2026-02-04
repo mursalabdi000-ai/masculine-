@@ -988,3 +988,97 @@ Everything inside IIFE so it won't redeclare on refresh.
     }
   ]
 }
+========================
+1) FILE: index.html
+========================
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Masculine Security — Mini Office</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+</head>
+<body>
+  <!-- Halkan ku hay app-kaaga (HTML/CSS/JS). -->
+  <h1 style="color:#fff;background:#0b1220;padding:20px;border-radius:12px;font-family:Arial">MS Mini Office</h1>
+
+  <script>
+    // Register Service Worker (PWA Install muhiim)
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          const reg = await navigator.serviceWorker.register("./sw.js", { scope: "./" });
+          console.log("SW registered:", reg.scope);
+        } catch (e) {
+          console.error("SW register failed:", e);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+
+
+========================
+2) FILE: manifest.json
+========================
+{
+  "id": "/",
+  "name": "Masculine Security — Mini Office",
+  "short_name": "MS Office",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "description": "Offline Mini Office: Kunden, Rechnungen, Ausgaben, Lohnabrechnung. Kleinunternehmer §19 UStG.",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
+
+
+========================
+3) FILE: sw.js
+========================
+const CACHE = "ms-mini-office-v1";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => (k !== CACHE ? caches.delete(k) : null)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
+  );
+});
+
+
+========================
+4) FILES: icons (folder)
+Create folder: icons/
+- icons/icon-192.png  (192x192 png)
+- icons/icon-512.png  (512x512 png)
+========================
