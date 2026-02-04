@@ -1,392 +1,300 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Masculine Security – Mini Office (Offline)</title>
-  <meta name="theme-color" content="#0b1220" />
+  <title>Masculine Security – Mini Office (Lohn + Steuer + PDF)</title>
+
+  <!-- jsPDF (PDF export) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
   <style>
     :root{
       --bg:#0b1220;
-      --panel:#0f172a;
-      --panel2:#111c36;
-      --card:#0f1a33;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:rgba(255,255,255,.08);
-      --accent:#3b82f6;
-      --accent2:#22c55e;
-      --danger:#ef4444;
-      --warning:#f59e0b;
-      --radius:14px;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --panel:#0f1a2e;
+      --panel2:#0c1628;
+      --card:#0f223f;
+      --stroke:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --accent:#2dd4bf;
+      --accent2:#60a5fa;
+      --danger:#fb7185;
+      --ok:#34d399;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
+
+    *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family:var(--sans);
-      background: radial-gradient(1200px 700px at 20% 10%, rgba(59,130,246,.18), transparent 55%),
-                  radial-gradient(900px 600px at 90% 30%, rgba(34,197,94,.12), transparent 55%),
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(45,212,191,.14), transparent 60%),
+                  radial-gradient(900px 700px at 90% 20%, rgba(96,165,250,.14), transparent 55%),
                   var(--bg);
       color:var(--text);
     }
-    a{color:inherit}
+    a{ color:inherit; text-decoration:none; }
     .app{
-      min-height:100%;
       display:grid;
       grid-template-columns: 280px 1fr;
+      min-height:100vh;
+      gap:18px;
+      padding:18px;
     }
-    /* Sidebar */
     .sidebar{
-      position:sticky; top:0; height:100vh;
-      padding:18px 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border-right:1px solid var(--line);
-      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
     .brand{
-      display:flex; align-items:center; gap:10px;
-      padding:12px 10px;
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.02);
-      box-shadow: var(--shadow);
+      padding:16px 16px 10px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      border-bottom:1px solid var(--stroke);
+      background: rgba(0,0,0,.14);
     }
     .logo{
-      width:40px; height:40px;
-      border-radius:12px;
-      display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(34,197,94,.18));
-      border:1px solid var(--line);
+      width:42px;height:42px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(45,212,191,.9), rgba(96,165,250,.9));
+      display:grid;place-items:center;
       font-weight:800;
+      color:#06111f;
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
     }
     .brand h1{
-      margin:0;
-      font-size:14px;
-      line-height:1.2;
+      font-size:14px; margin:0; line-height:1.1;
     }
-    .brand p{
-      margin:2px 0 0 0;
-      color:var(--muted);
-      font-size:12px;
+    .brand .sub{
+      font-size:12px; color:var(--muted); margin-top:3px;
     }
     .nav{
-      margin-top:14px;
+      padding:10px;
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:8px;
     }
     .nav button{
       width:100%;
-      text-align:left;
-      border:1px solid transparent;
-      background:transparent;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
       color:var(--text);
-      padding:10px 10px;
-      border-radius:12px;
-      cursor:pointer;
+      padding:12px 12px;
+      border-radius: 14px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
-      transition:.15s ease;
+      gap:10px;
+      cursor:pointer;
+      transition:.18s transform, .18s background, .18s border;
     }
-    .nav button:hover{background:rgba(255,255,255,.03); border-color:var(--line)}
+    .nav button:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
     .nav button.active{
-      background:rgba(59,130,246,.12);
-      border-color:rgba(59,130,246,.35);
-    }
-    .nav .left{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
-    }
-    .nav .icon{
-      width:28px; height:28px;
-      border-radius:10px;
-      display:grid; place-items:center;
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--line);
-      flex:0 0 auto;
-      font-size:13px;
-    }
-    .nav .label{
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      font-size:13px;
+      border-color: rgba(45,212,191,.35);
+      background: linear-gradient(180deg, rgba(45,212,191,.12), rgba(255,255,255,.03));
     }
     .pill{
-      font-size:11px;
-      color:var(--muted);
-      border:1px solid var(--line);
+      font-size:12px;
+      padding:4px 10px;
       border-radius:999px;
-      padding:4px 8px;
-      flex:0 0 auto;
+      border:1px solid var(--stroke);
+      color:var(--muted);
+      background: rgba(0,0,0,.12);
     }
-    .sidebar .footer{
-      margin-top:auto;
-      padding:12px 10px;
-      border-top:1px solid var(--line);
+    .hint{
+      padding:12px 14px;
       color:var(--muted);
       font-size:12px;
+      border-top:1px solid var(--stroke);
+      background: rgba(0,0,0,.12);
     }
 
-    /* Main */
     .main{
-      padding:18px 18px 26px 18px;
-    }
-    .topbar{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 14px;
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.02);
-      box-shadow: var(--shadow);
-      position:sticky; top:10px;
-      z-index:10;
-      backdrop-filter: blur(10px);
-    }
-    .crumbs{
+      flex-direction:column;
+      gap:14px;
       min-width:0;
     }
-    .crumbs .title{
-      font-size:14px;
-      font-weight:700;
-      margin:0;
+
+    .topbar{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
-    .crumbs .sub{
-      margin:3px 0 0 0;
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .crumb{
+      display:flex;flex-direction:column;gap:4px;
     }
+    .crumb .title{ font-weight:800; font-size:14px; }
+    .crumb .desc{ font-size:12px; color:var(--muted); }
+
     .actions{
-      display:flex; gap:8px; flex-wrap:wrap;
+      display:flex; gap:10px; flex-wrap:wrap;
       justify-content:flex-end;
     }
     .btn{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
       color:var(--text);
-      padding:8px 10px;
-      border-radius:12px;
+      padding:10px 12px;
+      border-radius: 14px;
       cursor:pointer;
-      font-size:12px;
-      transition:.15s ease;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+      transition:.18s transform, .18s background, .18s border;
+      font-weight:600;
+      display:flex; align-items:center; gap:8px;
     }
-    .btn:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.18)}
-    .btn.primary{border-color:rgba(59,130,246,.45); background:rgba(59,130,246,.14)}
-    .btn.good{border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.14)}
-    .btn.danger{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.12)}
-    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+    .btn.primary{
+      border-color: rgba(45,212,191,.35);
+      background: linear-gradient(180deg, rgba(45,212,191,.18), rgba(255,255,255,.03));
+    }
+    .btn.danger{
+      border-color: rgba(251,113,133,.35);
+      background: linear-gradient(180deg, rgba(251,113,133,.18), rgba(255,255,255,.03));
+    }
 
-    /* Layout blocks */
     .grid{
-      margin-top:14px;
       display:grid;
-      grid-template-columns: 1.2fr .8fr;
+      grid-template-columns: repeat(12, 1fr);
       gap:14px;
     }
-    @media (max-width: 980px){
-      .app{grid-template-columns: 1fr}
-      .sidebar{position:relative; height:auto}
-      .grid{grid-template-columns:1fr}
-      .topbar{position:relative; top:auto}
-    }
-
     .card{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.02);
+      grid-column: span 12;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding:14px;
+      min-width:0;
     }
     .card h2{
-      margin:0 0 10px 0;
+      margin:0 0 10px;
       font-size:14px;
+      letter-spacing:.2px;
     }
-    .muted{color:var(--muted)}
+    .muted{ color:var(--muted); font-size:12px; }
+
     .kpis{
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
     }
-    @media (max-width: 980px){
-      .kpis{grid-template-columns:1fr}
-    }
-    .kpi{
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:rgba(15,26,51,.55);
-    }
-    .kpi .klabel{font-size:12px; color:var(--muted)}
-    .kpi .kval{font-size:18px; font-weight:800; margin-top:6px}
-    .kpi .kmini{font-size:11px; color:var(--muted); margin-top:2px}
+    .kpi{ grid-column: span 4; padding:14px; }
+    .kpi .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
+    .kpi .val{ font-size:20px; font-weight:900; }
+    .kpi .sub{ color:var(--muted); font-size:12px; margin-top:6px; }
 
-    /* Tables */
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(15,26,51,.45);
-    }
-    th,td{
-      text-align:left;
-      padding:10px 10px;
-      font-size:12px;
-      border-bottom:1px solid var(--line);
-    }
-    th{
-      color:var(--muted);
-      font-weight:700;
-      background:rgba(255,255,255,.02);
-    }
-    tr:last-child td{border-bottom:none}
-    .row-actions{
-      display:flex; gap:6px; justify-content:flex-end;
-    }
-    .mini{
-      padding:6px 8px;
-      border-radius:10px;
-      font-size:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .mini.danger{border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.12)}
-    .mini.good{border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.12)}
-    .mini:disabled{opacity:.55; cursor:not-allowed}
-
-    /* Forms */
-    .form{
+    .row{
       display:grid;
-      gap:10px;
+      grid-template-columns: repeat(12, 1fr);
+      gap:12px;
+      align-items:end;
     }
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-    .field input, .field select, .field textarea{
+    .field{ grid-column: span 4; }
+    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    input, select, textarea{
       width:100%;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
       color:var(--text);
       outline:none;
     }
-    .field textarea{min-height:90px; resize:vertical}
-    .field input::placeholder, .field textarea::placeholder{color:rgba(156,163,175,.6)}
-    .form-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+    textarea{ min-height:90px; resize:vertical; }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border:1px solid var(--stroke);
     }
+    th, td{
+      padding:10px 10px;
+      font-size:12px;
+      border-bottom:1px solid var(--stroke);
+      color:var(--text);
+      text-align:left;
+      vertical-align:top;
+    }
+    th{ color:var(--muted); font-weight:700; background: rgba(0,0,0,.18); }
+    tr:last-child td{ border-bottom:none; }
+
+    .two{ grid-column: span 6; }
+    .three{ grid-column: span 4; }
+    .full{ grid-column: span 12; }
+
     @media (max-width: 980px){
-      .form-row{grid-template-columns:1fr}
+      .app{ grid-template-columns: 1fr; }
+      .kpi{ grid-column: span 12; }
+      .field{ grid-column: span 12; }
+      .two,.three{ grid-column: span 12; }
     }
 
     .toast{
       position:fixed;
-      right:16px;
-      bottom:16px;
+      left:18px; bottom:18px;
       padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.55);
+      border-radius: 14px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.45);
       color:var(--text);
       font-size:12px;
-      opacity:0;
-      transform:translateY(8px);
-      transition:.2s ease;
-      pointer-events:none;
+      box-shadow: var(--shadow);
+      display:none;
       max-width: 520px;
     }
-    .toast.show{opacity:1; transform:translateY(0)}
-    .split{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .code{
-      font-family:var(--mono);
-      font-size:11px;
-      color:rgba(229,231,235,.85);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
+    .toast.show{ display:block; }
   </style>
 </head>
 
 <body>
-  <div class="app" id="root">
+  <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="logo">MS</div>
         <div>
           <h1>Masculine Security</h1>
-          <p>Mini Office • Offline (local)</p>
+          <div class="sub">Mini Office • Offline (local)</div>
         </div>
       </div>
 
-      <nav class="nav" id="nav">
-        <button class="active" data-page="dashboard">
-          <div class="left"><div class="icon">🏠</div><div class="label">Übersicht</div></div>
-          <span class="pill" id="pillDash">KPIs</span>
-        </button>
-        <button data-page="customers">
-          <div class="left"><div class="icon">👤</div><div class="label">Kunden</div></div>
-          <span class="pill" id="pillCustomers">0</span>
-        </button>
-        <button data-page="invoices">
-          <div class="left"><div class="icon">🧾</div><div class="label">Rechnungen</div></div>
-          <span class="pill" id="pillInvoices">0</span>
-        </button>
-        <button data-page="expenses">
-          <div class="left"><div class="icon">💳</div><div class="label">Ausgaben</div></div>
-          <span class="pill" id="pillExpenses">0</span>
-        </button>
-        <button data-page="settings">
-          <div class="left"><div class="icon">⚙️</div><div class="label">Einstellungen</div></div>
-          <span class="pill">Backup</span>
-        </button>
-      </nav>
+      <div class="nav">
+        <button class="active" data-page="dashboard"><span>🏠 Übersicht</span><span class="pill" id="pillKpis">KPIs</span></button>
+        <button data-page="lohn"><span>💶 Lohnabrechnung</span><span class="pill" id="pillLohn">0</span></button>
+        <button data-page="steuer"><span>🧾 Einkommensteuer</span><span class="pill" id="pillSteuer">2026</span></button>
+        <button data-page="emailpdf"><span>✉️ Email + PDF</span><span class="pill">Export</span></button>
+        <button data-page="settings"><span>⚙️ Einstellungen</span><span class="pill">Backup</span></button>
+      </div>
 
-      <div class="footer">
-        <div><b>Tip:</b> Netlify updates = GitHub commit.</div>
-        <div class="muted" style="margin-top:6px">Version: <span id="ver">v1</span></div>
+      <div class="hint">
+        Tip: GitHub commit → Netlify auto deploy. <br/>
+        Haddii update uusan muuqan: Ctrl+F5 ama “Clear site cache” (Netlify).
       </div>
     </aside>
 
     <main class="main">
       <div class="topbar">
-        <div class="crumbs">
-          <p class="title" id="pageTitle">Übersicht</p>
-          <p class="sub" id="pageSub">Umsatz • Ausgaben • Kunden • Rechnungen (offline)</p>
+        <div class="crumb">
+          <div class="title" id="pageTitle">Übersicht</div>
+          <div class="desc" id="pageDesc">Umsatz • Ausgaben • Lohn • Steuer • PDF</div>
         </div>
-        <div class="actions" id="topActions">
-          <button class="btn primary" id="quickInvoice">＋ Rechnung</button>
-          <button class="btn" id="quickCustomer">＋ Kunde</button>
-          <button class="btn" id="quickExpense">＋ Ausgabe</button>
-          <button class="btn" id="exportBtn">Export</button>
-          <button class="btn" id="importBtn">Import</button>
+        <div class="actions">
+          <button class="btn" id="btnExportAll">⬇️ Export JSON</button>
+          <label class="btn" style="cursor:pointer;">
+            ⬆️ Import JSON
+            <input type="file" id="importJson" accept="application/json" style="display:none;">
+          </label>
+          <button class="btn danger" id="btnReset">🧹 Reset</button>
         </div>
       </div>
 
@@ -396,1041 +304,602 @@
 
   <div class="toast" id="toast"></div>
 
-  <input type="file" id="fileInput" accept="application/json" style="display:none" />
+<script>
+(() => {
+  "use strict";
 
-  <script>
-    // ===============================
-    // Mini Office App (offline localStorage)
-    // NOTE for CodePen: keep JS only here (HTML panel). Leave JS panel EMPTY.
-    // ===============================
+  // ---- Storage (safe) ----
+  const LS_KEY = "ms_mini_office_v2";
+  const defaultState = {
+    currency: "EUR",
+    company: {
+      name: "Masculine Security",
+      address: "Bremen, Germany",
+      email: "kontakt.mass.bremen@hotmail.com"
+    },
+    payrolls: [],   // Lohnabrechnung entries
+    taxes: { year: 2026, notes: "" } // Einkommensteuer simple
+  };
 
-    (function(){
-      const LS_KEY = "ms_mini_office_v1";
-      const $ = (sel, el=document) => el.querySelector(sel);
-      const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return structuredClone(defaultState);
+      const s = JSON.parse(raw);
+      return { ...structuredClone(defaultState), ...s };
+    }catch(e){
+      return structuredClone(defaultState);
+    }
+  }
+  function saveState(){
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    updatePills();
+  }
 
-      const state = loadState();
+  const state = loadState();
 
-      const ui = {
-        nav: $("#nav"),
-        view: $("#view"),
-        title: $("#pageTitle"),
-        sub: $("#pageSub"),
-        toast: $("#toast"),
-        pillCustomers: $("#pillCustomers"),
-        pillInvoices: $("#pillInvoices"),
-        pillExpenses: $("#pillExpenses"),
-        ver: $("#ver"),
-        fileInput: $("#fileInput"),
-        exportBtn: $("#exportBtn"),
-        importBtn: $("#importBtn"),
-        quickInvoice: $("#quickInvoice"),
-        quickCustomer: $("#quickCustomer"),
-        quickExpense: $("#quickExpense"),
-      };
+  // ---- UI Helpers ----
+  const $view = document.getElementById("view");
+  const $pageTitle = document.getElementById("pageTitle");
+  const $pageDesc = document.getElementById("pageDesc");
+  const $toast = document.getElementById("toast");
 
-      ui.ver.textContent = "v1 (offline)";
+  function money(n){
+    const v = Number(n || 0);
+    return new Intl.NumberFormat("de-DE", { style:"currency", currency: state.currency }).format(v);
+  }
+  function toast(msg){
+    $toast.textContent = msg;
+    $toast.classList.add("show");
+    setTimeout(() => $toast.classList.remove("show"), 2400);
+  }
 
-      // ---- Routing
-      $$("#nav button").forEach(btn=>{
-        btn.addEventListener("click", ()=>go(btn.dataset.page));
-      });
+  // ---- Navigation ----
+  const navButtons = Array.from(document.querySelectorAll(".nav button"));
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      navButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      render(btn.dataset.page);
+    });
+  });
 
-      // Top actions
-      ui.quickInvoice.addEventListener("click", ()=>go("invoices", {openNew:true}));
-      ui.quickCustomer.addEventListener("click", ()=>go("customers", {openNew:true}));
-      ui.quickExpense.addEventListener("click", ()=>go("expenses", {openNew:true}));
+  function updatePills(){
+    document.getElementById("pillLohn").textContent = String(state.payrolls.length);
+  }
+  updatePills();
 
-      ui.exportBtn.addEventListener("click", exportJSON);
-      ui.importBtn.addEventListener("click", ()=>{
-        ui.fileInput.value = "";
-        ui.fileInput.click();
-      });
-      ui.fileInput.addEventListener("change", importJSON);
+  // ---- Pages ----
+  function render(page){
+    if(page === "dashboard") return renderDashboard();
+    if(page === "lohn") return renderLohn();
+    if(page === "steuer") return renderSteuer();
+    if(page === "emailpdf") return renderEmailPdf();
+    if(page === "settings") return renderSettings();
+  }
 
-      // Initial
-      go("dashboard");
-      refreshPills();
+  function renderDashboard(){
+    $pageTitle.textContent = "Übersicht";
+    $pageDesc.textContent = "Schnellüberblick (lokal/offline)";
 
-      // ===============================
-      // Pages
-      // ===============================
-      function go(page, opts={}){
-        $$("#nav button").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
+    const totalNet = state.payrolls.reduce((a,x)=> a + Number(x.net||0), 0);
+    const totalGross = state.payrolls.reduce((a,x)=> a + Number(x.gross||0), 0);
+    const totalTaxHint = estimateIncomeTaxYear(totalGross);
 
-        if(page === "dashboard"){
-          ui.title.textContent = "Übersicht";
-          ui.sub.textContent = "Umsatz • Ausgaben • Kunden • Rechnungen (offline)";
-          ui.view.innerHTML = dashboardHTML();
-          wireDashboard();
-          return;
-        }
+    $view.innerHTML = `
+      <div class="kpis">
+        <div class="card kpi">
+          <div class="label">Lohn (Netto gesamt)</div>
+          <div class="val">${money(totalNet)}</div>
+          <div class="sub">Summe aller gespeicherten Lohnabrechnungen</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Lohn (Brutto gesamt)</div>
+          <div class="val">${money(totalGross)}</div>
+          <div class="sub">Nur als Übersicht (kein offizieller Nachweis)</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Steuer-Schätzung (Jahr)</div>
+          <div class="val">${money(totalTaxHint)}</div>
+          <div class="sub">Einfaches Modell (du kannst später genauer machen)</div>
+        </div>
+      </div>
 
-        if(page === "customers"){
-          ui.title.textContent = "Kunden";
-          ui.sub.textContent = "Kunden anlegen • bearbeiten • löschen";
-          ui.view.innerHTML = customersHTML();
-          wireCustomers(opts);
-          return;
-        }
-
-        if(page === "invoices"){
-          ui.title.textContent = "Rechnungen";
-          ui.sub.textContent = "Rechnungen erstellen • Liste • CSV Export";
-          ui.view.innerHTML = invoicesHTML();
-          wireInvoices(opts);
-          return;
-        }
-
-        if(page === "expenses"){
-          ui.title.textContent = "Ausgaben";
-          ui.sub.textContent = "Ausgaben erfassen • Liste • CSV Export";
-          ui.view.innerHTML = expensesHTML();
-          wireExpenses(opts);
-          return;
-        }
-
-        if(page === "settings"){
-          ui.title.textContent = "Einstellungen";
-          ui.sub.textContent = "Backup/Restore • CSV Export • Reset";
-          ui.view.innerHTML = settingsHTML();
-          wireSettings();
-          return;
-        }
-      }
-
-      function dashboardHTML(){
-        const k = calcKPIs();
-        const recent = buildRecent();
-        return `
-          <div class="grid">
-            <div class="card">
-              <h2>KPIs</h2>
-              <div class="kpis">
-                <div class="kpi">
-                  <div class="klabel">Umsatz (dieser Monat)</div>
-                  <div class="kval">${fmtEUR(k.revMonth)}</div>
-                  <div class="kmini">MwSt: ${fmtEUR(0)} • Brutto: ${fmtEUR(k.revMonth)}</div>
-                </div>
-                <div class="kpi">
-                  <div class="klabel">Ausgaben (dieser Monat)</div>
-                  <div class="kval">${fmtEUR(k.expMonth)}</div>
-                  <div class="kmini">Belege lokal gespeichert</div>
-                </div>
-                <div class="kpi">
-                  <div class="klabel">Umsatz (dieses Jahr)</div>
-                  <div class="kval">${fmtEUR(k.revYear)}</div>
-                  <div class="kmini">Rechnungen: ${k.invCount}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>Schnellstart</h2>
-              <p class="muted" style="margin:0 0 10px 0">
-                Wie Lexoffice-Style: Links Navigation, oben Aktionen, Daten offline.
-              </p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap">
-                <button class="btn primary" id="dashNewInv">＋ Rechnung</button>
-                <button class="btn" id="dashNewCus">＋ Kunde</button>
-                <button class="btn" id="dashNewExp">＋ Ausgabe</button>
-              </div>
-
-              <div style="margin-top:12px" class="muted">
-                Tipp: Export/Import oben rechts für Backup.
-              </div>
-            </div>
+      <div class="grid">
+        <div class="card full">
+          <h2>Letzte Lohnabrechnungen</h2>
+          ${renderPayrollTable(state.payrolls.slice().reverse().slice(0,6))}
+          <div class="muted" style="margin-top:10px;">
+            Hinweis: Das ist eine private Mini-App (offline). Für echte Lohnabrechnung/Steuer immer offiziell prüfen lassen.
           </div>
+        </div>
+      </div>
+    `;
+  }
 
-          <div class="card" style="margin-top:14px">
-            <div class="split">
-              <h2 style="margin:0">Letzte Aktivitäten</h2>
-              <div class="muted" style="font-size:12px">${recent.count} Einträge</div>
-            </div>
-            <div style="margin-top:10px">
-              ${recent.html}
-            </div>
-          </div>
-        `;
-      }
+  function renderPayrollTable(list){
+    if(!list.length){
+      return `<div class="muted">Noch keine Einträge. Geh zu “Lohnabrechnung” und speichere einen Datensatz.</div>`;
+    }
+    const rows = list.map((p, idx) => `
+      <tr>
+        <td>${escapeHtml(p.date || "")}</td>
+        <td>${escapeHtml(p.employee || "")}</td>
+        <td>${escapeHtml(p.period || "")}</td>
+        <td>${money(p.hours)} @ ${money(p.rate)}/h</td>
+        <td>${money(p.gross)}</td>
+        <td>${money(p.deductions)}</td>
+        <td><b>${money(p.net)}</b></td>
+        <td>
+          <button class="btn" data-act="pdf" data-id="${p.id}">PDF</button>
+          <button class="btn danger" data-act="del" data-id="${p.id}">Delete</button>
+        </td>
+      </tr>
+    `).join("");
 
-      function wireDashboard(){
-        $("#dashNewInv").addEventListener("click", ()=>go("invoices", {openNew:true}));
-        $("#dashNewCus").addEventListener("click", ()=>go("customers", {openNew:true}));
-        $("#dashNewExp").addEventListener("click", ()=>go("expenses", {openNew:true}));
-      }
-
-      function customersHTML(){
-        const rows = state.customers.map((c)=>`
+    return `
+      <table>
+        <thead>
           <tr>
-            <td><b>${escapeHTML(c.name)}</b><div class="muted" style="font-size:11px">${escapeHTML(c.email||"")}</div></td>
-            <td>${escapeHTML(c.phone||"")}</td>
-            <td class="muted">${escapeHTML(c.city||"")}</td>
-            <td class="muted">${escapeHTML(c.createdAt.slice(0,10))}</td>
-            <td>
-              <div class="row-actions">
-                <button class="mini" data-act="edit" data-id="${c.id}">Bearbeiten</button>
-                <button class="mini danger" data-act="del" data-id="${c.id}">Löschen</button>
-              </div>
-            </td>
+            <th>Datum</th><th>Mitarbeiter</th><th>Zeitraum</th>
+            <th>Stunden</th><th>Brutto</th><th>Abzüge</th><th>Netto</th><th>Aktion</th>
           </tr>
-        `).join("");
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
 
-        return `
-          <div class="grid">
-            <div class="card">
-              <h2>Kundenliste</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Telefon</th>
-                    <th>Ort</th>
-                    <th>Datum</th>
-                    <th style="text-align:right">Aktion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows || `<tr><td colspan="5" class="muted">Noch keine Kunden. Klicke „＋ Kunde“.</td></tr>`}
-                </tbody>
-              </table>
+  function renderLohn(){
+    $pageTitle.textContent = "Lohnabrechnung";
+    $pageDesc.textContent = "Netto/Brutto berechnen + speichern + PDF";
+
+    $view.innerHTML = `
+      <div class="grid">
+        <div class="card full">
+          <h2>Neue Lohnabrechnung (vereinfacht)</h2>
+          <div class="row">
+            <div class="field">
+              <label>Datum</label>
+              <input id="p_date" type="date" />
+            </div>
+            <div class="field">
+              <label>Mitarbeiter Name</label>
+              <input id="p_employee" placeholder="z.B. Mustafa Abdi" />
+            </div>
+            <div class="field">
+              <label>Zeitraum</label>
+              <input id="p_period" placeholder="z.B. 01.02–29.02.2026" />
             </div>
 
-            <div class="card">
-              <h2 id="custFormTitle">Neuer Kunde</h2>
-              <form class="form" id="custForm">
-                <input type="hidden" id="custId" />
-                <div class="field">
-                  <label>Name *</label>
-                  <input id="custName" placeholder="z.B. Beispiel Kunde GmbH" required />
-                </div>
-                <div class="form-row">
-                  <div class="field">
-                    <label>E-Mail</label>
-                    <input id="custEmail" placeholder="kunde@email.de" />
-                  </div>
-                  <div class="field">
-                    <label>Telefon</label>
-                    <input id="custPhone" placeholder="+49 ..." />
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="field">
-                    <label>Straße</label>
-                    <input id="custStreet" placeholder="Musterstraße 1" />
-                  </div>
-                  <div class="field">
-                    <label>PLZ/Ort</label>
-                    <input id="custCity" placeholder="28237 Bremen" />
-                  </div>
-                </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn good" type="submit" id="custSaveBtn">Speichern</button>
-                  <button class="btn" type="button" id="custResetBtn">Reset</button>
-                </div>
-              </form>
+            <div class="field">
+              <label>Stunden</label>
+              <input id="p_hours" type="number" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Stundensatz (€)</label>
+              <input id="p_rate" type="number" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label>Abzüge (SV + Steuer) (€)</label>
+              <input id="p_deductions" type="number" step="0.01" value="0" />
+            </div>
+
+            <div class="field full">
+              <label>Notizen</label>
+              <textarea id="p_notes" placeholder="Optional..."></textarea>
+            </div>
+
+            <div class="field">
+              <button class="btn primary" id="btnCalcSave">💾 Berechnen & Speichern</button>
+            </div>
+            <div class="field">
+              <button class="btn" id="btnPreviewPdf">📄 PDF Vorschau</button>
             </div>
           </div>
-        `;
-      }
+          <div class="muted" style="margin-top:10px;">
+            *Vereinfacht: Netto = (Stunden×Satz) − Abzüge. Waxaad ka dhigi kartaa mid “real” marka dambe.
+          </div>
+        </div>
 
-      function wireCustomers(opts){
-        const form = $("#custForm");
-        const title = $("#custFormTitle");
-        const id = $("#custId");
-        const name = $("#custName");
-        const email = $("#custEmail");
-        const phone = $("#custPhone");
-        const street = $("#custStreet");
-        const city = $("#custCity");
+        <div class="card full">
+          <h2>Gespeicherte Einträge</h2>
+          ${renderPayrollTable(state.payrolls.slice().reverse())}
+        </div>
+      </div>
+    `;
 
-        if(opts.openNew){
-          title.textContent = "Neuer Kunde";
-          id.value = "";
-          form.reset();
-          name.focus();
-        }
+    // bind table actions
+    bindPayrollTableActions();
 
-        $$("#view [data-act]").forEach(btn=>{
-          btn.addEventListener("click", ()=>{
-            const act = btn.dataset.act;
-            const cid = btn.dataset.id;
-            if(act === "del"){
-              if(!confirm("Kunde löschen?")) return;
-              state.customers = state.customers.filter(c=>c.id!==cid);
-              // also remove from invoices references (keep data)
-              saveState();
-              toast("Kunde gelöscht.");
-              refreshPills();
-              go("customers");
-            }
-            if(act === "edit"){
-              const c = state.customers.find(x=>x.id===cid);
-              if(!c) return;
-              title.textContent = "Kunde bearbeiten";
-              id.value = c.id;
-              name.value = c.name || "";
-              email.value = c.email || "";
-              phone.value = c.phone || "";
-              street.value = c.street || "";
-              city.value = c.city || "";
-              name.focus();
-            }
-          });
-        });
+    // defaults
+    const today = new Date().toISOString().slice(0,10);
+    document.getElementById("p_date").value = today;
 
-        $("#custResetBtn").addEventListener("click", ()=>{
-          title.textContent = "Neuer Kunde";
-          id.value = "";
-          form.reset();
-        });
+    document.getElementById("btnCalcSave").addEventListener("click", () => {
+      const p = collectPayrollFromForm();
+      state.payrolls.push(p);
+      saveState();
+      toast("Gespeichert ✅");
+      renderLohn();
+    });
 
-        form.addEventListener("submit", (e)=>{
-          e.preventDefault();
-          if(!name.value.trim()){
-            toast("Name ist Pflicht.", true);
-            return;
-          }
-          const payload = {
-            id: id.value || uid("C"),
-            name: name.value.trim(),
-            email: email.value.trim(),
-            phone: phone.value.trim(),
-            street: street.value.trim(),
-            city: city.value.trim(),
-            createdAt: new Date().toISOString(),
-          };
+    document.getElementById("btnPreviewPdf").addEventListener("click", () => {
+      const p = collectPayrollFromForm();
+      exportPayrollPdf(p, true);
+    });
+  }
 
-          if(id.value){
-            const idx = state.customers.findIndex(c=>c.id===id.value);
-            if(idx>=0){
-              payload.createdAt = state.customers[idx].createdAt;
-              state.customers[idx] = payload;
-              toast("Kunde aktualisiert.");
-            }
-          } else {
-            state.customers.unshift(payload);
-            toast("Kunde gespeichert.");
-          }
+  function bindPayrollTableActions(){
+    $view.querySelectorAll("button[data-act]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const act = btn.getAttribute("data-act");
+        const p = state.payrolls.find(x => x.id === id);
+        if(!p) return;
 
+        if(act === "pdf"){
+          exportPayrollPdf(p, false);
+        } else if(act === "del"){
+          state.payrolls = state.payrolls.filter(x => x.id !== id);
           saveState();
-          refreshPills();
-          go("customers");
-        });
-      }
+          toast("Deleted 🗑️");
+          // re-render current page
+          const active = document.querySelector(".nav button.active")?.dataset.page || "dashboard";
+          render(active);
+        }
+      });
+    });
+  }
 
-      function invoicesHTML(){
-        const rows = state.invoices.map(inv=>{
-          const c = state.customers.find(x=>x.id===inv.customerId);
-          return `
-            <tr>
-              <td><b>${escapeHTML(inv.number)}</b><div class="muted" style="font-size:11px">${escapeHTML(inv.date)}</div></td>
-              <td>${escapeHTML(c ? c.name : "(ohne Kunde)")}</td>
-              <td class="muted">${escapeHTML(inv.title || "")}</td>
-              <td><b>${fmtEUR(inv.total)}</b></td>
-              <td>
-                <div class="row-actions">
-                  <button class="mini" data-act="editInv" data-id="${inv.id}">Bearbeiten</button>
-                  <button class="mini" data-act="csvInv" data-id="${inv.id}">CSV</button>
-                  <button class="mini danger" data-act="delInv" data-id="${inv.id}">Löschen</button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join("");
+  function collectPayrollFromForm(){
+    const hours = Number(document.getElementById("p_hours").value || 0);
+    const rate = Number(document.getElementById("p_rate").value || 0);
+    const gross = round2(hours * rate);
+    const deductions = Number(document.getElementById("p_deductions").value || 0);
+    const net = round2(gross - deductions);
 
-        const customerOptions = state.customers.map(c=>`<option value="${c.id}">${escapeHTML(c.name)}</option>`).join("");
+    return {
+      id: cryptoId(),
+      date: document.getElementById("p_date").value || "",
+      employee: (document.getElementById("p_employee").value || "").trim(),
+      period: (document.getElementById("p_period").value || "").trim(),
+      hours, rate, gross, deductions, net,
+      notes: (document.getElementById("p_notes").value || "").trim(),
+      createdAt: new Date().toISOString()
+    };
+  }
 
-        return `
-          <div class="grid">
-            <div class="card">
-              <div class="split">
-                <h2 style="margin:0">Rechnungen</h2>
-                <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn" id="exportInvoicesCsv">Rechnungen CSV</button>
-                </div>
-              </div>
-              <div style="margin-top:10px">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Nr / Datum</th>
-                      <th>Kunde</th>
-                      <th>Titel</th>
-                      <th>Summe</th>
-                      <th style="text-align:right">Aktion</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${rows || `<tr><td colspan="5" class="muted">Noch keine Rechnungen. Klicke „＋ Rechnung“.</td></tr>`}
-                  </tbody>
-                </table>
-              </div>
+  function renderSteuer(){
+    $pageTitle.textContent = "Einkommensteuer";
+    $pageDesc.textContent = "Einfacher Rechner + Notizen (später ausbauen)";
+
+    const totalGross = state.payrolls.reduce((a,x)=> a + Number(x.gross||0), 0);
+    const est = estimateIncomeTaxYear(totalGross);
+
+    $view.innerHTML = `
+      <div class="grid">
+        <div class="card full">
+          <h2>Steuer-Schätzung (vereinfachtes Modell)</h2>
+
+          <div class="row">
+            <div class="field">
+              <label>Jahr</label>
+              <input id="t_year" type="number" value="${escapeAttr(String(state.taxes.year || 2026))}" />
+            </div>
+            <div class="field">
+              <label>Brutto (aus Lohnabrechnungen)</label>
+              <input id="t_gross" type="number" step="0.01" value="${round2(totalGross)}" />
+            </div>
+            <div class="field">
+              <label>Geschätzte Einkommensteuer</label>
+              <input id="t_est" type="text" readonly value="${money(est)}" />
             </div>
 
-            <div class="card">
-              <h2 id="invFormTitle">Neue Rechnung</h2>
-              <form class="form" id="invForm">
-                <input type="hidden" id="invId" />
-                <div class="form-row">
-                  <div class="field">
-                    <label>Rechnungsnummer *</label>
-                    <input id="invNumber" placeholder="RE-2026-0001" required />
-                  </div>
-                  <div class="field">
-                    <label>Datum *</label>
-                    <input id="invDate" type="date" required />
-                  </div>
-                </div>
+            <div class="field full">
+              <label>Notizen / Belege (frei)</label>
+              <textarea id="t_notes" placeholder="z.B. Werbungskosten, Fahrtkosten, Versicherung...">${escapeHtml(state.taxes.notes || "")}</textarea>
+            </div>
 
-                <div class="field">
-                  <label>Kunde</label>
-                  <select id="invCustomer">
-                    <option value="">(ohne Kunde)</option>
-                    ${customerOptions}
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label>Titel</label>
-                  <input id="invTitle" placeholder="z.B. Sicherheitsdienst – Objektschutz" />
-                </div>
-
-                <div class="form-row">
-                  <div class="field">
-                    <label>Netto (EUR) *</label>
-                    <input id="invNet" type="number" step="0.01" placeholder="480.00" required />
-                  </div>
-                  <div class="field">
-                    <label>Notiz</label>
-                    <input id="invNote" placeholder="Kleinunternehmer §19 UStG" />
-                  </div>
-                </div>
-
-                <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn good" type="submit">Speichern</button>
-                  <button class="btn" type="button" id="invResetBtn">Reset</button>
-                </div>
-
-                <div class="muted" style="margin-top:10px; font-size:12px">
-                  MwSt wird hier als 0 gerechnet (Kleinunternehmer). Du kannst später erweitern.
-                </div>
-              </form>
+            <div class="field">
+              <button class="btn primary" id="btnSaveTax">💾 Speichern</button>
+            </div>
+            <div class="field">
+              <button class="btn" id="btnTaxPdf">📄 Steuer PDF</button>
             </div>
           </div>
-        `;
-      }
 
-      function wireInvoices(opts){
-        const form = $("#invForm");
-        const title = $("#invFormTitle");
-        const id = $("#invId");
-        const number = $("#invNumber");
-        const date = $("#invDate");
-        const customer = $("#invCustomer");
-        const invTitle = $("#invTitle");
-        const net = $("#invNet");
-        const note = $("#invNote");
+          <div class="muted" style="margin-top:10px;">
+            Hinweis: Tani waa “estimate” oo keliya. Xisaab rasmi ah waxay u baahan tahay Steuerberater/Elster details.
+          </div>
+        </div>
+      </div>
+    `;
 
-        // defaults
-        if(!date.value) date.value = today();
+    document.getElementById("btnSaveTax").addEventListener("click", () => {
+      state.taxes.year = Number(document.getElementById("t_year").value || 2026);
+      state.taxes.notes = document.getElementById("t_notes").value || "";
+      saveState();
+      toast("Saved ✅");
+    });
 
-        if(opts.openNew){
-          title.textContent = "Neue Rechnung";
-          id.value = "";
-          form.reset();
-          date.value = today();
-          number.value = nextInvoiceNumber();
-          number.focus();
-        } else {
-          // if empty list, propose next number
-          if(!number.value) number.value = nextInvoiceNumber();
-        }
+    document.getElementById("btnTaxPdf").addEventListener("click", () => {
+      const year = Number(document.getElementById("t_year").value || 2026);
+      const gross = Number(document.getElementById("t_gross").value || 0);
+      const estimate = estimateIncomeTaxYear(gross);
+      exportTaxPdf({year, gross, estimate, notes: document.getElementById("t_notes").value || ""});
+    });
+  }
 
-        $("#exportInvoicesCsv").addEventListener("click", ()=>{
-          const csv = makeInvoicesCSV();
-          downloadText(csv, "rechnungen.csv", "text/csv;charset=utf-8");
-        });
+  function renderEmailPdf(){
+    $pageTitle.textContent = "Email + PDF";
+    $pageDesc.textContent = "PDF samee + Email (mailto) ku dir";
 
-        $$("#view [data-act]").forEach(btn=>{
-          btn.addEventListener("click", ()=>{
-            const act = btn.dataset.act;
-            const iid = btn.dataset.id;
+    $view.innerHTML = `
+      <div class="grid">
+        <div class="card full">
+          <h2>Email (mailto) + PDF</h2>
+          <div class="muted">Browser-ka ma diri karo email si toos ah, laakiin wuxuu furi karaa Email app-kaaga (mailto).</div>
 
-            if(act === "delInv"){
-              if(!confirm("Rechnung löschen?")) return;
-              state.invoices = state.invoices.filter(x=>x.id!==iid);
-              saveState();
-              toast("Rechnung gelöscht.");
-              refreshPills();
-              go("invoices");
-            }
-
-            if(act === "editInv"){
-              const inv = state.invoices.find(x=>x.id===iid);
-              if(!inv) return;
-              title.textContent = "Rechnung bearbeiten";
-              id.value = inv.id;
-              number.value = inv.number;
-              date.value = inv.date;
-              customer.value = inv.customerId || "";
-              invTitle.value = inv.title || "";
-              net.value = inv.net;
-              note.value = inv.note || "";
-              number.focus();
-            }
-
-            if(act === "csvInv"){
-              const inv = state.invoices.find(x=>x.id===iid);
-              if(!inv) return;
-              const c = state.customers.find(x=>x.id===inv.customerId);
-              const header = ["number","date","customer","title","net","total","note"];
-              const row = [
-                inv.number,
-                inv.date,
-                c ? c.name : "",
-                inv.title || "",
-                String(inv.net),
-                String(inv.total),
-                inv.note || ""
-              ].map(csvEscape).join(",");
-              const csv = header.join(",") + "\n" + row + "\n";
-              downloadText(csv, `${inv.number}.csv`, "text/csv;charset=utf-8");
-              toast("CSV erstellt.");
-            }
-          });
-        });
-
-        $("#invResetBtn").addEventListener("click", ()=>{
-          title.textContent = "Neue Rechnung";
-          id.value = "";
-          form.reset();
-          date.value = today();
-          number.value = nextInvoiceNumber();
-        });
-
-        form.addEventListener("submit", (e)=>{
-          e.preventDefault();
-
-          if(!number.value.trim() || !date.value){
-            toast("Nummer & Datum sind Pflicht.", true);
-            return;
-          }
-          const netVal = Number(net.value);
-          if(!isFinite(netVal) || netVal < 0){
-            toast("Netto Betrag ist ungültig.", true);
-            return;
-          }
-
-          const payload = {
-            id: id.value || uid("I"),
-            number: number.value.trim(),
-            date: date.value,
-            customerId: customer.value || "",
-            title: invTitle.value.trim(),
-            note: note.value.trim(),
-            net: round2(netVal),
-            total: round2(netVal), // MwSt 0
-            createdAt: new Date().toISOString(),
-          };
-
-          if(id.value){
-            const idx = state.invoices.findIndex(x=>x.id===id.value);
-            if(idx>=0){
-              payload.createdAt = state.invoices[idx].createdAt;
-              state.invoices[idx] = payload;
-              toast("Rechnung aktualisiert.");
-            }
-          } else {
-            state.invoices.unshift(payload);
-            toast("Rechnung gespeichert.");
-          }
-
-          saveState();
-          refreshPills();
-          go("invoices");
-        });
-      }
-
-      function expensesHTML(){
-        const rows = state.expenses.map(ex=>`
-          <tr>
-            <td><b>${escapeHTML(ex.title)}</b><div class="muted" style="font-size:11px">${escapeHTML(ex.date)}</div></td>
-            <td class="muted">${escapeHTML(ex.category||"")}</td>
-            <td><b>${fmtEUR(ex.amount)}</b></td>
-            <td>
-              <div class="row-actions">
-                <button class="mini" data-act="editEx" data-id="${ex.id}">Bearbeiten</button>
-                <button class="mini danger" data-act="delEx" data-id="${ex.id}">Löschen</button>
-              </div>
-            </td>
-          </tr>
-        `).join("");
-
-        return `
-          <div class="grid">
-            <div class="card">
-              <div class="split">
-                <h2 style="margin:0">Ausgaben</h2>
-                <button class="btn" id="exportExpensesCsv">Ausgaben CSV</button>
-              </div>
-
-              <div style="margin-top:10px">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Bezeichnung / Datum</th>
-                      <th>Kategorie</th>
-                      <th>Betrag</th>
-                      <th style="text-align:right">Aktion</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${rows || `<tr><td colspan="4" class="muted">Noch keine Ausgaben. Klicke „＋ Ausgabe“.</td></tr>`}
-                  </tbody>
-                </table>
-              </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="field">
+              <label>To</label>
+              <input id="e_to" placeholder="z.B. buchhaltung@firma.de" />
+            </div>
+            <div class="field">
+              <label>Subject</label>
+              <input id="e_subject" value="Dokumente – Lohnabrechnung / Einkommensteuer" />
+            </div>
+            <div class="field">
+              <label>Template</label>
+              <select id="e_tpl">
+                <option value="lohn">Lohnabrechnung (letzte)</option>
+                <option value="steuer">Einkommensteuer (Schätzung)</option>
+              </select>
             </div>
 
-            <div class="card">
-              <h2 id="exFormTitle">Neue Ausgabe</h2>
-              <form class="form" id="exForm">
-                <input type="hidden" id="exId" />
-                <div class="form-row">
-                  <div class="field">
-                    <label>Datum *</label>
-                    <input id="exDate" type="date" required />
-                  </div>
-                  <div class="field">
-                    <label>Betrag (EUR) *</label>
-                    <input id="exAmount" type="number" step="0.01" placeholder="29.90" required />
-                  </div>
-                </div>
-                <div class="field">
-                  <label>Bezeichnung *</label>
-                  <input id="exTitle" placeholder="z.B. Büromaterial" required />
-                </div>
-                <div class="field">
-                  <label>Kategorie</label>
-                  <input id="exCategory" placeholder="z.B. Büro / Fahrt / Telefon" />
-                </div>
+            <div class="field full">
+              <label>Message</label>
+              <textarea id="e_msg">Guten Tag,
 
-                <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn good" type="submit">Speichern</button>
-                  <button class="btn" type="button" id="exResetBtn">Reset</button>
-                </div>
-              </form>
+anbei die gewünschten Unterlagen.
+
+Viele Grüße
+Masculine Security</textarea>
+            </div>
+
+            <div class="field">
+              <button class="btn primary" id="btnMakePdf">📄 PDF erstellen</button>
+            </div>
+            <div class="field">
+              <button class="btn" id="btnOpenEmail">✉️ Email öffnen</button>
             </div>
           </div>
-        `;
+
+          <div class="muted" style="margin-top:10px;">
+            PDF-ga waxaa lagu download-gareynayaa. Kadib Email-ka ku attach-garee.
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btnMakePdf").addEventListener("click", () => {
+      const tpl = document.getElementById("e_tpl").value;
+      if(tpl === "lohn"){
+        const last = state.payrolls.slice().reverse()[0];
+        if(!last){ toast("No payroll data yet"); return; }
+        exportPayrollPdf(last, false);
+      }else{
+        const gross = state.payrolls.reduce((a,x)=> a + Number(x.gross||0), 0);
+        const year = Number(state.taxes.year || 2026);
+        const estimate = estimateIncomeTaxYear(gross);
+        exportTaxPdf({year, gross, estimate, notes: state.taxes.notes || ""});
       }
+    });
 
-      function wireExpenses(opts){
-        const form = $("#exForm");
-        const title = $("#exFormTitle");
-        const id = $("#exId");
-        const date = $("#exDate");
-        const amount = $("#exAmount");
-        const exTitle = $("#exTitle");
-        const category = $("#exCategory");
+    document.getElementById("btnOpenEmail").addEventListener("click", () => {
+      const to = document.getElementById("e_to").value.trim();
+      const subject = document.getElementById("e_subject").value.trim();
+      const msg = document.getElementById("e_msg").value;
 
-        if(!date.value) date.value = today();
+      const url = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+      window.location.href = url;
+    });
+  }
 
-        if(opts.openNew){
-          title.textContent = "Neue Ausgabe";
-          id.value = "";
-          form.reset();
-          date.value = today();
-          exTitle.focus();
-        }
+  function renderSettings(){
+    $pageTitle.textContent = "Einstellungen";
+    $pageDesc.textContent = "Backup / Restore / Reset";
 
-        $("#exportExpensesCsv").addEventListener("click", ()=>{
-          const csv = makeExpensesCSV();
-          downloadText(csv, "ausgaben.csv", "text/csv;charset=utf-8");
-        });
-
-        $$("#view [data-act]").forEach(btn=>{
-          btn.addEventListener("click", ()=>{
-            const act = btn.dataset.act;
-            const eid = btn.dataset.id;
-
-            if(act === "delEx"){
-              if(!confirm("Ausgabe löschen?")) return;
-              state.expenses = state.expenses.filter(x=>x.id!==eid);
-              saveState();
-              toast("Ausgabe gelöscht.");
-              refreshPills();
-              go("expenses");
-            }
-
-            if(act === "editEx"){
-              const ex = state.expenses.find(x=>x.id===eid);
-              if(!ex) return;
-              title.textContent = "Ausgabe bearbeiten";
-              id.value = ex.id;
-              date.value = ex.date;
-              amount.value = ex.amount;
-              exTitle.value = ex.title;
-              category.value = ex.category || "";
-              exTitle.focus();
-            }
-          });
-        });
-
-        $("#exResetBtn").addEventListener("click", ()=>{
-          title.textContent = "Neue Ausgabe";
-          id.value = "";
-          form.reset();
-          date.value = today();
-        });
-
-        form.addEventListener("submit", (e)=>{
-          e.preventDefault();
-
-          if(!date.value || !exTitle.value.trim()){
-            toast("Datum & Bezeichnung sind Pflicht.", true);
-            return;
-          }
-
-          const amt = Number(amount.value);
-          if(!isFinite(amt) || amt < 0){
-            toast("Betrag ist ungültig.", true);
-            return;
-          }
-
-          const payload = {
-            id: id.value || uid("E"),
-            date: date.value,
-            amount: round2(amt),
-            title: exTitle.value.trim(),
-            category: category.value.trim(),
-            createdAt: new Date().toISOString(),
-          };
-
-          if(id.value){
-            const idx = state.expenses.findIndex(x=>x.id===id.value);
-            if(idx>=0){
-              payload.createdAt = state.expenses[idx].createdAt;
-              state.expenses[idx] = payload;
-              toast("Ausgabe aktualisiert.");
-            }
-          } else {
-            state.expenses.unshift(payload);
-            toast("Ausgabe gespeichert.");
-          }
-
-          saveState();
-          refreshPills();
-          go("expenses");
-        });
-      }
-
-      function settingsHTML(){
-        return `
-          <div class="grid">
-            <div class="card">
-              <h2>Backup / Restore</h2>
-              <p class="muted" style="margin-top:0">
-                Export/Import speichert alle Daten (Kunden, Rechnungen, Ausgaben) als JSON.
-              </p>
-
-              <div style="display:flex; gap:8px; flex-wrap:wrap">
-                <button class="btn primary" id="doExport">Export JSON</button>
-                <button class="btn" id="doImport">Import JSON</button>
-              </div>
-
-              <div class="card" style="margin-top:12px; background:rgba(15,26,51,.35)">
-                <div class="split">
-                  <div>
-                    <div style="font-weight:700">CSV Export</div>
-                    <div class="muted" style="font-size:12px">Für Excel / Lexoffice Import später</div>
-                  </div>
-                  <div class="code">UTF-8 • comma</div>
-                </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px">
-                  <button class="btn" id="csvCustomers">Kunden CSV</button>
-                  <button class="btn" id="csvInvoices">Rechnungen CSV</button>
-                  <button class="btn" id="csvExpenses">Ausgaben CSV</button>
-                </div>
-              </div>
+    $view.innerHTML = `
+      <div class="grid">
+        <div class="card full">
+          <h2>Profil</h2>
+          <div class="row">
+            <div class="field">
+              <label>Firma</label>
+              <input id="c_name" value="${escapeAttr(state.company.name)}" />
             </div>
-
-            <div class="card">
-              <h2>Danger Zone</h2>
-              <p class="muted" style="margin-top:0">
-                Setzt lokale Daten zurück (localStorage).
-              </p>
-              <button class="btn danger" id="resetAll">Alles zurücksetzen</button>
-
-              <div style="margin-top:12px" class="muted">
-                <b>Hinweis:</b> Wenn Netlify “app” nicht updatet, mach Hard-Refresh (Ctrl+F5) oder lösche Site-Daten im Browser.
-              </div>
+            <div class="field">
+              <label>Adresse</label>
+              <input id="c_addr" value="${escapeAttr(state.company.address)}" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="c_email" value="${escapeAttr(state.company.email)}" />
+            </div>
+            <div class="field">
+              <button class="btn primary" id="btnSaveCompany">💾 Speichern</button>
             </div>
           </div>
-        `;
+        </div>
+
+        <div class="card full">
+          <h2>Backup / Restore</h2>
+          <div class="muted">Export JSON si aad backup u haysato, Import si aad u soo celiso.</div>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn primary" id="btnExport2">⬇️ Export JSON</button>
+            <label class="btn" style="cursor:pointer;">
+              ⬆️ Import JSON
+              <input type="file" id="importJson2" accept="application/json" style="display:none;">
+            </label>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btnSaveCompany").addEventListener("click", () => {
+      state.company.name = document.getElementById("c_name").value.trim();
+      state.company.address = document.getElementById("c_addr").value.trim();
+      state.company.email = document.getElementById("c_email").value.trim();
+      saveState();
+      toast("Saved ✅");
+    });
+
+    document.getElementById("btnExport2").addEventListener("click", exportAllJson);
+    document.getElementById("importJson2").addEventListener("change", importJsonFile);
+  }
+
+  // ---- PDF Export ----
+  function exportPayrollPdf(p, previewOnly){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const lines = [
+      `${state.company.name}`,
+      `${state.company.address}`,
+      `Email: ${state.company.email}`,
+      "",
+      `LOHNABRECHNUNG (vereinfacht)`,
+      `Datum: ${p.date}`,
+      `Mitarbeiter: ${p.employee}`,
+      `Zeitraum: ${p.period}`,
+      "",
+      `Stunden: ${p.hours}`,
+      `Stundensatz: ${money(p.rate)}`,
+      `Brutto: ${money(p.gross)}`,
+      `Abzüge: ${money(p.deductions)}`,
+      `Netto: ${money(p.net)}`,
+      "",
+      `Notizen: ${p.notes || "-"}`
+    ];
+
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(12);
+    let y = 14;
+    lines.forEach(t => { doc.text(String(t), 14, y); y += 7; });
+
+    if(previewOnly){
+      window.open(doc.output("bloburl"), "_blank");
+      return;
+    }
+    doc.save(`Lohnabrechnung_${safeFile(p.employee || "Mitarbeiter")}_${p.date || ""}.pdf`);
+    toast("PDF gespeichert ✅");
+  }
+
+  function exportTaxPdf(t){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const lines = [
+      `${state.company.name}`,
+      `${state.company.address}`,
+      `Email: ${state.company.email}`,
+      "",
+      `EINKOMMENSTEUER – SCHÄTZUNG`,
+      `Jahr: ${t.year}`,
+      "",
+      `Brutto (Summe): ${money(t.gross)}`,
+      `Geschätzte Steuer: ${money(t.estimate)}`,
+      "",
+      `Notizen:`,
+      `${(t.notes || "-").slice(0, 1200)}`
+    ];
+
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(12);
+
+    let y = 14;
+    lines.forEach(tl => {
+      const chunks = doc.splitTextToSize(String(tl), 180);
+      chunks.forEach(c => { doc.text(c, 14, y); y += 7; });
+      y += 1;
+      if(y > 275){ doc.addPage(); y = 14; }
+    });
+
+    doc.save(`Einkommensteuer_Schaetzung_${t.year}.pdf`);
+    toast("PDF gespeichert ✅");
+  }
+
+  // ---- Tax Estimator (simple placeholder) ----
+  // This is NOT official. It's a simple progressive-ish estimate just for your dashboard.
+  function estimateIncomeTaxYear(gross){
+    const x = Number(gross||0);
+    if(x <= 0) return 0;
+    // very rough bracket-like estimate (for planning only)
+    if(x < 12000) return 0;
+    if(x < 25000) return round2((x - 12000) * 0.14);
+    if(x < 60000) return round2((13000 * 0.14) + (x - 25000) * 0.24);
+    return round2((13000 * 0.14) + (35000 * 0.24) + (x - 60000) * 0.33);
+  }
+
+  // ---- Backup/Restore ----
+  function exportAllJson(){
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "ms-mini-office-backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Exported ✅");
+  }
+
+  function importJsonFile(ev){
+    const file = ev.target.files?.[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const incoming = JSON.parse(String(reader.result || "{}"));
+        // basic merge
+        const merged = { ...structuredClone(defaultState), ...incoming };
+        // keep arrays safe
+        merged.payrolls = Array.isArray(incoming.payrolls) ? incoming.payrolls : [];
+        merged.company = { ...defaultState.company, ...(incoming.company||{}) };
+        merged.taxes = { ...defaultState.taxes, ...(incoming.taxes||{}) };
+
+        localStorage.setItem(LS_KEY, JSON.stringify(merged));
+        location.reload();
+      }catch(e){
+        toast("Import failed ❌");
       }
+    };
+    reader.readAsText(file);
+  }
 
-      function wireSettings(){
-        $("#doExport").addEventListener("click", exportJSON);
-        $("#doImport").addEventListener("click", ()=>{
-          ui.fileInput.value = "";
-          ui.fileInput.click();
-        });
+  // topbar buttons
+  document.getElementById("btnExportAll").addEventListener("click", exportAllJson);
+  document.getElementById("importJson").addEventListener("change", importJsonFile);
+  document.getElementById("btnReset").addEventListener("click", () => {
+    if(!confirm("Reset all local data?")) return;
+    localStorage.removeItem(LS_KEY);
+    location.reload();
+  });
 
-        $("#csvCustomers").addEventListener("click", ()=>{
-          downloadText(makeCustomersCSV(), "kunden.csv", "text/csv;charset=utf-8");
-          toast("Kunden CSV erstellt.");
-        });
-        $("#csvInvoices").addEventListener("click", ()=>{
-          downloadText(makeInvoicesCSV(), "rechnungen.csv", "text/csv;charset=utf-8");
-          toast("Rechnungen CSV erstellt.");
-        });
-        $("#csvExpenses").addEventListener("click", ()=>{
-          downloadText(makeExpensesCSV(), "ausgaben.csv", "text/csv;charset=utf-8");
-          toast("Ausgaben CSV erstellt.");
-        });
+  // ---- Utils ----
+  function round2(n){ return Math.round((Number(n||0) + Number.EPSILON) * 100) / 100; }
+  function cryptoId(){
+    return (crypto?.randomUUID?.() || ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
+  }
+  function safeFile(s){ return String(s).replace(/[^\w\-]+/g,"_").slice(0,60); }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g, "&quot;"); }
 
-        $("#resetAll").addEventListener("click", ()=>{
-          if(!confirm("Wirklich ALLES löschen?")) return;
-          localStorage.removeItem(LS_KEY);
-          state.customers = [];
-          state.invoices = [];
-          state.expenses = [];
-          saveState();
-          refreshPills();
-          toast("Zurückgesetzt.");
-          go("dashboard");
-        });
-      }
-
-      // ===============================
-      // Storage
-      // ===============================
-      function loadState(){
-        try{
-          const raw = localStorage.getItem(LS_KEY);
-          if(!raw) return seed();
-          const data = JSON.parse(raw);
-          return normalize(data);
-        } catch(e){
-          return seed();
-        }
-      }
-
-      function saveState(){
-        localStorage.setItem(LS_KEY, JSON.stringify(state));
-      }
-
-      function seed(){
-        // Small demo data (you can delete later)
-        return normalize({
-          customers: [
-            { id: "C_demo", name: "Beispiel Kunde GmbH", email: "", phone:"", street:"", city:"Bremen", createdAt: new Date().toISOString() }
-          ],
-          invoices: [
-            { id:"I_demo", number:"RE-2026-0001", date: today(), customerId:"C_demo", title:"Sicherheitsdienst", note:"Kleinunternehmer §19 UStG", net:480, total:480, createdAt: new Date().toISOString() }
-          ],
-          expenses: [
-            { id:"E_demo", date: today(), amount:29.90, title:"Büromaterial", category:"Büro", createdAt: new Date().toISOString() }
-          ]
-        });
-      }
-
-      function normalize(data){
-        return {
-          customers: Array.isArray(data.customers) ? data.customers : [],
-          invoices: Array.isArray(data.invoices) ? data.invoices : [],
-          expenses: Array.isArray(data.expenses) ? data.expenses : []
-        };
-      }
-
-      function exportJSON(){
-        const blob = JSON.stringify(state, null, 2);
-        downloadText(blob, "ms-backup.json", "application/json;charset=utf-8");
-        toast("Export fertig.");
-      }
-
-      function importJSON(ev){
-        const file = ev.target.files && ev.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = ()=>{
-          try{
-            const data = JSON.parse(String(reader.result || ""));
-            const clean = normalize(data);
-            state.customers = clean.customers;
-            state.invoices = clean.invoices;
-            state.expenses = clean.expenses;
-            saveState();
-            refreshPills();
-            toast("Import erfolgreich.");
-            go("dashboard");
-          } catch(e){
-            toast("Import fehlgeschlagen: JSON ungültig.", true);
-          }
-        };
-        reader.readAsText(file);
-      }
-
-      // ===============================
-      // KPIs & helpers
-      // ===============================
-      function calcKPIs(){
-        const now = new Date();
-        const ym = now.toISOString().slice(0,7);
-        const year = now.getFullYear();
-
-        const invMonth = state.invoices.filter(i=>String(i.date||"").slice(0,7)===ym);
-        const expMonth = state.expenses.filter(e=>String(e.date||"").slice(0,7)===ym);
-
-        const invYear = state.invoices.filter(i=>Number(String(i.date||"").slice(0,4))===year);
-
-        const revMonth = invMonth.reduce((s,i)=>s+Number(i.total||0),0);
-        const expMonthSum = expMonth.reduce((s,e)=>s+Number(e.amount||0),0);
-        const revYear = invYear.reduce((s,i)=>s+Number(i.total||0),0);
-
-        return {
-          revMonth: round2(revMonth),
-          expMonth: round2(expMonthSum),
-          revYear: round2(revYear),
-          invCount: state.invoices.length
-        };
-      }
-
-      function buildRecent(){
-        const items = [];
-        for(const inv of state.invoices.slice(0,6)){
-          items.push({
-            type:"invoice",
-            date: inv.date,
-            label: `${inv.number} • ${inv.title || "Rechnung"} • ${fmtEUR(inv.total)}`
-          });
-        }
-        for(const ex of state.expenses.slice(0,6)){
-          items.push({
-            type:"expense",
-            date: ex.date,
-            label: `${ex.title} • ${fmtEUR(ex.amount)}`
-          });
-        }
-        items.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-        const top = items.slice(0,8);
-
-        const html = top.length ? `
-          <table>
-            <thead><tr><th>Typ</th><th>Eintrag</th><th>Datum</th></tr></thead>
-            <tbody>
-              ${top.map(x=>`
-                <tr>
-                  <td class="muted">${x.type==="invoice" ? "Rechnung" : "Ausgabe"}</td>
-                  <td><b>${escapeHTML(x.label)}</b></td>
-                  <td class="muted">${escapeHTML(String(x.date||""))}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        ` : `<div class="muted">Noch keine Aktivitäten.</div>`;
-
-        return { count: top.length, html };
-      }
-
-      function refreshPills(){
-        ui.pillCustomers.textContent = String(state.customers.length);
-        ui.pillInvoices.textContent = String(state.invoices.length);
-        ui.pillExpenses.textContent = String(state.expenses.length);
-      }
-
-      function nextInvoiceNumber(){
-        // simple: find max numeric tail
-        const year = new Date().getFullYear();
-        const prefix = `RE-${year}-`;
-        let max = 0;
-        for(const inv of state.invoices){
-          if(typeof inv.number !== "string") continue;
-          if(inv.number.startsWith(prefix)){
-            const tail = inv.number.slice(prefix.length);
-            const n = parseInt(tail, 10);
-            if(Number.isFinite(n)) max = Math.max(max, n);
-          }
-        }
-        const next = String(max + 1).padStart(4,"0");
-        return `${prefix}${next}`;
-      }
-
-      function makeCustomersCSV(){
-        const header = ["id","name","email","phone","street","city","createdAt"];
-        const rows = state.customers.map(c=>[
-          c.id, c.name, c.email||"", c.phone||"", c.street||"", c.city||"", c.createdAt||""
-        ].map(csvEscape).join(","));
-        return header.join(",") + "\n" + rows.join("\n") + "\n";
-      }
-
-      function makeInvoicesCSV(){
-        const header = ["id","number","date","customerId","customerName","title","net","total","note","createdAt"];
-        const rows = state.invoices.map(i=>{
-          const c = state.customers.find(x=>x.id===i.customerId);
-          return [
-            i.id, i.number, i.date, i.customerId||"", c?c.name:"", i.title||"",
-            String(i.net||0), String(i.total||0), i.note||"", i.createdAt||""
-          ].map(csvEscape).join(",");
-        });
-        return header.join(",") + "\n" + rows.join("\n") + "\n";
-      }
-
-      function makeExpensesCSV(){
-        const header = ["id","date","title","category","amount","createdAt"];
-        const rows = state.expenses.map(e=>[
-          e.id, e.date, e.title, e.category||"", String(e.amount||0), e.createdAt||""
-        ].map(csvEscape).join(","));
-        return header.join(",") + "\n" + rows.join("\n") + "\n";
-      }
-
-      function downloadText(text, filename, mime){
-        const blob = new Blob([text], {type: mime || "text/plain;charset=utf-8"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      }
-
-      function toast(msg, isError=false){
-        ui.toast.textContent = msg;
-        ui.toast.style.borderColor = isError ? "rgba(239,68,68,.45)" : "rgba(255,255,255,.12)";
-        ui.toast.style.background = isError ? "rgba(239,68,68,.12)" : "rgba(0,0,0,.55)";
-        ui.toast.classList.add("show");
-        clearTimeout(toast._t);
-        toast._t = setTimeout(()=>ui.toast.classList.remove("show"), 2200);
-      }
-
-      function uid(prefix){
-        return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
-      }
-      function today(){
-        const d = new Date();
-        const mm = String(d.getMonth()+1).padStart(2,"0");
-        const dd = String(d.getDate()).padStart(2,"0");
-        return `${d.getFullYear()}-${mm}-${dd}`;
-      }
-      function fmtEUR(n){
-        const v = Number(n||0);
-        return v.toLocaleString("de-DE", {style:"currency", currency:"EUR"});
-      }
-      function round2(n){ return Math.round((Number(n)||0)*100)/100; }
-      function csvEscape(v){
-        const s = String(v ?? "");
-        if(/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-        return s;
-      }
-      function escapeHTML(s){
-        return String(s ?? "").replace(/[&<>"']/g, (m)=>({
-          "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-        }[m]));
-      }
-    })();
-  </script>
+  // ---- Start ----
+  render("dashboard");
+})();
+</script>
 </body>
 </html>
