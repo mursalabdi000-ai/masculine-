@@ -1074,9 +1074,3 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((cached) => cached || fetch(event.request))
   );
 });
-========================
-4) FILES: icons (folder)
-Create folder: icons/
-- icons/icon-192.png  (192x192 png)
-- icons/icon-512.png  (512x512 png)
-========================
