@@ -1,0 +1,48 @@
+/* DARK THEME */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f1115;
+  color: #e5e7eb;
+}
+
+header {
+  background: #111827;
+  padding: 15px;
+}
+
+h1, h2, h3 {
+  color: #f9fafb;
+}
+
+nav button {
+  background: #1f2933;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background: #2563eb;
+}
+
+.card {
+  background: #1a1d23;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+input, select, button {
+  background: #1f2933;
+  color: white;
+  border: 1px solid #374151;
+}
+
+#app {
+  background: transparent;
+}
