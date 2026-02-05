@@ -6,21 +6,29 @@
 
   <title>Masculine Security – Mini Office</title>
 
+  <!-- PWA -->
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#0a1e2d" />
 
+  <!-- CSS -->
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
 
-<h1>Masculine Security – Mini Office</h1>
-<p>PWA Test – Installation should appear.</p>
+  <h1>Masculine Security – Mini Office</h1>
+  <p>PWA Test – installation should appear.</p>
 
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./service-worker.js");
-}
-</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .then(() => console.log("✅ Service Worker registered"))
+          .catch(err => console.error("❌ SW error:", err));
+      });
+    }
+  </script>
 
 </body>
 </html>
