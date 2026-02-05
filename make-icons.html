@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PWA Icon Generator</title>
+<style>
+  body {
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
+    padding:40px;
+  }
+  canvas {
+    display:none;
+  }
+  button {
+    padding:12px 20px;
+    font-size:16px;
+    margin:10px;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Masculine Security Icon Generator</h1>
+<p>Click buttons → download icons → upload to GitHub</p>
+
+<button onclick="makeIcon(192)">Download icon-192.png</button>
+<button onclick="makeIcon(512)">Download icon-512.png</button>
+
+<canvas id="c"></canvas>
+
+<script>
+function makeIcon(size){
+  const canvas = document.getElementById("c");
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext("2d");
+
+  // background
+  ctx.fillStyle = "#0a1e2d";
+  ctx.fillRect(0,0,size,size);
+
+  // circle
+  ctx.fillStyle = "#123a5a";
+  ctx.beginPath();
+  ctx.arc(size/2,size/2,size/2.1,0,Math.PI*2);
+  ctx.fill();
+
+  // text
+  ctx.fillStyle = "white";
+  ctx.font = `bold ${size/3}px Arial`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText("MS", size/2, size/2);
+
+  const link = document.createElement("a");
+  link.download = `icon-${size}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+</script>
+
+</body>
+</html>
