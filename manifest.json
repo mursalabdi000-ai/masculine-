@@ -1,24 +1,23 @@
 {
   "name": "Masculine Security – Mini Office",
   "short_name": "MS Office",
-  "description": "Mini Office App – Rechnungen, Kunden, Ausgaben, Einkommensteuer",
+  "description": "Mini Office App – Rechnungen, Kunden, Einkommensteuer",
   "start_url": "/masculine/",
   "scope": "/masculine/",
   "display": "standalone",
   "background_color": "#0a1e2d",
   "theme_color": "#0a1e2d",
+
   "icons": [
     {
       "src": "/masculine/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "/masculine/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
