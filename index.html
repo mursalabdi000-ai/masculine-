@@ -1,7 +1,6 @@
 /* ===========================
    FILE: index.html
 =========================== */
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,50 +10,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f1115" />
 
-  <!-- Manifest -->
   <link rel="manifest" href="manifest.json" />
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
-
 </head>
+
 <body>
+  <h1>Masculine Security – Mini Office</h1>
+  <p>PWA Test – Installation should appear.</p>
 
-<h1>Masculine Security – Mini Office</h1>
-<p>PWA Test – Installation should appear.</p>
+  <button id="installBtn" hidden>Install App</button>
 
-<button id="installBtn" hidden>Install App</button>
+  <script>
+    // Register Service Worker
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
 
-<script>
-/* Register Service Worker */
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js");
-  });
-}
+    // Install prompt
+    let deferredPrompt;
 
-/* Install prompt */
-let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById("installBtn").hidden = false;
+    });
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById("installBtn").hidden = false;
-});
-
-document.getElementById("installBtn").addEventListener("click", async () => {
-  deferredPrompt.prompt();
-});
-</script>
-
+    document.getElementById("installBtn").addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+    });
+  </script>
 </body>
 </html>
 
 
 /* ===========================
    FILE: manifest.json
+   (MUHIIM: KANI WAA JSON OO KALIYA!)
 =========================== */
-
 {
   "name": "Masculine Security – Mini Office",
   "short_name": "MS Office",
@@ -63,16 +58,8 @@ document.getElementById("installBtn").addEventListener("click", async () => {
   "background_color": "#0f1115",
   "theme_color": "#0f1115",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
 
@@ -80,9 +67,7 @@ document.getElementById("installBtn").addEventListener("click", async () => {
 /* ===========================
    FILE: service-worker.js
 =========================== */
-
 const CACHE_NAME = "ms-mini-office-v1";
-
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
@@ -92,50 +77,39 @@ const FILES_TO_CACHE = [
   "./icon-512.png"
 ];
 
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
-  );
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE)));
 });
 
-self.addEventListener("activate", e => {
+self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     )
   );
 });
 
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  );
+self.addEventListener("fetch", (e) => {
+  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
 });
 
 
 /* ===========================
    FILE: style.css
 =========================== */
-
-body {
-  margin: 0;
+body{
+  margin:0;
   font-family: Arial, sans-serif;
-  background: #0f1115;
-  color: #e5e7eb;
-  padding: 30px;
+  background:#0f1115;
+  color:#e5e7eb;
+  padding:30px;
 }
-
-h1 {
-  font-size: 28px;
-}
-
-button {
-  padding: 12px 20px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+h1{ font-size:28px; }
+button{
+  padding:12px 20px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
 }
