@@ -506,3 +506,17 @@
   </script>
 </body>
 </html>
+<div style="text-align:center; padding:15px; border-top:1px solid #ccc; margin-top:20px;">
+  Tel: <button id="btnCall">015778697052</button>
+  • E-Mail: <button id="btnMail">Kontakt.mass.bremen@hotmail.com</button>
+</div>
+<script>
+document.addEventListener("click", function(e){
+  if(e.target.id === "btnCall"){
+    window.location.href = "tel:015778697052";
+  }
+  if(e.target.id === "btnMail"){
+    window.location.href = "mailto:Kontakt.mass.bremen@hotmail.com";
+  }
+});
+</script>
