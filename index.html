@@ -49,6 +49,15 @@
     .brandName{font-weight:800; letter-spacing:.2px}
     .brandSub{color:var(--muted); font-size:12px; margin-top:2px}
 
+    /* ✅ clickable links */
+    a.link{
+      color:inherit;
+      text-decoration:none;
+      border-bottom:1px dotted rgba(255,255,255,.35);
+      cursor:pointer;
+    }
+    a.link:hover{ border-bottom-color: rgba(255,255,255,.75); }
+
     .topActions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .wrap{max-width:1220px; margin:18px auto; padding:0 16px}
     .grid{display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:14px;}
@@ -140,7 +149,6 @@
       color:#dbfff5;
     }
 
-    /* Mitarbeiter select list */
     .pickWrap{
       border:1px solid rgba(255,255,255,.12);
       background:rgba(7,18,37,.35);
@@ -171,7 +179,6 @@
       color:var(--text);
     }
 
-    /* Signatures (App) */
     .sigBox{
       border:1px dashed rgba(255,255,255,.22);
       background:rgba(7,18,37,.35);
@@ -180,7 +187,7 @@
     }
     canvas{
       width:100%;
-      height:180px; /* ✅ improved */
+      height:180px;
       border-radius:14px;
       background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
@@ -188,7 +195,6 @@
     }
     .sigActions{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 
-    /* Autosave status */
     .status{
       display:flex; align-items:center; gap:8px; flex-wrap:wrap;
       padding:8px 10px;
@@ -228,7 +234,8 @@
       <img class="logo" id="logoImg" alt="Logo"/>
       <div class="brandText">
         <div class="brandName" id="brandName">Masculine Security</div>
-        <div class="brandSub" id="brandSub">Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift (Bottom)</div>
+        <!-- ✅ clickable will be injected by JS -->
+        <div class="brandSub" id="brandSub"></div>
       </div>
     </div>
 
@@ -389,7 +396,6 @@
             </div>
           </div>
 
-          <!-- App signatures: keep BOTH as before (PDF will place Arbeitgeber bottom) -->
           <div class="row">
             <div class="field">
               <label>Unterschrift Mitarbeiter (auto-save)</label>
@@ -497,11 +503,9 @@
       <div class="card">
         <h2>Documentation</h2>
         <div class="doc">
-          <h3>PDF Layout (Updated)</h3>
+          <h3>Clickable Links</h3>
           <ul>
-            <li><b>Mitarbeiter Unterschrift</b> = column gaar ah (blank box row kasta).</li>
-            <li><b>Arbeitgeber Unterschrift</b> = hoosta (bottom) kadib table-ka.</li>
-            <li>Logo haddii uusan muuqan: PDF wuxuu sugaa images ka hor print.</li>
+            <li>Header-ka Tel & E-Mail hadda waa <b>clickable</b> (tel:/mailto:).</li>
           </ul>
         </div>
       </div>
@@ -512,8 +516,8 @@
     // =========================
     // Storage
     // =========================
-    const STORE_KEY = "ms_einsatz_store_v8";
-    const DRAFT_KEY = "ms_einsatz_draft_v8";
+    const STORE_KEY = "ms_einsatz_store_v9";
+    const DRAFT_KEY = "ms_einsatz_draft_v9";
 
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -557,6 +561,15 @@
       else { txt.textContent="Ready"; }
     }
 
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
     function collectDraft(){
       return {
         empName: $("empName").value,
@@ -569,4 +582,958 @@
         objAddr: $("objAddr").value,
         objType: $("objType").value,
 
-        selObj: $("selObj"
+        selObj: $("selObj").value,
+        shiftDate: $("shiftDate").value,
+        shiftStart: $("shiftStart").value,
+        shiftEnd: $("shiftEnd").value,
+
+        selectedEmpIds: getSelectedEmpIds(),
+        logoPosition: $("logoPos").value,
+        lastSavedAt: Date.now()
+      };
+    }
+
+    function saveDraftNow(){
+      try{
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
+        setSaveStatus("saved");
+      }catch(e){
+        setSaveStatus("error");
+      }
+    }
+
+    function queueAutoSave(){
+      setSaveStatus("saving");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveDraftNow, 250);
+    }
+
+    window.addEventListener("beforeunload", ()=>{ try{ saveDraftNow(); saveStore(); }catch{} });
+
+    // =========================
+    // Clickable header line
+    // =========================
+    function refreshBrand(){
+      const c = store.company || {};
+      const name = c.name || "Security";
+      const street = (c.street||"").trim();
+      const city = (c.city||"").trim();
+      const phone = (c.phone||"").trim();
+      const email = (c.email||"").trim();
+      const addr = [street, city].filter(Boolean).join(", ");
+
+      $("brandName").textContent = name;
+
+      const telHtml = phone
+        ? `Tel: <a class="link" href="tel:${encodeURIComponent(phone)}">${escapeHtml(phone)}</a>`
+        : `Tel: —`;
+
+      const mailHtml = email
+        ? `E-Mail: <a class="link" href="mailto:${encodeURIComponent(email)}">${escapeHtml(email)}</a>`
+        : `E-Mail: —`;
+
+      $("brandSub").innerHTML =
+        `${addr ? escapeHtml(addr) : "—"} • ${telHtml} • ${mailHtml} • Auto-Save`;
+    }
+
+    // =========================
+    // Selections
+    // =========================
+    function getSelectedEmpIds(){
+      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked')).map(i=>i.value);
+    }
+    function setSelectedEmpIds(ids){
+      const set = new Set((ids||[]).map(String));
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
+        chk.checked = set.has(String(chk.value));
+      });
+      updateSelectedCount();
+    }
+    function updateSelectedCount(){
+      const n = getSelectedEmpIds().length;
+      $("selEmpCount").textContent = `${n} selected`;
+    }
+
+    // =========================
+    // Tabs
+    // =========================
+    function showTab(name){
+      $("tab-app").style.display = (name==="app") ? "" : "none";
+      $("tab-settings").style.display = (name==="settings") ? "" : "none";
+      $("tab-doc").style.display = (name==="doc") ? "" : "none";
+    }
+    document.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        showTab(btn.getAttribute("data-tab"));
+      });
+    });
+
+    // =========================
+    // Logo + Position
+    // =========================
+    function applyLogo(){
+      const img = $("logoImg");
+      if(store.logoDataUrl){
+        img.src = store.logoDataUrl;
+        img.style.display = "block";
+      }else{
+        img.removeAttribute("src");
+        img.style.display = "none";
+      }
+    }
+    function applyLogoPos(){ $("logoPos").value = store.logoPosition || "left"; }
+
+    $("logoPos").addEventListener("change", ()=>{
+      store.logoPosition = $("logoPos").value;
+      saveStore();
+      queueAutoSave();
+    });
+
+    $("logoFile").addEventListener("change", ()=>{
+      const file = $("logoFile").files?.[0];
+      if(!file) return;
+      if(file.type !== "image/png"){ alert("PNG kaliya ✅"); $("logoFile").value=""; return; }
+      if(file.size > 3*1024*1024){ alert("Logo < 3MB"); $("logoFile").value=""; return; }
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        store.logoDataUrl = String(fr.result||"");
+        saveStore();
+        applyLogo();
+        $("logoFile").value="";
+      };
+      fr.readAsDataURL(file);
+    });
+
+    $("btnClearLogo").addEventListener("click", ()=>{
+      if(!confirm("Remove stored logo?")) return;
+      store.logoDataUrl = null;
+      saveStore();
+      applyLogo();
+    });
+
+    // =========================
+    // Settings
+    // =========================
+    function loadSettingsToUI(){
+      const c = store.company || {};
+      $("setCompanyName").value = c.name || "";
+      $("setStreet").value = c.street || "";
+      $("setCity").value = c.city || "";
+      $("setPhone").value = c.phone || "";
+      $("setEmail").value = c.email || "";
+      $("setTax").value = c.tax || "";
+      $("setFooterNote").value = c.footerNote || "";
+      $("setDefaultType").value = c.defaultType || "";
+    }
+
+    function saveSettingsFromUI(){
+      store.company = store.company || {};
+      store.company.name = $("setCompanyName").value.trim() || "Security";
+      store.company.street = $("setStreet").value.trim();
+      store.company.city = $("setCity").value.trim();
+      store.company.phone = $("setPhone").value.trim();
+      store.company.email = $("setEmail").value.trim();
+      store.company.tax = $("setTax").value.trim();
+      store.company.footerNote = $("setFooterNote").value.trim() ||
+        "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.";
+      store.company.defaultType = $("setDefaultType").value.trim();
+      saveStore();
+      refreshBrand();
+      setSaveStatus("saved");
+    }
+
+    $("btnSaveSettings").addEventListener("click", ()=>{
+      saveSettingsFromUI();
+      alert("Settings saved ✅");
+    });
+
+    $("btnResetSettings").addEventListener("click", ()=>{
+      if(!confirm("Reset company settings?")) return;
+      store.company = {
+        name: "Masculine Security",
+        street: "Werschenregerstraße 6",
+        city: "28237 Bremen",
+        phone: "015778697052",
+        email: "Kontakt.mass.bremen@hotmail.com",
+        tax: "",
+        footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
+        defaultType: ""
+      };
+      saveStore();
+      loadSettingsToUI();
+      refreshBrand();
+    });
+
+    ["setCompanyName","setStreet","setCity","setPhone","setEmail","setTax","setFooterNote","setDefaultType"].forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        clearTimeout(saveTimer);
+        setSaveStatus("saving");
+        saveTimer = setTimeout(()=>{ saveSettingsFromUI(); }, 300);
+      });
+    });
+
+    // =========================
+    // Render lists
+    // =========================
+    let selectedEinsatzId = null;
+
+    function renderEmployees(){
+      const box = $("empList");
+      box.innerHTML = "";
+      if(store.employees.length===0){
+        box.innerHTML = `<div class="muted small">No Mitarbeiter yet.</div>`;
+      }else{
+        store.employees.forEach(emp=>{
+          const div = document.createElement("div");
+          div.className="item";
+          div.innerHTML = `
+            <div>
+              <b>${escapeHtml(emp.name)}</b>
+              <div class="meta">
+                ${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
+                ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
+                ${emp.phone ? ` • ${escapeHtml(emp.phone)}`:""}
+              </div>
+            </div>
+            <div class="right">
+              <span class="pill">Mitarbeiter</span>
+              <button class="linkbtn" data-del-emp="${emp.id}" type="button">Delete</button>
+            </div>
+          `;
+          box.appendChild(div);
+        });
+      }
+
+      const pick = $("empPickList");
+      pick.innerHTML = "";
+      if(store.employees.length===0){
+        pick.innerHTML = `<div class="muted small">No Mitarbeiter to select.</div>`;
+      }else{
+        store.employees.forEach(emp=>{
+          const row = document.createElement("div");
+          row.className="pickRow";
+          row.innerHTML = `
+            <div class="pickLeft">
+              <input class="chk" type="checkbox" data-emp-chk="1" value="${emp.id}">
+              <div>
+                <div class="pickName">${escapeHtml(emp.name)}</div>
+                <div class="pickMeta">
+                  ${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
+                  ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
+                </div>
+              </div>
+            </div>
+            <div class="pill">Select</div>
+          `;
+          pick.appendChild(row);
+        });
+
+        pick.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
+          chk.addEventListener("change", ()=>{
+            updateSelectedCount();
+            queueAutoSave();
+          });
+        });
+      }
+      updateSelectedCount();
+    }
+
+    function renderObjects(){
+      const box = $("objList");
+      box.innerHTML = "";
+      if(store.objects.length===0){
+        box.innerHTML = `<div class="muted small">No Objekt yet.</div>`;
+      }else{
+        store.objects.forEach(obj=>{
+          const div = document.createElement("div");
+          div.className="item";
+          div.innerHTML = `
+            <div>
+              <b>${escapeHtml(obj.cust)} — ${escapeHtml(obj.obj)}</b>
+              <div class="meta">${escapeHtml(obj.type)} • ${escapeHtml(obj.addr)}</div>
+            </div>
+            <div class="right">
+              <span class="pill">Objekt</span>
+              <button class="linkbtn" data-del-obj="${obj.id}" type="button">Delete</button>
+            </div>
+          `;
+          box.appendChild(div);
+        });
+      }
+
+      const sel = $("selObj");
+      sel.innerHTML = "";
+      if(store.objects.length===0){
+        sel.innerHTML = `<option value="">— no Objekt —</option>`;
+      }else{
+        store.objects.forEach(obj=>{
+          const opt = document.createElement("option");
+          opt.value = obj.id;
+          opt.textContent = `${obj.cust} — ${obj.obj}`;
+          sel.appendChild(opt);
+        });
+      }
+    }
+
+    function renderEinsaetze(){
+      const box = $("einsatzList");
+      box.innerHTML = "";
+      if(store.einsaetze.length===0){
+        box.innerHTML = `<div class="muted small">No Einsätze saved yet.</div>`;
+        return;
+      }
+      store.einsaetze.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(ein=>{
+        const obj = store.objects.find(x=>x.id===ein.objId);
+        const empNames = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)?.name || "(missing)").join(", ");
+        const title = `${empNames || "(no Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
+        const meta = `${ein.date} • ${ein.start}–${ein.end} • ${obj?obj.cust:""} • ${obj?obj.addr:""}`;
+        const active = selectedEinsatzId === ein.id;
+        const div = document.createElement("div");
+        div.className="item";
+        div.innerHTML = `
+          <div>
+            <b>${escapeHtml(title)} ${active ? "✓" : ""}</b>
+            <div class="meta">${escapeHtml(meta)}</div>
+          </div>
+          <div class="right">
+            <span class="pill">${ein.type || "Einsatz"}</span>
+            <button class="linkbtn" data-pick-ein="${ein.id}" type="button">${active ? "Selected" : "Select"}</button>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderAll(){
+      renderEmployees();
+      renderObjects();
+      renderEinsaetze();
+      applyLogo();
+      applyLogoPos();
+      refreshBrand();
+      loadSettingsToUI();
+    }
+
+    // =========================
+    // Signature (Crisp + correct)
+    // =========================
+    function setupSignature(canvasId, clearBtnId, storeKey){
+      const canvas = $(canvasId);
+      const ctx = canvas.getContext("2d", { willReadFrequently:true });
+
+      function resizeCanvasToDisplaySize(){
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const newW = Math.floor(rect.width * dpr);
+        const newH = Math.floor(rect.height * dpr);
+
+        if(canvas.width !== newW || canvas.height !== newH){
+          const old = document.createElement("canvas");
+          old.width = canvas.width;
+          old.height = canvas.height;
+          old.getContext("2d").drawImage(canvas, 0, 0);
+
+          canvas.width = newW;
+          canvas.height = newH;
+
+          ctx.setTransform(1,0,0,1,0,0);
+          ctx.scale(dpr, dpr);
+
+          ctx.clearRect(0,0,rect.width,rect.height);
+          if(old.width && old.height){
+            ctx.drawImage(old, 0, 0, old.width, old.height, 0, 0, rect.width, rect.height);
+          }
+        }else{
+          ctx.setTransform(1,0,0,1,0,0);
+          ctx.scale(dpr, dpr);
+        }
+      }
+
+      function getPos(ev){
+        const rect = canvas.getBoundingClientRect();
+        const t = ev.touches && ev.touches[0] ? ev.touches[0] : null;
+        const x = (t ? t.clientX : ev.clientX) - rect.left;
+        const y = (t ? t.clientY : ev.clientY) - rect.top;
+        return {x,y};
+      }
+
+      function drawLine(a,b){
+        ctx.lineWidth = 2.6;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "rgba(255,255,255,.95)";
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+      }
+
+      function saveSignatureImage(){
+        try{
+          const dataUrl = canvas.toDataURL("image/png");
+          store[storeKey] = dataUrl;
+          saveStore();
+          setSaveStatus("saved");
+        }catch{
+          setSaveStatus("error");
+        }
+      }
+
+      let drawing=false, last=null;
+
+      function start(ev){
+        resizeCanvasToDisplaySize();
+        drawing = true;
+        last = getPos(ev);
+      }
+      function move(ev){
+        if(!drawing) return;
+        ev.preventDefault();
+        const p = getPos(ev);
+        drawLine(last,p);
+        last=p;
+        setSaveStatus("saving");
+      }
+      function end(){
+        if(!drawing) return;
+        drawing=false; last=null;
+        saveSignatureImage();
+      }
+
+      canvas.addEventListener("mousedown", start);
+      canvas.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", end);
+
+      canvas.addEventListener("touchstart", start, {passive:false});
+      canvas.addEventListener("touchmove", move, {passive:false});
+      canvas.addEventListener("touchend", end, {passive:false});
+
+      $(clearBtnId).addEventListener("click", ()=>{
+        resizeCanvasToDisplaySize();
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0,0,rect.width,rect.height);
+        store[storeKey] = null;
+        saveStore();
+        setSaveStatus("saved");
+      });
+
+      function restore(){
+        resizeCanvasToDisplaySize();
+        const dataUrl = store[storeKey];
+        if(!dataUrl) return;
+        const img = new Image();
+        img.onload = ()=>{
+          const rect = canvas.getBoundingClientRect();
+          ctx.clearRect(0,0,rect.width,rect.height);
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = dataUrl;
+      }
+
+      window.addEventListener("resize", ()=>{
+        const saved = store[storeKey];
+        resizeCanvasToDisplaySize();
+        if(saved) restore();
+      });
+
+      resizeCanvasToDisplaySize();
+      return { restore };
+    }
+
+    const sigEmp = setupSignature("sigCanvasEmp","btnSigClearEmp","sigEmpDataUrl");
+    const sigAg  = setupSignature("sigCanvasAg","btnSigClearAg","sigAgDataUrl");
+
+    // =========================
+    // Mitarbeiter CRUD
+    // =========================
+    $("btnAddEmp").addEventListener("click", ()=>{
+      const name = $("empName").value.trim();
+      if(!name) return alert("Bitte Name eingeben.");
+      store.employees.push({
+        id: uid(),
+        name,
+        bewacher: $("empBewacher").value.trim(),
+        phone: $("empPhone").value.trim(),
+        role: $("empRole").value.trim()
+      });
+      saveStore();
+      renderAll();
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
+    });
+
+    $("btnClearEmp").addEventListener("click", ()=>{
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
+    });
+
+    $("empList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-emp");
+      if(!id) return;
+      if(!confirm("Delete Mitarbeiter?")) return;
+      store.employees = store.employees.filter(x=>x.id!==id);
+      saveStore();
+      renderAll();
+      queueAutoSave();
+    });
+
+    // =========================
+    // Objekt CRUD
+    // =========================
+    $("btnSaveObj").addEventListener("click", ()=>{
+      const cust = $("custName").value.trim();
+      const obj  = $("objName").value.trim();
+      const addr = $("objAddr").value.trim();
+      const type = $("objType").value;
+      if(!cust || !obj || !addr) return alert("Bitte Kunde, Objektname, Adresse ausfüllen.");
+      store.objects.push({ id: uid(), cust, obj, addr, type });
+      saveStore();
+      renderAll();
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
+    });
+
+    $("btnClearObj").addEventListener("click", ()=>{
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
+    });
+
+    $("objList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-obj");
+      if(!id) return;
+      if(!confirm("Delete Objekt?")) return;
+      store.objects = store.objects.filter(x=>x.id!==id);
+      saveStore();
+      renderAll();
+      queueAutoSave();
+    });
+
+    // =========================
+    // Einsätze CRUD
+    // =========================
+    $("btnEmpSelectAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=true);
+      updateSelectedCount();
+      queueAutoSave();
+    });
+    $("btnEmpClearAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=false);
+      updateSelectedCount();
+      queueAutoSave();
+    });
+
+    $("btnCreate").addEventListener("click", ()=>{
+      const objId = $("selObj").value;
+      const empIds = getSelectedEmpIds();
+      const date = $("shiftDate").value;
+      const start = $("shiftStart").value;
+      const end = $("shiftEnd").value;
+
+      if(!objId) return alert("Objekt wählen.");
+      if(empIds.length===0) return alert("Mindestens 1 Mitarbeiter auswählen.");
+      if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
+
+      const obj = store.objects.find(x=>x.id===objId);
+      const fallbackType = (store.company?.defaultType || "").trim();
+
+      store.einsaetze.push({
+        id: uid(),
+        objId,
+        empIds,
+        date, start, end,
+        type: obj?.type || fallbackType || "Einsatz",
+        sigEmpDataUrl: store.sigEmpDataUrl || null,
+        sigAgDataUrl: store.sigAgDataUrl || null,
+        createdAt: Date.now()
+      });
+
+      saveStore();
+      renderEinsaetze();
+      alert("Einsatz saved ✅");
+    });
+
+    $("einsatzList").addEventListener("click",(e)=>{
+      const pick = e.target?.getAttribute?.("data-pick-ein");
+      if(!pick) return;
+      selectedEinsatzId = pick;
+      renderEinsaetze();
+    });
+
+    $("btnDelete").addEventListener("click", ()=>{
+      if(!selectedEinsatzId) return alert("Select Einsatz first.");
+      if(!confirm("Delete selected Einsatz?")) return;
+      store.einsaetze = store.einsaetze.filter(x=>x.id!==selectedEinsatzId);
+      selectedEinsatzId = null;
+      saveStore();
+      renderEinsaetze();
+    });
+
+    // =========================
+    // Backup / Restore
+    // =========================
+    $("btnBackup").addEventListener("click", ()=>{
+      const payload = { store, draft: collectDraft() };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "einsatzmeldung-backup.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $("btnRestore").addEventListener("click", ()=>{
+      const input = document.createElement("input");
+      input.type="file";
+      input.accept="application/json";
+      input.onchange = ()=>{
+        const file = input.files?.[0];
+        if(!file) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          const payload = safeParse(String(r.result||""), null);
+          if(!payload || typeof payload !== "object"){ alert("Invalid backup."); return; }
+          if(payload.store) store = payload.store;
+          saveStore();
+          if(payload.draft) localStorage.setItem(DRAFT_KEY, JSON.stringify(payload.draft));
+          renderAll();
+          restoreDraftToUI();
+          sigEmp.restore(); sigAg.restore();
+          alert("Restore done ✅");
+        };
+        r.readAsText(file);
+      };
+      input.click();
+    });
+
+    // =========================
+    // PDF helpers
+    // =========================
+    function formatDateISOToDE(iso){
+      if(!iso) return "";
+      const [y,m,d] = iso.split("-");
+      if(!y||!m||!d) return iso;
+      return `${d}.${m}.${y}`;
+    }
+    function companyAddressLine(c){
+      const street = (c.street||"").trim();
+      const city = (c.city||"").trim();
+      return [street, city].filter(Boolean).join(", ");
+    }
+    function waitForImagesThenPrint(){
+      const imgs = Array.from(document.images || []);
+      if(imgs.length === 0){ window.print(); return; }
+      let done = 0;
+      const finish = () => {
+        done++;
+        if(done >= imgs.length) setTimeout(()=>window.print(), 250);
+      };
+      imgs.forEach(img=>{
+        if(img.complete) finish();
+        else { img.onload = finish; img.onerror = finish; }
+      });
+      setTimeout(()=>window.print(), 1200);
+    }
+
+    // =========================
+    // Company PDF
+    // =========================
+    $("btnCompanyPdf").addEventListener("click", ()=>{
+      const c = store.company || {};
+      const logo = store.logoDataUrl || null;
+      const logoPos = store.logoPosition || "left";
+      const showLogo = (logoPos !== "hide") && !!logo;
+      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
+      const leftBlock = (logoPos === "left") ? logoHTML : ``;
+      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
+      const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Firmendaten — ${escapeHtml(c.name||"Company")}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: Arial, sans-serif; color:#111; }
+    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .leftHead { display:flex; gap:12px; align-items:center; }
+    .logo { width:64px; height:64px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+    h1 { margin:0; font-size:20px; }
+    .sub { color:#444; margin-top:4px; font-size:12px; }
+    .box { border:1px solid #111; border-radius:10px; padding:14px; margin-top:12px; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .label { font-size:11px; color:#333; margin-bottom:4px; }
+    .val { font-size:12px; font-weight:700; }
+    a{color:#111; text-decoration:none;}
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="leftHead">
+      ${leftBlock}
+      <div>
+        <h1>Firmendaten</h1>
+        <div class="sub">${escapeHtml(c.name||"")}</div>
+      </div>
+    </div>
+    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      ${rightBlock}
+      <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="row">
+      <div>
+        <div class="label">Adresse</div>
+        <div class="val">${escapeHtml(companyAddressLine(c) || "—")}</div>
+      </div>
+      <div>
+        <div class="label">Kontakt</div>
+        <div class="val">Tel: ${escapeHtml(c.phone||"—")}</div>
+        <div class="sub">E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"—")}</a></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="label">Steuernummer / USt-IdNr</div>
+      <div class="val">${escapeHtml(c.tax || "—")}</div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = () => (${waitForImagesThenPrint.toString()})() ;
+  <\/script>
+</body>
+</html>`;
+
+      const w = window.open("", "_blank");
+      if(!w) return alert("Popup blocked. Allow popups to print PDF.");
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    });
+
+    // =========================
+    // Einsatz PDF (UPDATED: signature column + employer bottom)
+    // =========================
+    async function generatePdfForEinsatz(ein){
+      const obj = store.objects.find(x=>x.id===ein.objId);
+      const logo = store.logoDataUrl || null;
+      const logoPos = store.logoPosition || "left";
+      const c = store.company || {};
+
+      const showLogo = (logoPos !== "hide") && !!logo;
+      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
+      const leftBlock = (logoPos === "left") ? logoHTML : ``;
+      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
+      const employees = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)).filter(Boolean);
+
+      const empRows = employees.length
+        ? employees.map((e, idx)=>`
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #111;">${idx+1}</td>
+            <td style="padding:6px 8px; border:1px solid #111;"><b>${escapeHtml(e.name)}</b></td>
+            <td style="padding:6px 8px; border:1px solid #111;">${escapeHtml(e.bewacher || "—")}</td>
+            <td style="padding:6px 8px; border:1px solid #111;">${escapeHtml(e.role || "—")}</td>
+            <td style="padding:6px 8px; border:1px solid #111;">
+              <div style="height:26px; border:1px solid #111; border-radius:6px;"></div>
+            </td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="5" style="padding:8px; border:1px solid #111;">—</td></tr>`;
+
+      const sigAgImg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
+
+      const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Einsatzmeldung ${formatDateISOToDE(ein.date)}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: Arial, sans-serif; color:#111; }
+    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .leftHead { display:flex; gap:12px; align-items:center; }
+    .logo { width:56px; height:56px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+    h1 { margin:0; font-size:18px; }
+    .sub { color:#444; margin-top:4px; font-size:12px; }
+    .box { border:1px solid #111; border-radius:10px; padding:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .label { font-size:11px; color:#333; margin-bottom:4px; }
+    .val { font-size:12px; font-weight:700; }
+    .line { height:1px; background:#111; opacity:.18; margin:12px 0; }
+    .sigimg { max-height:70px; max-width:100%; display:block; image-rendering:auto; }
+    .foot { margin-top:10px; font-size:10px; color:#333; }
+    a { color:#111; text-decoration:none; }
+    table{ border-collapse:collapse; width:100%; font-size:12px; }
+    th{ text-align:left; padding:6px 8px; border:1px solid #111; background:#f2f2f2; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="leftHead">
+      ${leftBlock}
+      <div>
+        <h1>Einsatzmeldung</h1>
+        <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+        <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+        ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
+      </div>
+    </div>
+    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      ${rightBlock}
+      <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+      <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="grid">
+      <div>
+        <div class="label">Kunde / Objekt</div>
+        <div class="val">${escapeHtml(obj?.cust || "—")} — ${escapeHtml(obj?.obj || "—")}</div>
+        <div class="sub">Adresse: ${escapeHtml(obj?.addr || "—")}</div>
+      </div>
+      <div>
+        <div class="label">Schichtzeit</div>
+        <div class="val">${escapeHtml(ein.start)} – ${escapeHtml(ein.end)}</div>
+      </div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="label">Mitarbeiter (Liste)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:44px;">#</th>
+          <th>Name</th>
+          <th style="width:160px;">Bewacher-ID</th>
+          <th style="width:140px;">Position</th>
+          <th style="width:190px;">Unterschrift Mitarbeiter</th>
+        </tr>
+      </thead>
+      <tbody>${empRows}</tbody>
+    </table>
+
+    <div style="margin-top:14px; display:flex; justify-content:space-between; gap:12px; align-items:flex-end;">
+      <div style="flex:1;">
+        <div class="label">Unterschrift Arbeitgeber / Auftraggeber</div>
+        <div style="border:1px solid #111; border-radius:10px; padding:10px; min-height:86px;">
+          ${sigAgImg ? `<img class="sigimg" src="${sigAgImg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
+        </div>
+      </div>
+      <div style="width:240px;">
+        <div class="label">Ort / Datum</div>
+        <div style="border:1px solid #111; border-radius:10px; padding:10px; min-height:86px;">
+          <div style="height:20px;"></div>
+          <div style="border-top:1px solid #111; margin-top:26px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">${escapeHtml(c.footerNote || "")}</div>
+  </div>
+
+  <script>
+    window.onload = () => (${waitForImagesThenPrint.toString()})() ;
+  <\/script>
+</body>
+</html>`;
+
+      const w = window.open("", "_blank");
+      if(!w) return alert("Popup blocked. Allow popups to print PDF.");
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    }
+
+    // =========================
+    // PDF Button
+    // =========================
+    $("btnPDF").addEventListener("click", async ()=>{
+      if(!selectedEinsatzId) return alert("Select Einsatz first.");
+      const ein = store.einsaetze.find(x=>x.id===selectedEinsatzId);
+      if(!ein) return alert("Einsatz not found.");
+      await generatePdfForEinsatz(ein);
+    });
+
+    // =========================
+    // Restore draft
+    // =========================
+    function restoreDraftToUI(){
+      const d = safeParse(localStorage.getItem(DRAFT_KEY), null) || {};
+      if(typeof d !== "object" || !d) return;
+
+      $("empName").value = d.empName || "";
+      $("empBewacher").value = d.empBewacher || "";
+      $("empPhone").value = d.empPhone || "";
+      $("empRole").value = d.empRole || "";
+
+      $("custName").value = d.custName || "";
+      $("objName").value = d.objName || "";
+      $("objAddr").value = d.objAddr || "";
+      $("objType").value = d.objType || "Hotel";
+
+      if(d.shiftDate) $("shiftDate").value = d.shiftDate;
+      if(d.shiftStart) $("shiftStart").value = d.shiftStart;
+      if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
+
+      if(d.logoPosition) $("logoPos").value = d.logoPosition;
+      if(d.selObj) $("selObj").value = d.selObj;
+
+      setSelectedEmpIds(d.selectedEmpIds || []);
+      updateSelectedCount();
+    }
+
+    // auto-save bindings
+    const autosaveIds = [
+      "empName","empBewacher","empPhone","empRole",
+      "custName","objName","objAddr","objType",
+      "selObj","shiftDate","shiftStart","shiftEnd",
+      "logoPos"
+    ];
+    autosaveIds.forEach(id=>{
+      const el = $(id);
+      el.addEventListener("input", queueAutoSave);
+      el.addEventListener("change", queueAutoSave);
+    });
+
+    // =========================
+    // Init
+    // =========================
+    (function init(){
+      store.company = store.company || {
+        name:"Masculine Security", street:"", city:"", phone:"", email:"",
+        tax:"", footerNote:"Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
+        defaultType:""
+      };
+
+      renderAll();
+
+      const hasDraft = !!localStorage.getItem(DRAFT_KEY);
+      if(!hasDraft){
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth()+1).padStart(2,"0");
+        const dd = String(now.getDate()).padStart(2,"0");
+        $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
+        $("shiftStart").value = "18:00";
+        $("shiftEnd").value = "06:00";
+      }
+
+      restoreDraftToUI();
+      sigEmp.restore();
+      sigAg.restore();
+
+      setSaveStatus("saved");
+      showTab("app");
+    })();
+  </script>
+</body>
+</html>
