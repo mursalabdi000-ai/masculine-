@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Masculine Security — Einsatzmeldung (All-in-One)</title>
+  <title>Masculine Security — Einsatzmeldung (99% Auto)</title>
   <meta name="theme-color" content="#0b3a78"/>
 
   <style>
@@ -52,11 +52,7 @@
 
     .topActions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .wrap{max-width:1220px; margin:18px auto; padding:0 16px}
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:14px;
-    }
+    .grid{display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:14px;}
     .card{
       background:linear-gradient(180deg, rgba(15,42,79,.92), rgba(11,26,51,.85));
       border:1px solid rgba(22,52,94,.8);
@@ -67,6 +63,7 @@
     .card h2{margin:0 0 6px 0; font-size:18px}
     .muted{color:var(--muted); margin:0 0 12px 0}
     .small{font-size:12px}
+
     .tabs{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 12px}
     .tab{
       padding:8px 10px; border-radius:999px;
@@ -77,17 +74,9 @@
       font-weight:800;
       font-size:13px;
     }
-    .tab.active{
-      background:rgba(58,166,255,.16);
-      border-color:rgba(58,166,255,.28);
-    }
+    .tab.active{background:rgba(58,166,255,.16); border-color:rgba(58,166,255,.28);}
 
-    .row{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:10px;
-      margin-bottom:10px;
-    }
+    .row{display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:10px; margin-bottom:10px;}
     .row.actions{display:flex; gap:10px; flex-wrap:wrap}
     .field label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px 2px}
     input, select, textarea{
@@ -113,16 +102,8 @@
       cursor:pointer;
       user-select:none;
     }
-    .btn.ghost{
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.12);
-    }
-    .btn.danger{
-      background:rgba(255,77,109,.18);
-      color:#ffd7de;
-      border:1px solid rgba(255,77,109,.35);
-    }
+    .btn.ghost{background:rgba(255,255,255,.08); color:var(--text); border:1px solid rgba(255,255,255,.12);}
+    .btn.danger{background:rgba(255,77,109,.18); color:#ffd7de; border:1px solid rgba(255,77,109,.35);}
     .btn:hover{filter:brightness(1.05)}
 
     .list{display:flex; flex-direction:column; gap:8px; margin-top:10px}
@@ -151,6 +132,47 @@
     }
     .linkbtn:hover{background:rgba(255,255,255,.06)}
 
+    .note{
+      border:1px solid rgba(33,209,159,.25);
+      background:rgba(33,209,159,.08);
+      padding:10px;
+      border-radius:14px;
+      margin-top:10px;
+      color:#dbfff5;
+    }
+
+    /* Mitarbeiter Multi-select */
+    .pickWrap{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(7,18,37,.35);
+      border-radius:16px;
+      padding:10px;
+    }
+    .pickHdr{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; flex-wrap:wrap; margin-bottom:8px;
+    }
+    .pickList{display:flex; flex-direction:column; gap:8px; max-height:220px; overflow:auto; padding-right:4px;}
+    .pickRow{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:10px; padding:8px 10px; border-radius:14px;
+      border:1px solid rgba(22,52,94,.7);
+      background:rgba(7,18,37,.45);
+    }
+    .pickLeft{display:flex; gap:10px; align-items:flex-start;}
+    .chk{width:18px; height:18px; margin-top:2px; accent-color: var(--accent);}
+    .pickName{font-weight:800}
+    .pickMeta{color:var(--muted); font-size:12px; margin-top:2px}
+    .countPill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(33,209,159,.12);
+      border:1px solid rgba(33,209,159,.22);
+      color:var(--text);
+    }
+
+    /* Signatures */
     .sigBox{
       border:1px dashed rgba(255,255,255,.22);
       background:rgba(7,18,37,.35);
@@ -166,71 +188,31 @@
       touch-action:none;
     }
     .sigActions{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
-    .span2{grid-column: 1 / span 2}
-    .foot{padding:14px 2px 22px}
-    code{background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; border:1px solid rgba(255,255,255,.10)}
-    .doc{line-height:1.5}
-    .doc h3{margin:12px 0 6px}
-    .doc ul{margin:6px 0 10px; padding-left:18px}
-    .note{
-      border:1px solid rgba(33,209,159,.25);
-      background:rgba(33,209,159,.08);
-      padding:10px;
-      border-radius:14px;
-      margin-top:10px;
-      color:#dbfff5;
-    }
 
-    /* Mitarbeiter Multi-select list */
-    .pickWrap{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(7,18,37,.35);
-      border-radius:16px;
-      padding:10px;
-    }
-    .pickHdr{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:8px;
-    }
-    .pickList{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      max-height:220px;
-      overflow:auto;
-      padding-right:4px;
-    }
-    .pickRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
+    /* Autosave status */
+    .status{
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
       padding:8px 10px;
       border-radius:14px;
-      border:1px solid rgba(22,52,94,.7);
-      background:rgba(7,18,37,.45);
-    }
-    .pickLeft{
-      display:flex; gap:10px; align-items:flex-start;
-    }
-    .chk{
-      width:18px; height:18px; margin-top:2px;
-      accent-color: var(--accent);
-    }
-    .pickName{font-weight:800}
-    .pickMeta{color:var(--muted); font-size:12px; margin-top:2px}
-    .countPill{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
       font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:rgba(33,209,159,.12);
-      border:1px solid rgba(33,209,159,.22);
-      color:var(--text);
     }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background:rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.25);
+    }
+    .dot.ok{background:rgba(33,209,159,.85); border-color:rgba(33,209,159,.65);}
+    .dot.work{background:rgba(58,166,255,.85); border-color:rgba(58,166,255,.65);}
+    .dot.err{background:rgba(255,77,109,.85); border-color:rgba(255,77,109,.65);}
+
+    .span2{grid-column: 1 / span 2}
+    .foot{padding:14px 2px 22px}
+    .doc{line-height:1.55}
+    .doc h3{margin:12px 0 6px}
+    .doc ul{margin:6px 0 10px; padding-left:18px}
 
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
@@ -238,36 +220,41 @@
       .row{grid-template-columns:1fr}
       .brand{min-width:unset}
     }
-
     pre, code{white-space:pre-wrap; word-break:break-word}
   </style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="brand">
       <img class="logo" id="logoImg" alt="Masculine Security Logo"/>
       <div class="brandText">
         <div class="brandName">Masculine Security</div>
-        <div class="brandSub">Einsatzmeldung • PDF • Signatur • Offline (Multi Mitarbeiter + Arbeitgeber Unterschrift)</div>
+        <div class="brandSub">99% Automatic • Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift</div>
       </div>
     </div>
 
     <div class="topActions">
+      <div class="status" title="Auto-save status">
+        <span class="dot" id="saveDot"></span>
+        <span id="saveText">Ready</span>
+      </div>
+
       <label class="btn ghost" style="display:inline-flex; align-items:center; gap:8px">
         Logo PNG
         <input id="logoFile" type="file" accept="image/png" style="display:none">
       </label>
-      <button class="btn ghost" id="btnClearLogo" title="Remove stored logo">Remove Logo</button>
+      <button class="btn ghost" id="btnClearLogo" type="button">Remove Logo</button>
 
-      <button class="btn ghost" id="btnBackup">Backup</button>
-      <button class="btn ghost" id="btnRestore">Restore</button>
+      <button class="btn ghost" id="btnBackup" type="button">Backup</button>
+      <button class="btn ghost" id="btnRestore" type="button">Restore</button>
     </div>
   </header>
 
   <main class="wrap">
     <div class="tabs">
-      <button class="tab active" data-tab="app">App</button>
-      <button class="tab" data-tab="doc">Documentation</button>
+      <button class="tab active" data-tab="app" type="button">App</button>
+      <button class="tab" data-tab="doc" type="button">Documentation</button>
     </div>
 
     <!-- APP -->
@@ -276,33 +263,33 @@
         <!-- Mitarbeiter -->
         <div class="card">
           <h2>Mitarbeiter</h2>
-          <p class="muted">Ku dar shaqaalaha (Bewacher-ID optional).</p>
+          <p class="muted">Typing = auto-save draft ✅ (refresh kadib waa soo laabanayaa).</p>
 
           <div class="row">
             <div class="field">
               <label>Vorname & Nachname</label>
-              <input id="empName" placeholder="z.B. Ahmed Ali" />
+              <input id="empName" placeholder="z.B. Ahmed Ali"/>
             </div>
             <div class="field">
               <label>Bewacher-ID (optional)</label>
-              <input id="empBewacher" placeholder="z.B. HB-123456" />
+              <input id="empBewacher" placeholder="z.B. HB-123456"/>
             </div>
           </div>
 
           <div class="row">
             <div class="field">
               <label>Telefon (optional)</label>
-              <input id="empPhone" placeholder="z.B. 0157..." />
+              <input id="empPhone" placeholder="z.B. 0157..."/>
             </div>
             <div class="field">
               <label>Position (optional)</label>
-              <input id="empRole" placeholder="z.B. Wachmann" />
+              <input id="empRole" placeholder="z.B. Wachmann"/>
             </div>
           </div>
 
           <div class="row actions">
-            <button class="btn" id="btnAddEmp">Add Mitarbeiter</button>
-            <button class="btn danger" id="btnClearEmp">Clear</button>
+            <button class="btn" id="btnAddEmp" type="button">Add Mitarbeiter</button>
+            <button class="btn danger" id="btnClearEmp" type="button">Clear</button>
           </div>
 
           <div class="list" id="empList"></div>
@@ -311,23 +298,23 @@
         <!-- Kunde/Objekt -->
         <div class="card">
           <h2>Kunde & Objekt</h2>
-          <p class="muted">Ku kaydi Kunde/Objekt (hotel/baustelle/event...).</p>
+          <p class="muted">Typing/Select = auto-save draft ✅</p>
 
           <div class="row">
             <div class="field">
               <label>Kunde (Firma/Name)</label>
-              <input id="custName" placeholder="z.B. Hotel Bremen GmbH" />
+              <input id="custName" placeholder="z.B. Hotel Bremen GmbH"/>
             </div>
             <div class="field">
               <label>Objektname</label>
-              <input id="objName" placeholder="z.B. Eingang / Lobby" />
+              <input id="objName" placeholder="z.B. Eingang / Lobby"/>
             </div>
           </div>
 
           <div class="row">
             <div class="field">
               <label>Einsatzort (Adresse)</label>
-              <input id="objAddr" placeholder="Straße, PLZ Ort" />
+              <input id="objAddr" placeholder="Straße, PLZ Ort"/>
             </div>
             <div class="field">
               <label>Objekt-Typ</label>
@@ -343,17 +330,20 @@
           </div>
 
           <div class="row actions">
-            <button class="btn" id="btnSaveObj">Save Objekt</button>
-            <button class="btn danger" id="btnClearObj">Clear</button>
+            <button class="btn" id="btnSaveObj" type="button">Save Objekt</button>
+            <button class="btn danger" id="btnClearObj" type="button">Clear</button>
           </div>
 
           <div class="list" id="objList"></div>
         </div>
 
-        <!-- Einsatzmeldung -->
+        <!-- Einsatz -->
         <div class="card span2">
           <h2>Einsatzmeldung erstellen</h2>
-          <p class="muted">Hadda waxaad dooran kartaa <b>in ka badan 1 Mitarbeiter</b>.</p>
+          <p class="muted">
+            99% automatic ✅: draft inputs + selected Mitarbeiter + Objekt + date/time + note + signatures auto-save.
+            (Manual: Save Einsatz / Add Mitarbeiter / Save Objekt)
+          </p>
 
           <div class="row">
             <div class="field">
@@ -368,10 +358,10 @@
 
           <div class="row">
             <div class="field" style="grid-column:1/-1">
-              <label>Mitarbeiter auswählen (Multi-List)</label>
+              <label>Mitarbeiter auswählen (One list for more Mitarbeiter)</label>
               <div class="pickWrap">
                 <div class="pickHdr">
-                  <div class="muted small">Tick ku saar shaqaalaha (1 ama ka badan).</div>
+                  <div class="muted small">Tick ku saar 1 ama ka badan (auto-save).</div>
                   <div style="display:flex; gap:8px; flex-wrap:wrap">
                     <button class="btn ghost" id="btnEmpSelectAll" type="button">Select all</button>
                     <button class="btn ghost" id="btnEmpClearAll" type="button">Clear all</button>
@@ -400,133 +390,218 @@
           <div class="row">
             <div class="field" style="grid-column:1/-1">
               <label>Tätigkeit / Bemerkung (optional)</label>
-              <input id="shiftNote" placeholder="z.B. Kontrollgänge, Eingangskontrolle..." />
+              <input id="shiftNote" placeholder="z.B. Kontrollgänge, Eingangskontrolle..."/>
             </div>
           </div>
 
-          <!-- Signatures -->
           <div class="row">
             <div class="field">
-              <label>Unterschrift Mitarbeiter (draw)</label>
+              <label>Unterschrift Mitarbeiter (auto-save)</label>
               <div class="sigBox">
                 <canvas id="sigCanvasEmp" width="900" height="240"></canvas>
                 <div class="sigActions">
                   <button class="btn ghost" id="btnSigClearEmp" type="button">Clear</button>
-                  <button class="btn ghost" id="btnSigSaveEmp" type="button">Save</button>
                 </div>
-                <div class="muted small">Tip: mobile finger • desktop mouse.</div>
+                <div class="muted small">Saxiix → marka aad joojiso sawirka, si auto ah ayuu u save-garayaa.</div>
               </div>
             </div>
             <div class="field">
-              <label>Unterschrift Arbeitgeber / Auftraggeber (draw)</label>
+              <label>Unterschrift Arbeitgeber / Auftraggeber (auto-save)</label>
               <div class="sigBox">
                 <canvas id="sigCanvasAg" width="900" height="240"></canvas>
                 <div class="sigActions">
                   <button class="btn ghost" id="btnSigClearAg" type="button">Clear</button>
-                  <button class="btn ghost" id="btnSigSaveAg" type="button">Save</button>
                 </div>
-                <div class="muted small">Halkan ku sawir saxiixa Arbeitgeber/Auftraggeber.</div>
+                <div class="muted small">Arbeitgeber/Auftraggeber saxiix (auto-save).</div>
               </div>
             </div>
           </div>
 
           <div class="row actions">
-            <button class="btn" id="btnCreate">Save Einsatz</button>
-            <button class="btn" id="btnPDF">Generate PDF</button>
-            <button class="btn danger" id="btnDelete">Delete selected Einsatz</button>
+            <button class="btn" id="btnCreate" type="button">Save Einsatz</button>
+            <button class="btn" id="btnPDF" type="button">Generate PDF</button>
+            <button class="btn danger" id="btnDelete" type="button">Delete selected Einsatz</button>
           </div>
 
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ Multi-Mitarbeiter + Arbeitgeber Unterschrift waa la daray. Logo PNG upload → PDF wuu galayaa.
+            ✅ Auto-save = Draft (inputs + selection + signatures).  
+            ✅ PDF button uses safe <code>&lt;\/script&gt;</code> (code hoos ma soo bixi doono).
           </div>
         </div>
       </section>
 
       <footer class="foot">
-        <div class="muted small">
-          Data waa local (browser). Backup/Restore isticmaal. PDF: browser print → “Save as PDF”.
-        </div>
+        <div class="muted small">Data local (browser). PDF: Generate → Print → “Save as PDF”.</div>
       </footer>
     </section>
 
-    <!-- DOCUMENTATION -->
+    <!-- DOC -->
     <section id="tab-doc" style="display:none">
       <div class="card">
-        <h2>Documentation</h2>
-        <p class="muted">Buugga isticmaalka (Somali + German terms).</p>
+        <h2>Documentation (Fixed)</h2>
+        <p class="muted">Tilmaamo sax ah oo kooban.</p>
 
         <div class="doc">
-          <h3>Waxyaabaha cusub</h3>
+          <h3>1) 99% Automatic maxaa loola jeedaa?</h3>
           <ul>
-            <li><b>One list for more Mitarbeiter</b> → waxaad tick ku saari kartaa shaqaale badan hal Einsatz</li>
-            <li><b>Arbeitgeber/Auftraggeber Unterschrift</b> → canvas cusub + PDF gudaheeda</li>
+            <li>✅ Wax kasta oo aad ku qorto forms-ka → si auto ah ayaa loo save-gareeyaa (Draft).</li>
+            <li>✅ Refresh / browser xirmo → Draft-ka si auto ah ayuu u soo laabanayaa.</li>
+            <li>✅ Checkbox Mitarbeiter + Objekt select + date/time + note → auto-save.</li>
+            <li>✅ Signatures (Mitarbeiter + Arbeitgeber/Auftraggeber) → auto-save marka sawirku dhamaado.</li>
           </ul>
 
-          <h3>Workflow</h3>
+          <h3>2) Waxyaabaha weli manual ah</h3>
           <ul>
-            <li>Mitarbeiter ku dar</li>
-            <li>Objekt ku dar</li>
-            <li>Einsatz: dooro Objekt → tick ku saar Mitarbeiter (1 ama ka badan) → Save Einsatz</li>
-            <li>Select Einsatz-ka list-ka → Generate PDF → Save as PDF</li>
+            <li><b>Add Mitarbeiter</b> → si uu ugu galo list-ka joogtada ah.</li>
+            <li><b>Save Objekt</b> → si Objekt ugu galo list-ka joogtada ah.</li>
+            <li><b>Save Einsatz</b> → si Einsatz ugu galo list-ka “saved Einsätze”.</li>
           </ul>
 
-          <h3>Company data (PDF gudaha)</h3>
+          <h3>3) Workflow</h3>
           <ul>
-            <li>Masculine Security</li>
+            <li>Mitarbeiter geli → <b>Add Mitarbeiter</b>.</li>
+            <li>Objekt geli → <b>Save Objekt</b>.</li>
+            <li>Einsatz: dooro Objekt → tick Mitarbeiter (1+) → geli date/time → <b>Save Einsatz</b>.</li>
+            <li>List-ka: select Einsatz → <b>Generate PDF</b> → Print → <b>Save as PDF</b>.</li>
+          </ul>
+
+          <h3>4) Backup & Restore</h3>
+          <ul>
+            <li><b>Backup</b> → soo dejin JSON (dhammaan xogta + drafts + signatures + logo).</li>
+            <li><b>Restore</b> → upload JSON si xogta u soo noqoto.</li>
+          </ul>
+
+          <h3>5) Company data (PDF gudaha)</h3>
+          <ul>
+            <li><b>Masculine Security</b></li>
             <li>Werschenregerstraße 6, 28237 Bremen</li>
             <li>Tel: 015778697052</li>
             <li>E-Mail: <a href="mailto:Kontakt.mass.bremen@hotmail.com" style="color:#9fd0ff; font-weight:800; text-decoration:none">Kontakt.mass.bremen@hotmail.com</a></li>
           </ul>
 
-          <div class="note">
-            Haddii PDF uusan furmin: popups/print allow.
-          </div>
+          <div class="note">Haddii PDF uusan furmin: popups/print allow.</div>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    // ========= Store =========
-    const STORE_KEY = "ms_einsatzmeldung_allinone_v3_multi";
+    // =========================
+    // Storage
+    // =========================
+    const STORE_KEY = "ms_einsatz_store_v5";
+    const DRAFT_KEY = "ms_einsatz_draft_v5";
+
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
 
-    function loadStore(){
-      try{
-        const raw = localStorage.getItem(STORE_KEY);
-        if(!raw) return {
-          employees:[], objects:[], einsaetze:[],
-          sigEmpDataUrl:null, sigAgDataUrl:null,
-          logoDataUrl:null
-        };
-        const data = JSON.parse(raw);
-        return {
-          employees: Array.isArray(data.employees) ? data.employees : [],
-          objects: Array.isArray(data.objects) ? data.objects : [],
-          einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
-          sigEmpDataUrl: data.sigEmpDataUrl || null,
-          sigAgDataUrl: data.sigAgDataUrl || null,
-          logoDataUrl: data.logoDataUrl || null
-        };
-      }catch{
-        return {
-          employees:[], objects:[], einsaetze:[],
-          sigEmpDataUrl:null, sigAgDataUrl:null,
-          logoDataUrl:null
-        };
-      }
+    function safeParse(raw, fallback){
+      try{ return JSON.parse(raw); }catch{ return fallback; }
     }
-    function saveStore(store){
+
+    let store = safeParse(localStorage.getItem(STORE_KEY), null) || {
+      employees:[], objects:[], einsaetze:[],
+      logoDataUrl:null,
+      sigEmpDataUrl:null,
+      sigAgDataUrl:null
+    };
+    let draft = safeParse(localStorage.getItem(DRAFT_KEY), null) || {};
+
+    function saveStore(){
       localStorage.setItem(STORE_KEY, JSON.stringify(store));
     }
 
-    let store = loadStore();
-    let selectedEinsatzId = null;
+    // =========================
+    // Auto-save (draft)
+    // =========================
+    let saveTimer = null;
 
-    // ========= Tabs =========
+    function setSaveStatus(mode){
+      const dot = $("saveDot");
+      const txt = $("saveText");
+      dot.classList.remove("ok","work","err");
+      if(mode==="saving"){ dot.classList.add("work"); txt.textContent="Saving…"; }
+      else if(mode==="saved"){ dot.classList.add("ok"); txt.textContent="Saved"; }
+      else if(mode==="error"){ dot.classList.add("err"); txt.textContent="Save error"; }
+      else { txt.textContent="Ready"; }
+    }
+
+    function collectDraft(){
+      return {
+        empName: $("empName").value,
+        empBewacher: $("empBewacher").value,
+        empPhone: $("empPhone").value,
+        empRole: $("empRole").value,
+
+        custName: $("custName").value,
+        objName: $("objName").value,
+        objAddr: $("objAddr").value,
+        objType: $("objType").value,
+
+        selObj: $("selObj").value,
+        shiftDate: $("shiftDate").value,
+        shiftStart: $("shiftStart").value,
+        shiftEnd: $("shiftEnd").value,
+        shiftNote: $("shiftNote").value,
+
+        selectedEmpIds: getSelectedEmpIds(),
+        lastSavedAt: Date.now()
+      };
+    }
+
+    function saveDraftNow(){
+      try{
+        draft = collectDraft();
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        setSaveStatus("saved");
+      }catch(e){
+        setSaveStatus("error");
+      }
+    }
+
+    function queueAutoSave(){
+      setSaveStatus("saving");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveDraftNow, 250);
+    }
+
+    // Save on unload (extra safety)
+    window.addEventListener("beforeunload", ()=>{ try{ saveDraftNow(); saveStore(); }catch{} });
+
+    // =========================
+    // UI helpers
+    // =========================
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getSelectedEmpIds(){
+      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked')).map(i=>i.value);
+    }
+
+    function setSelectedEmpIds(ids){
+      const set = new Set((ids||[]).map(String));
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
+        chk.checked = set.has(String(chk.value));
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount(){
+      const n = getSelectedEmpIds().length;
+      $("selEmpCount").textContent = `${n} selected`;
+    }
+
+    // =========================
+    // Tabs
+    // =========================
     document.querySelectorAll(".tab").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
@@ -537,7 +612,9 @@
       });
     });
 
-    // ========= Logo =========
+    // =========================
+    // Logo
+    // =========================
     function applyLogo(){
       const img = $("logoImg");
       if(store.logoDataUrl){
@@ -552,56 +629,30 @@
     $("logoFile").addEventListener("change", ()=>{
       const file = $("logoFile").files?.[0];
       if(!file) return;
-      if(file.type !== "image/png"){
-        alert("PNG kaliya ✅ (image/png).");
-        $("logoFile").value = "";
-        return;
-      }
-      const maxMB = 3;
-      if(file.size > maxMB * 1024 * 1024){
-        alert("Logo waa weyn yahay. Fadlan ka dhig < 3MB.");
-        $("logoFile").value = "";
-        return;
-      }
+      if(file.type !== "image/png"){ alert("PNG kaliya ✅"); $("logoFile").value=""; return; }
+      if(file.size > 3*1024*1024){ alert("Logo < 3MB"); $("logoFile").value=""; return; }
       const fr = new FileReader();
       fr.onload = ()=>{
-        store.logoDataUrl = String(fr.result || "");
-        saveStore(store);
+        store.logoDataUrl = String(fr.result||"");
+        saveStore();
         applyLogo();
-        alert("Logo saved ✅");
+        $("logoFile").value="";
       };
       fr.readAsDataURL(file);
-      $("logoFile").value = "";
     });
 
     $("btnClearLogo").addEventListener("click", ()=>{
       if(!confirm("Remove stored logo?")) return;
       store.logoDataUrl = null;
-      saveStore(store);
+      saveStore();
       applyLogo();
     });
 
-    // ========= Render helpers =========
-    function escapeHtml(s){
-      return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
+    // =========================
+    // Render
+    // =========================
+    let selectedEinsatzId = null;
 
-    function getSelectedEmpIds(){
-      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked'))
-        .map(i=>i.value);
-    }
-
-    function updateSelectedCount(){
-      const n = getSelectedEmpIds().length;
-      $("selEmpCount").textContent = `${n} selected`;
-    }
-
-    // ========= Render =========
     function renderEmployees(){
       const box = $("empList");
       box.innerHTML = "";
@@ -614,9 +665,11 @@
           div.innerHTML = `
             <div>
               <b>${escapeHtml(emp.name)}</b>
-              <div class="meta">${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
-              ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
-              ${emp.phone ? ` • ${escapeHtml(emp.phone)}`:""}</div>
+              <div class="meta">
+                ${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
+                ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
+                ${emp.phone ? ` • ${escapeHtml(emp.phone)}`:""}
+              </div>
             </div>
             <div class="right">
               <span class="pill">Mitarbeiter</span>
@@ -627,7 +680,6 @@
         });
       }
 
-      // Multi pick list
       const pick = $("empPickList");
       pick.innerHTML = "";
       if(store.employees.length===0){
@@ -635,7 +687,7 @@
       }else{
         store.employees.forEach(emp=>{
           const row = document.createElement("div");
-          row.className = "pickRow";
+          row.className="pickRow";
           row.innerHTML = `
             <div class="pickLeft">
               <input class="chk" type="checkbox" data-emp-chk="1" value="${emp.id}">
@@ -652,12 +704,13 @@
           pick.appendChild(row);
         });
 
-        // Listen
         pick.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
-          chk.addEventListener("change", updateSelectedCount);
+          chk.addEventListener("change", ()=>{
+            updateSelectedCount();
+            queueAutoSave();
+          });
         });
       }
-
       updateSelectedCount();
     }
 
@@ -683,6 +736,7 @@
           box.appendChild(div);
         });
       }
+
       const sel = $("selObj");
       sel.innerHTML = "";
       if(store.objects.length===0){
@@ -704,35 +758,27 @@
         box.innerHTML = `<div class="muted small">No Einsätze saved yet.</div>`;
         return;
       }
-      store.einsaetze
-        .slice()
-        .sort((a,b)=> (b.createdAt||0) - (a.createdAt||0))
-        .forEach(ein=>{
-          const obj = store.objects.find(x=>x.id===ein.objId);
-
-          const empNames = (Array.isArray(ein.empIds) ? ein.empIds : [])
-            .map(id => store.employees.find(e=>e.id===id)?.name || "(missing)")
-            .join(", ");
-
-          const title = `${empNames || "(no Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
-          const meta = `${ein.date} • ${ein.start}–${ein.end} • ${obj?obj.cust:""} • ${obj?obj.addr:""}`;
-          const active = (selectedEinsatzId === ein.id);
-
-          const div = document.createElement("div");
-          div.className="item";
-          div.innerHTML = `
-            <div>
-              <b>${escapeHtml(title)} ${active ? "✓" : ""}</b>
-              <div class="meta">${escapeHtml(meta)}</div>
-              ${ein.note ? `<div class="meta">Note: ${escapeHtml(ein.note)}</div>` : ""}
-            </div>
-            <div class="right">
-              <span class="pill">${ein.type || "Einsatz"}</span>
-              <button class="linkbtn" data-pick-ein="${ein.id}" type="button">${active ? "Selected" : "Select"}</button>
-            </div>
-          `;
-          box.appendChild(div);
-        });
+      store.einsaetze.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(ein=>{
+        const obj = store.objects.find(x=>x.id===ein.objId);
+        const empNames = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)?.name || "(missing)").join(", ");
+        const title = `${empNames || "(no Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
+        const meta = `${ein.date} • ${ein.start}–${ein.end} • ${obj?obj.cust:""} • ${obj?obj.addr:""}`;
+        const active = selectedEinsatzId === ein.id;
+        const div = document.createElement("div");
+        div.className="item";
+        div.innerHTML = `
+          <div>
+            <b>${escapeHtml(title)} ${active ? "✓" : ""}</b>
+            <div class="meta">${escapeHtml(meta)}</div>
+            ${ein.note ? `<div class="meta">Note: ${escapeHtml(ein.note)}</div>` : ""}
+          </div>
+          <div class="right">
+            <span class="pill">${ein.type || "Einsatz"}</span>
+            <button class="linkbtn" data-pick-ein="${ein.id}" type="button">${active ? "Selected" : "Select"}</button>
+          </div>
+        `;
+        box.appendChild(div);
+      });
     }
 
     function renderAll(){
@@ -742,100 +788,98 @@
       applyLogo();
     }
 
-    // ========= CRUD: Mitarbeiter =========
+    // =========================
+    // Mitarbeiter CRUD
+    // =========================
     $("btnAddEmp").addEventListener("click", ()=>{
       const name = $("empName").value.trim();
       if(!name) return alert("Bitte Name eingeben.");
-      const emp = {
+      store.employees.push({
         id: uid(),
         name,
         bewacher: $("empBewacher").value.trim(),
         phone: $("empPhone").value.trim(),
         role: $("empRole").value.trim()
-      };
-      store.employees.push(emp);
-      saveStore(store);
-      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      });
+      saveStore();
       renderAll();
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
     });
+
     $("btnClearEmp").addEventListener("click", ()=>{
       $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
     });
+
     $("empList").addEventListener("click",(e)=>{
       const id = e.target?.getAttribute?.("data-del-emp");
       if(!id) return;
       if(!confirm("Delete Mitarbeiter?")) return;
       store.employees = store.employees.filter(x=>x.id!==id);
-      saveStore(store);
+      saveStore();
       renderAll();
+      queueAutoSave();
     });
 
-    // Multi list quick actions
     $("btnEmpSelectAll").addEventListener("click", ()=>{
       document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=true);
       updateSelectedCount();
+      queueAutoSave();
     });
+
     $("btnEmpClearAll").addEventListener("click", ()=>{
       document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=false);
       updateSelectedCount();
+      queueAutoSave();
     });
 
-    // ========= CRUD: Objekt =========
+    // =========================
+    // Objekt CRUD
+    // =========================
     $("btnSaveObj").addEventListener("click", ()=>{
       const cust = $("custName").value.trim();
-      const obj = $("objName").value.trim();
+      const obj  = $("objName").value.trim();
       const addr = $("objAddr").value.trim();
       const type = $("objType").value;
       if(!cust || !obj || !addr) return alert("Bitte Kunde, Objektname, Adresse ausfüllen.");
       store.objects.push({ id: uid(), cust, obj, addr, type });
-      saveStore(store);
-      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      saveStore();
       renderAll();
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
     });
+
     $("btnClearObj").addEventListener("click", ()=>{
       $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
     });
+
     $("objList").addEventListener("click",(e)=>{
       const id = e.target?.getAttribute?.("data-del-obj");
       if(!id) return;
       if(!confirm("Delete Objekt?")) return;
       store.objects = store.objects.filter(x=>x.id!==id);
-      saveStore(store);
+      saveStore();
       renderAll();
+      queueAutoSave();
     });
 
-    // ========= Signature Canvas helpers =========
-    function setupSignature(canvasId, clearBtnId, saveBtnId, storeKey){
+    // =========================
+    // Signature (AUTO SAVE)
+    // =========================
+    function setupSignature(canvasId, clearBtnId, storeKey){
       const canvas = $(canvasId);
       const ctx = canvas.getContext("2d");
       let drawing = false;
       let last = null;
 
-      function resizeCanvasToDevice(){
+      function getPos(ev){
         const rect = canvas.getBoundingClientRect();
-        const ratio = Math.max(1, window.devicePixelRatio || 1);
-        const w = Math.floor(rect.width * ratio);
-        const h = Math.floor(rect.height * ratio);
-
-        const tmp = document.createElement("canvas");
-        tmp.width = canvas.width; tmp.height = canvas.height;
-        tmp.getContext("2d").drawImage(canvas, 0, 0);
-
-        canvas.width = w;
-        canvas.height = h;
-
-        ctx.setTransform(1,0,0,1,0,0);
-        ctx.scale(ratio, ratio);
-
-        ctx.drawImage(tmp, 0, 0, rect.width, rect.height);
-      }
-
-      function posFromEvent(ev){
-        const rect = canvas.getBoundingClientRect();
-        const isTouch = ev.touches && ev.touches[0];
-        const clientX = isTouch ? ev.touches[0].clientX : ev.clientX;
-        const clientY = isTouch ? ev.touches[0].clientY : ev.clientY;
-        return { x: clientX - rect.left, y: clientY - rect.top };
+        const t = ev.touches && ev.touches[0];
+        const x = (t ? t.clientX : ev.clientX) - rect.left;
+        const y = (t ? t.clientY : ev.clientY) - rect.top;
+        return {x,y};
       }
 
       function drawLine(a,b){
@@ -844,45 +888,60 @@
         ctx.lineJoin = "round";
         ctx.strokeStyle = "rgba(255,255,255,.92)";
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
         ctx.stroke();
       }
 
-      function startDraw(ev){ drawing = true; last = posFromEvent(ev); }
-      function moveDraw(ev){
+      function saveSignatureImage(){
+        try{
+          const rect = canvas.getBoundingClientRect();
+          const out = document.createElement("canvas");
+          out.width = Math.max(1, Math.floor(rect.width));
+          out.height = Math.max(1, Math.floor(rect.height));
+          const octx = out.getContext("2d");
+          octx.drawImage(canvas, 0, 0, out.width, out.height);
+          store[storeKey] = out.toDataURL("image/png");
+          saveStore();
+          setSaveStatus("saved");
+        }catch{
+          setSaveStatus("error");
+        }
+      }
+
+      function start(ev){
+        drawing = true;
+        last = getPos(ev);
+      }
+      function move(ev){
         if(!drawing) return;
         ev.preventDefault();
-        const p = posFromEvent(ev);
-        drawLine(last, p);
+        const p = getPos(ev);
+        drawLine(last,p);
         last = p;
+        setSaveStatus("saving");
       }
-      function endDraw(){ drawing = false; last = null; }
+      function end(){
+        if(!drawing) return;
+        drawing = false;
+        last = null;
+        // auto-save when drawing ends
+        saveSignatureImage();
+      }
 
-      canvas.addEventListener("mousedown", startDraw);
-      canvas.addEventListener("mousemove", moveDraw);
-      window.addEventListener("mouseup", endDraw);
+      canvas.addEventListener("mousedown", start);
+      canvas.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", end);
 
-      canvas.addEventListener("touchstart", startDraw, {passive:false});
-      canvas.addEventListener("touchmove", moveDraw, {passive:false});
-      canvas.addEventListener("touchend", endDraw);
+      canvas.addEventListener("touchstart", start, {passive:false});
+      canvas.addEventListener("touchmove", move, {passive:false});
+      canvas.addEventListener("touchend", end);
 
       $(clearBtnId).addEventListener("click", ()=>{
-        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         store[storeKey] = null;
-        saveStore(store);
-      });
-
-      $(saveBtnId).addEventListener("click", ()=>{
-        const rect = canvas.getBoundingClientRect();
-        const exportCanvas = document.createElement("canvas");
-        exportCanvas.width = Math.floor(rect.width);
-        exportCanvas.height = Math.floor(rect.height);
-        const ectx = exportCanvas.getContext("2d");
-        ectx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
-        store[storeKey] = exportCanvas.toDataURL("image/png");
-        saveStore(store);
-        alert("Signature saved ✅");
+        saveStore();
+        setSaveStatus("saved");
       });
 
       function restore(){
@@ -891,24 +950,21 @@
         const img = new Image();
         img.onload = ()=>{
           const rect = canvas.getBoundingClientRect();
-          ctx.clearRect(0,0,canvas.width, canvas.height);
+          ctx.clearRect(0,0,canvas.width,canvas.height);
           ctx.drawImage(img, 0, 0, rect.width, rect.height);
         };
         img.src = dataUrl;
       }
 
-      return { resizeCanvasToDevice, restore };
+      return { restore };
     }
 
-    const sigEmp = setupSignature("sigCanvasEmp", "btnSigClearEmp", "btnSigSaveEmp", "sigEmpDataUrl");
-    const sigAg  = setupSignature("sigCanvasAg",  "btnSigClearAg",  "btnSigSaveAg",  "sigAgDataUrl");
+    const sigEmp = setupSignature("sigCanvasEmp","btnSigClearEmp","sigEmpDataUrl");
+    const sigAg  = setupSignature("sigCanvasAg","btnSigClearAg","sigAgDataUrl");
 
-    window.addEventListener("resize", ()=>setTimeout(()=>{
-      sigEmp.resizeCanvasToDevice();
-      sigAg.resizeCanvasToDevice();
-    }, 150));
-
-    // ========= CRUD: Einsatz =========
+    // =========================
+    // Einsatz CRUD
+    // =========================
     $("btnCreate").addEventListener("click", ()=>{
       const objId = $("selObj").value;
       const empIds = getSelectedEmpIds();
@@ -916,17 +972,16 @@
       const start = $("shiftStart").value;
       const end = $("shiftEnd").value;
       const note = $("shiftNote").value.trim();
-
       if(!objId) return alert("Objekt wählen.");
-      if(empIds.length === 0) return alert("Mindestens 1 Mitarbeiter auswählen.");
+      if(empIds.length===0) return alert("Mindestens 1 Mitarbeiter auswählen.");
       if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
 
       const obj = store.objects.find(x=>x.id===objId);
 
       store.einsaetze.push({
         id: uid(),
-        empIds,
         objId,
+        empIds,
         date, start, end,
         note,
         type: obj?.type || "Einsatz",
@@ -935,9 +990,8 @@
         createdAt: Date.now()
       });
 
-      saveStore(store);
-      $("shiftNote").value="";
-      renderAll();
+      saveStore();
+      renderEinsaetze();
       alert("Einsatz saved ✅");
     });
 
@@ -953,13 +1007,16 @@
       if(!confirm("Delete selected Einsatz?")) return;
       store.einsaetze = store.einsaetze.filter(x=>x.id!==selectedEinsatzId);
       selectedEinsatzId = null;
-      saveStore(store);
+      saveStore();
       renderEinsaetze();
     });
 
-    // ========= Backup / Restore =========
+    // =========================
+    // Backup / Restore (store + draft)
+    // =========================
     $("btnBackup").addEventListener("click", ()=>{
-      const blob = new Blob([JSON.stringify(store, null, 2)], {type:"application/json"});
+      const payload = { store, draft: collectDraft() };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "einsatzmeldung-backup.json";
@@ -976,34 +1033,25 @@
         if(!file) return;
         const r = new FileReader();
         r.onload = ()=>{
-          try{
-            const data = JSON.parse(String(r.result||""));
-            store = {
-              employees: Array.isArray(data.employees) ? data.employees : [],
-              objects: Array.isArray(data.objects) ? data.objects : [],
-              einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
-              sigEmpDataUrl: data.sigEmpDataUrl || null,
-              sigAgDataUrl: data.sigAgDataUrl || null,
-              logoDataUrl: data.logoDataUrl || null
-            };
-            saveStore(store);
-            selectedEinsatzId = null;
-            renderAll();
-            setTimeout(()=>{
-              sigEmp.resizeCanvasToDevice(); sigAg.resizeCanvasToDevice();
-              sigEmp.restore(); sigAg.restore();
-            }, 150);
-            alert("Restore done ✅");
-          }catch{
-            alert("Restore failed (invalid JSON).");
-          }
+          const payload = safeParse(String(r.result||""), null);
+          if(!payload || typeof payload !== "object"){ alert("Invalid backup."); return; }
+          if(payload.store) store = payload.store;
+          if(payload.draft) draft = payload.draft;
+          saveStore();
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft||{}));
+          renderAll();
+          restoreDraftToUI();
+          sigEmp.restore(); sigAg.restore();
+          alert("Restore done ✅");
         };
         r.readAsText(file);
       };
       input.click();
     });
 
-    // ========= PDF Generation (Print-to-PDF) =========
+    // =========================
+    // PDF
+    // =========================
     function formatDateISOToDE(iso){
       if(!iso) return "";
       const [y,m,d] = iso.split("-");
@@ -1011,7 +1059,6 @@
       return `${d}.${m}.${y}`;
     }
 
-    // ✅ IMPORTANT FIX: Use <\/script> inside PDF HTML to avoid breaking this main script.
     async function generatePdfForEinsatz(ein){
       const obj = store.objects.find(x=>x.id===ein.objId);
       const logo = store.logoDataUrl || null;
@@ -1023,10 +1070,7 @@
         email: "Kontakt.mass.bremen@hotmail.com"
       };
 
-      const employees = (Array.isArray(ein.empIds) ? ein.empIds : [])
-        .map(id => store.employees.find(e=>e.id===id))
-        .filter(Boolean);
-
+      const employees = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)).filter(Boolean);
       const empRows = employees.length
         ? employees.map((e, idx)=>`
           <tr>
@@ -1038,8 +1082,8 @@
         `).join("")
         : `<tr><td colspan="4" style="padding:8px; border:1px solid #111;">—</td></tr>`;
 
-      const sigEmp = ein.sigEmpDataUrl || store.sigEmpDataUrl || null;
-      const sigAg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
+      const sigEmpImg = ein.sigEmpDataUrl || store.sigEmpDataUrl || null;
+      const sigAgImg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
 
       const html = `
 <!doctype html>
@@ -1111,25 +1155,21 @@
           <th style="width:160px;">Position</th>
         </tr>
       </thead>
-      <tbody>
-        ${empRows}
-      </tbody>
+      <tbody>${empRows}</tbody>
     </table>
 
     <div class="sig">
       <div class="sigbox">
         <div class="label">Unterschrift Mitarbeiter</div>
-        ${sigEmp ? `<img class="sigimg" src="${sigEmp}" alt="Signature Mitarbeiter"/>` : `<div class="sub">—</div>`}
+        ${sigEmpImg ? `<img class="sigimg" src="${sigEmpImg}" alt="Signature Mitarbeiter"/>` : `<div class="sub">—</div>`}
       </div>
       <div class="sigbox">
         <div class="label">Unterschrift Arbeitgeber / Auftraggeber</div>
-        ${sigAg ? `<img class="sigimg" src="${sigAg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
+        ${sigAgImg ? `<img class="sigimg" src="${sigAgImg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
       </div>
     </div>
 
-    <div class="foot">
-      Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.
-    </div>
+    <div class="foot">Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.</div>
   </div>
 
   <script>
@@ -1152,23 +1192,78 @@
       await generatePdfForEinsatz(ein);
     });
 
-    // ========= Init =========
+    // =========================
+    // Auto-save bindings (inputs)
+    // =========================
+    const autosaveIds = [
+      "empName","empBewacher","empPhone","empRole",
+      "custName","objName","objAddr","objType",
+      "selObj","shiftDate","shiftStart","shiftEnd","shiftNote"
+    ];
+    autosaveIds.forEach(id=>{
+      const el = $(id);
+      if(!el) return;
+      el.addEventListener("input", queueAutoSave);
+      el.addEventListener("change", queueAutoSave);
+    });
+
+    // =========================
+    // Restore draft -> UI
+    // =========================
+    function restoreDraftToUI(){
+      const d = safeParse(localStorage.getItem(DRAFT_KEY), null) || {};
+      if(typeof d !== "object" || !d) return;
+
+      $("empName").value = d.empName || "";
+      $("empBewacher").value = d.empBewacher || "";
+      $("empPhone").value = d.empPhone || "";
+      $("empRole").value = d.empRole || "";
+
+      $("custName").value = d.custName || "";
+      $("objName").value = d.objName || "";
+      $("objAddr").value = d.objAddr || "";
+      $("objType").value = d.objType || "Hotel";
+
+      if(d.shiftDate) $("shiftDate").value = d.shiftDate;
+      if(d.shiftStart) $("shiftStart").value = d.shiftStart;
+      if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
+      $("shiftNote").value = d.shiftNote || "";
+
+      // Objekt select after renderObjects() created options
+      if(d.selObj) $("selObj").value = d.selObj;
+
+      // Mitarbeiter selection after renderEmployees() created checkboxes
+      setSelectedEmpIds(d.selectedEmpIds || []);
+      updateSelectedCount();
+    }
+
+    // =========================
+    // Init
+    // =========================
     (function init(){
+      // defaults (only if no draft)
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth()+1).padStart(2,"0");
       const dd = String(now.getDate()).padStart(2,"0");
-      $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
-      $("shiftStart").value = "18:00";
-      $("shiftEnd").value = "06:00";
 
       renderAll();
-      setTimeout(()=>{
-        sigEmp.resizeCanvasToDevice(); sigAg.resizeCanvasToDevice();
-        sigEmp.restore(); sigAg.restore();
-        applyLogo();
-        updateSelectedCount();
-      }, 150);
+
+      // set defaults if draft empty
+      const d0 = safeParse(localStorage.getItem(DRAFT_KEY), null);
+      if(!d0){
+        $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
+        $("shiftStart").value = "18:00";
+        $("shiftEnd").value = "06:00";
+      }
+
+      // restore draft + signatures
+      restoreDraftToUI();
+      sigEmp.restore();
+      sigAg.restore();
+      applyLogo();
+
+      setSaveStatus("saved");
     })();
   </script>
 </body>
