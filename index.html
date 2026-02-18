@@ -9,7 +9,6 @@
   <style>
     :root{
       --bg:#071225;
-      --card:#0f2a4f;
       --line:#16345e;
       --text:#e7f0ff;
       --muted:#9bb1d5;
@@ -89,7 +88,6 @@
       outline:none;
       resize:vertical;
     }
-    textarea{min-height:84px}
     input:focus, select:focus, textarea:focus{border-color:rgba(58,166,255,.9); box-shadow:0 0 0 3px rgba(58,166,255,.15)}
 
     .btn{
@@ -230,7 +228,7 @@
       <img class="logo" id="logoImg" alt="Masculine Security Logo"/>
       <div class="brandText">
         <div class="brandName">Masculine Security</div>
-        <div class="brandSub">99% Automatic • Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift</div>
+        <div class="brandSub">Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift</div>
       </div>
     </div>
 
@@ -239,6 +237,13 @@
         <span class="dot" id="saveDot"></span>
         <span id="saveText">Ready</span>
       </div>
+
+      <!-- ✅ Logo position -->
+      <select id="logoPos" title="Logo position in PDF">
+        <option value="left">Logo Left (PDF)</option>
+        <option value="right">Logo Right (PDF)</option>
+        <option value="hide">Hide Logo (PDF)</option>
+      </select>
 
       <label class="btn ghost" style="display:inline-flex; align-items:center; gap:8px">
         Logo PNG
@@ -263,7 +268,7 @@
         <!-- Mitarbeiter -->
         <div class="card">
           <h2>Mitarbeiter</h2>
-          <p class="muted">Typing = auto-save draft ✅ (refresh kadib waa soo laabanayaa).</p>
+          <p class="muted">Typing = auto-save draft ✅</p>
 
           <div class="row">
             <div class="field">
@@ -340,10 +345,7 @@
         <!-- Einsatz -->
         <div class="card span2">
           <h2>Einsatzmeldung erstellen</h2>
-          <p class="muted">
-            99% automatic ✅: draft inputs + selected Mitarbeiter + Objekt + date/time + note + signatures auto-save.
-            (Manual: Save Einsatz / Add Mitarbeiter / Save Objekt)
-          </p>
+          <p class="muted">✅ Bemerkung/Note waa la saaray (removed).</p>
 
           <div class="row">
             <div class="field">
@@ -387,13 +389,7 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="field" style="grid-column:1/-1">
-              <label>Tätigkeit / Bemerkung (optional)</label>
-              <input id="shiftNote" placeholder="z.B. Kontrollgänge, Eingangskontrolle..."/>
-            </div>
-          </div>
-
+          <!-- ✅ Unterschrift Mitarbeiter hortiisa (before list in PDF; in app we keep both here) -->
           <div class="row">
             <div class="field">
               <label>Unterschrift Mitarbeiter (auto-save)</label>
@@ -402,7 +398,6 @@
                 <div class="sigActions">
                   <button class="btn ghost" id="btnSigClearEmp" type="button">Clear</button>
                 </div>
-                <div class="muted small">Saxiix → marka aad joojiso sawirka, si auto ah ayuu u save-garayaa.</div>
               </div>
             </div>
             <div class="field">
@@ -412,7 +407,6 @@
                 <div class="sigActions">
                   <button class="btn ghost" id="btnSigClearAg" type="button">Clear</button>
                 </div>
-                <div class="muted small">Arbeitgeber/Auftraggeber saxiix (auto-save).</div>
               </div>
             </div>
           </div>
@@ -426,8 +420,8 @@
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ Auto-save = Draft (inputs + selection + signatures).  
-            ✅ PDF button uses safe <code>&lt;\/script&gt;</code> (code hoos ma soo bixi doono).
+            ✅ Logo Position: top-right menu-ka ka dooro (PDF).  
+            ✅ Bemerkung waa la saaray (App + PDF).
           </div>
         </div>
       </section>
@@ -440,48 +434,14 @@
     <!-- DOC -->
     <section id="tab-doc" style="display:none">
       <div class="card">
-        <h2>Documentation (Fixed)</h2>
-        <p class="muted">Tilmaamo sax ah oo kooban.</p>
-
+        <h2>Documentation (Updated)</h2>
         <div class="doc">
-          <h3>1) 99% Automatic maxaa loola jeedaa?</h3>
+          <h3>Waxyaabaha la beddelay</h3>
           <ul>
-            <li>✅ Wax kasta oo aad ku qorto forms-ka → si auto ah ayaa loo save-gareeyaa (Draft).</li>
-            <li>✅ Refresh / browser xirmo → Draft-ka si auto ah ayuu u soo laabanayaa.</li>
-            <li>✅ Checkbox Mitarbeiter + Objekt select + date/time + note → auto-save.</li>
-            <li>✅ Signatures (Mitarbeiter + Arbeitgeber/Auftraggeber) → auto-save marka sawirku dhamaado.</li>
+            <li>✅ <b>Logo position</b> (PDF): Left / Right / Hide</li>
+            <li>✅ <b>Bemerkung</b> waa la saaray (App + PDF)</li>
+            <li>✅ PDF: <b>Unterschrift Mitarbeiter</b> waxaa la dhigay <b>hortiisa</b> (ka hor Mitarbeiter list)</li>
           </ul>
-
-          <h3>2) Waxyaabaha weli manual ah</h3>
-          <ul>
-            <li><b>Add Mitarbeiter</b> → si uu ugu galo list-ka joogtada ah.</li>
-            <li><b>Save Objekt</b> → si Objekt ugu galo list-ka joogtada ah.</li>
-            <li><b>Save Einsatz</b> → si Einsatz ugu galo list-ka “saved Einsätze”.</li>
-          </ul>
-
-          <h3>3) Workflow</h3>
-          <ul>
-            <li>Mitarbeiter geli → <b>Add Mitarbeiter</b>.</li>
-            <li>Objekt geli → <b>Save Objekt</b>.</li>
-            <li>Einsatz: dooro Objekt → tick Mitarbeiter (1+) → geli date/time → <b>Save Einsatz</b>.</li>
-            <li>List-ka: select Einsatz → <b>Generate PDF</b> → Print → <b>Save as PDF</b>.</li>
-          </ul>
-
-          <h3>4) Backup & Restore</h3>
-          <ul>
-            <li><b>Backup</b> → soo dejin JSON (dhammaan xogta + drafts + signatures + logo).</li>
-            <li><b>Restore</b> → upload JSON si xogta u soo noqoto.</li>
-          </ul>
-
-          <h3>5) Company data (PDF gudaha)</h3>
-          <ul>
-            <li><b>Masculine Security</b></li>
-            <li>Werschenregerstraße 6, 28237 Bremen</li>
-            <li>Tel: 015778697052</li>
-            <li>E-Mail: <a href="mailto:Kontakt.mass.bremen@hotmail.com" style="color:#9fd0ff; font-weight:800; text-decoration:none">Kontakt.mass.bremen@hotmail.com</a></li>
-          </ul>
-
-          <div class="note">Haddii PDF uusan furmin: popups/print allow.</div>
         </div>
       </div>
     </section>
@@ -491,8 +451,8 @@
     // =========================
     // Storage
     // =========================
-    const STORE_KEY = "ms_einsatz_store_v5";
-    const DRAFT_KEY = "ms_einsatz_draft_v5";
+    const STORE_KEY = "ms_einsatz_store_v6";
+    const DRAFT_KEY = "ms_einsatz_draft_v6";
 
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -504,17 +464,15 @@
     let store = safeParse(localStorage.getItem(STORE_KEY), null) || {
       employees:[], objects:[], einsaetze:[],
       logoDataUrl:null,
+      logoPosition:"left", // ✅ NEW
       sigEmpDataUrl:null,
       sigAgDataUrl:null
     };
-    let draft = safeParse(localStorage.getItem(DRAFT_KEY), null) || {};
 
-    function saveStore(){
-      localStorage.setItem(STORE_KEY, JSON.stringify(store));
-    }
+    function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
 
     // =========================
-    // Auto-save (draft)
+    // Auto-save draft
     // =========================
     let saveTimer = null;
 
@@ -544,17 +502,16 @@
         shiftDate: $("shiftDate").value,
         shiftStart: $("shiftStart").value,
         shiftEnd: $("shiftEnd").value,
-        shiftNote: $("shiftNote").value,
 
         selectedEmpIds: getSelectedEmpIds(),
+        logoPosition: $("logoPos").value,
         lastSavedAt: Date.now()
       };
     }
 
     function saveDraftNow(){
       try{
-        draft = collectDraft();
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
         setSaveStatus("saved");
       }catch(e){
         setSaveStatus("error");
@@ -567,7 +524,6 @@
       saveTimer = setTimeout(saveDraftNow, 250);
     }
 
-    // Save on unload (extra safety)
     window.addEventListener("beforeunload", ()=>{ try{ saveDraftNow(); saveStore(); }catch{} });
 
     // =========================
@@ -613,7 +569,7 @@
     });
 
     // =========================
-    // Logo
+    // Logo + Position
     // =========================
     function applyLogo(){
       const img = $("logoImg");
@@ -625,6 +581,17 @@
         img.style.display = "none";
       }
     }
+
+    // set logo position select from store
+    function applyLogoPos(){
+      $("logoPos").value = store.logoPosition || "left";
+    }
+
+    $("logoPos").addEventListener("change", ()=>{
+      store.logoPosition = $("logoPos").value;
+      saveStore();
+      queueAutoSave();
+    });
 
     $("logoFile").addEventListener("change", ()=>{
       const file = $("logoFile").files?.[0];
@@ -770,7 +737,6 @@
           <div>
             <b>${escapeHtml(title)} ${active ? "✓" : ""}</b>
             <div class="meta">${escapeHtml(meta)}</div>
-            ${ein.note ? `<div class="meta">Note: ${escapeHtml(ein.note)}</div>` : ""}
           </div>
           <div class="right">
             <span class="pill">${ein.type || "Einsatz"}</span>
@@ -786,6 +752,7 @@
       renderObjects();
       renderEinsaetze();
       applyLogo();
+      applyLogoPos();
     }
 
     // =========================
@@ -909,10 +876,7 @@
         }
       }
 
-      function start(ev){
-        drawing = true;
-        last = getPos(ev);
-      }
+      function start(ev){ drawing = true; last = getPos(ev); }
       function move(ev){
         if(!drawing) return;
         ev.preventDefault();
@@ -925,8 +889,7 @@
         if(!drawing) return;
         drawing = false;
         last = null;
-        // auto-save when drawing ends
-        saveSignatureImage();
+        saveSignatureImage(); // ✅ auto-save
       }
 
       canvas.addEventListener("mousedown", start);
@@ -955,7 +918,6 @@
         };
         img.src = dataUrl;
       }
-
       return { restore };
     }
 
@@ -971,7 +933,7 @@
       const date = $("shiftDate").value;
       const start = $("shiftStart").value;
       const end = $("shiftEnd").value;
-      const note = $("shiftNote").value.trim();
+
       if(!objId) return alert("Objekt wählen.");
       if(empIds.length===0) return alert("Mindestens 1 Mitarbeiter auswählen.");
       if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
@@ -983,7 +945,6 @@
         objId,
         empIds,
         date, start, end,
-        note,
         type: obj?.type || "Einsatz",
         sigEmpDataUrl: store.sigEmpDataUrl || null,
         sigAgDataUrl: store.sigAgDataUrl || null,
@@ -1012,7 +973,7 @@
     });
 
     // =========================
-    // Backup / Restore (store + draft)
+    // Backup / Restore
     // =========================
     $("btnBackup").addEventListener("click", ()=>{
       const payload = { store, draft: collectDraft() };
@@ -1036,9 +997,8 @@
           const payload = safeParse(String(r.result||""), null);
           if(!payload || typeof payload !== "object"){ alert("Invalid backup."); return; }
           if(payload.store) store = payload.store;
-          if(payload.draft) draft = payload.draft;
           saveStore();
-          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft||{}));
+          if(payload.draft) localStorage.setItem(DRAFT_KEY, JSON.stringify(payload.draft));
           renderAll();
           restoreDraftToUI();
           sigEmp.restore(); sigAg.restore();
@@ -1062,6 +1022,7 @@
     async function generatePdfForEinsatz(ein){
       const obj = store.objects.find(x=>x.id===ein.objId);
       const logo = store.logoDataUrl || null;
+      const logoPos = store.logoPosition || "left";
 
       const company = {
         name: "Masculine Security",
@@ -1085,6 +1046,13 @@
       const sigEmpImg = ein.sigEmpDataUrl || store.sigEmpDataUrl || null;
       const sigAgImg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
 
+      const showLogo = (logoPos !== "hide") && !!logo;
+
+      // ✅ Logo position logic
+      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
+      const leftBlock = (logoPos === "left") ? logoHTML : ``;
+      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
       const html = `
 <!doctype html>
 <html>
@@ -1095,7 +1063,7 @@
     @page { size: A4; margin: 18mm; }
     body { font-family: Arial, sans-serif; color:#111; }
     .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-    .brand { display:flex; gap:12px; align-items:center; }
+    .leftHead { display:flex; gap:12px; align-items:center; }
     .logo { width:56px; height:56px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
     h1 { margin:0; font-size:18px; }
     .sub { color:#444; margin-top:4px; font-size:12px; }
@@ -1115,15 +1083,16 @@
 </head>
 <body>
   <div class="head">
-    <div class="brand">
-      ${logo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``}
+    <div class="leftHead">
+      ${leftBlock}
       <div>
         <h1>Einsatzmeldung</h1>
         <div class="sub">${company.name} • ${company.address}</div>
         <div class="sub">Tel: ${company.phone} • E-Mail: <a href="mailto:${company.email}">${company.email}</a></div>
       </div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      ${rightBlock}
       <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
       <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
     </div>
@@ -1139,7 +1108,18 @@
       <div>
         <div class="label">Schichtzeit</div>
         <div class="val">${escapeHtml(ein.start)} – ${escapeHtml(ein.end)}</div>
-        <div class="sub"><b>Bemerkung:</b> ${escapeHtml(ein.note || "—")}</div>
+      </div>
+    </div>
+
+    <!-- ✅ Unterschrift Mitarbeiter hortiisa (before Mitarbeiter table) -->
+    <div class="sig">
+      <div class="sigbox">
+        <div class="label">Unterschrift Mitarbeiter</div>
+        ${sigEmpImg ? `<img class="sigimg" src="${sigEmpImg}" alt="Signature Mitarbeiter"/>` : `<div class="sub">—</div>`}
+      </div>
+      <div class="sigbox">
+        <div class="label">Unterschrift Arbeitgeber / Auftraggeber</div>
+        ${sigAgImg ? `<img class="sigimg" src="${sigAgImg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
       </div>
     </div>
 
@@ -1157,17 +1137,6 @@
       </thead>
       <tbody>${empRows}</tbody>
     </table>
-
-    <div class="sig">
-      <div class="sigbox">
-        <div class="label">Unterschrift Mitarbeiter</div>
-        ${sigEmpImg ? `<img class="sigimg" src="${sigEmpImg}" alt="Signature Mitarbeiter"/>` : `<div class="sub">—</div>`}
-      </div>
-      <div class="sigbox">
-        <div class="label">Unterschrift Arbeitgeber / Auftraggeber</div>
-        ${sigAgImg ? `<img class="sigimg" src="${sigAgImg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
-      </div>
-    </div>
 
     <div class="foot">Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.</div>
   </div>
@@ -1198,7 +1167,8 @@
     const autosaveIds = [
       "empName","empBewacher","empPhone","empRole",
       "custName","objName","objAddr","objType",
-      "selObj","shiftDate","shiftStart","shiftEnd","shiftNote"
+      "selObj","shiftDate","shiftStart","shiftEnd",
+      "logoPos"
     ];
     autosaveIds.forEach(id=>{
       const el = $(id);
@@ -1227,12 +1197,11 @@
       if(d.shiftDate) $("shiftDate").value = d.shiftDate;
       if(d.shiftStart) $("shiftStart").value = d.shiftStart;
       if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
-      $("shiftNote").value = d.shiftNote || "";
 
-      // Objekt select after renderObjects() created options
+      if(d.logoPosition) $("logoPos").value = d.logoPosition;
+
       if(d.selObj) $("selObj").value = d.selObj;
 
-      // Mitarbeiter selection after renderEmployees() created checkboxes
       setSelectedEmpIds(d.selectedEmpIds || []);
       updateSelectedCount();
     }
@@ -1241,7 +1210,6 @@
     // Init
     // =========================
     (function init(){
-      // defaults (only if no draft)
       const now = new Date();
       const yyyy = now.getFullYear();
       const mm = String(now.getMonth()+1).padStart(2,"0");
@@ -1249,19 +1217,18 @@
 
       renderAll();
 
-      // set defaults if draft empty
-      const d0 = safeParse(localStorage.getItem(DRAFT_KEY), null);
-      if(!d0){
+      const hasDraft = !!localStorage.getItem(DRAFT_KEY);
+      if(!hasDraft){
         $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
         $("shiftStart").value = "18:00";
         $("shiftEnd").value = "06:00";
       }
 
-      // restore draft + signatures
+      applyLogo();
+      applyLogoPos();
       restoreDraftToUI();
       sigEmp.restore();
       sigAg.restore();
-      applyLogo();
 
       setSaveStatus("saved");
     })();
