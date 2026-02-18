@@ -1,918 +1,1023 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Masculine Security — Dienstplan</title>
-  <meta name="theme-color" content="#0b1220" />
-
-  <!-- PDF + Excel libs (CDN) -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Masculine Security — Einsatzmeldung (All-in-One)</title>
+  <meta name="theme-color" content="#0b3a78"/>
 
   <style>
     :root{
-      --bg:#0b1220; --panel:#0f1a2f; --card:#10203a; --line:#1a2a4b;
-      --text:#e7eeff; --muted:#93a4c6; --accent:#3aa6ff; --good:#2bd4bd; --bad:#ff4d6d;
-      --white:#ffffff;
-      --r:16px; --r2:12px;
+      --bg:#071225;
+      --panel:#0b1a33;
+      --panel2:#0c2242;
+      --card:#0f2a4f;
+      --line:#16345e;
+      --text:#e7f0ff;
+      --muted:#9bb1d5;
+      --accent:#3aa6ff;
+      --danger:#ff4d6d;
+      --good:#21d19f;
+      --r:18px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:var(--font); color:var(--text);
-      background: radial-gradient(1200px 700px at 30% -10%, rgba(58,166,255,.25), transparent 60%),
-                  radial-gradient(900px 600px at 100% 0%, rgba(43,212,189,.18), transparent 55%),
-                  var(--bg);
-      min-height:100vh;
-    }
-    a{color:inherit}
-    .wrap{max-width:1100px; margin:0 auto; padding:20px}
-    .topbar{
-      display:flex; gap:14px; align-items:center; justify-content:space-between;
-      padding:16px; border:1px solid var(--line); border-radius:var(--r);
-      background: linear-gradient(180deg, rgba(16,32,58,.9), rgba(15,26,47,.9));
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
-    }
-    .brand{display:flex; gap:12px; align-items:center}
-    .logo{
-      width:58px; height:58px; border-radius:14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      display:flex; align-items:center; justify-content:center;
-      overflow:hidden;
-    }
-    .logo img{width:100%; height:100%; object-fit:cover}
-    .btitle{line-height:1.15}
-    .btitle h1{margin:0; font-size:18px; letter-spacing:.6px}
-    .btitle p{margin:4px 0 0; color:var(--muted); font-size:12px}
-    .actions{display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end}
-    .btn{
-      appearance:none; border:none; cursor:pointer;
-      padding:10px 12px; border-radius:12px;
-      background: rgba(255,255,255,.10);
+      margin:0;
+      font-family:var(--font);
       color:var(--text);
-      border:1px solid rgba(255,255,255,.10);
-      font-weight:700; font-size:13px;
+      background:
+        radial-gradient(1200px 700px at 30% -10%, rgba(58,166,255,.22), transparent 55%),
+        radial-gradient(900px 500px at 90% 10%, rgba(33,209,159,.12), transparent 55%),
+        var(--bg);
     }
-    .btn:hover{background: rgba(255,255,255,.14)}
-    .btn.primary{background: rgba(58,166,255,.18); border-color: rgba(58,166,255,.35)}
-    .btn.good{background: rgba(43,212,189,.14); border-color: rgba(43,212,189,.32)}
-    .btn.bad{background: rgba(255,77,109,.14); border-color: rgba(255,77,109,.35)}
-    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px}
-    @media (max-width: 900px){ .grid{grid-template-columns:1fr} .actions{justify-content:flex-start} }
-    .card{
-      border:1px solid var(--line); border-radius:var(--r);
-      background: rgba(16,32,58,.75);
-      box-shadow: 0 12px 30px rgba(0,0,0,.30);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .card .hd h2{margin:0; font-size:14px; letter-spacing:.4px}
-    .card .bd{padding:16px}
-    .row{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
-    @media (max-width:600px){ .row{grid-template-columns:1fr} }
-    label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
-    input, select, textarea{
-      width:100%; padding:11px 12px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color:var(--text); outline:none;
-    }
-    textarea{min-height:90px; resize:vertical}
-    input::placeholder, textarea::placeholder{color: rgba(231,238,255,.55)}
-    .hint{font-size:12px; color:var(--muted); margin-top:10px}
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-    }
-    .pill .dot{width:8px; height:8px; border-radius:999px; background: var(--accent)}
-    .pill.good .dot{background: var(--good)}
-    .pill.bad .dot{background: var(--bad)}
 
-    table{width:100%; border-collapse:collapse}
-    th, td{
-      padding:10px 10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      text-align:left; font-size:13px;
-      vertical-align:top;
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 16px;
+      background:linear-gradient(180deg, rgba(11,26,51,.92), rgba(7,18,37,.78));
+      border-bottom:1px solid rgba(22,52,94,.7);
+      backdrop-filter: blur(10px);
+      gap:12px;
+      flex-wrap:wrap;
     }
-    th{font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.3px}
-    .t-actions{white-space:nowrap}
-    .smallbtn{
-      padding:7px 10px; border-radius:10px; font-size:12px;
+    .brand{display:flex; gap:12px; align-items:center; min-width:260px}
+    .logo{
+      width:44px; height:44px; border-radius:12px;
+      object-fit:contain; background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
+      display:none;
+    }
+    .brandName{font-weight:800; letter-spacing:.2px}
+    .brandSub{color:var(--muted); font-size:12px; margin-top:2px}
+
+    .topActions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .wrap{max-width:1220px; margin:18px auto; padding:0 16px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(15,42,79,.92), rgba(11,26,51,.85));
+      border:1px solid rgba(22,52,94,.8);
+      border-radius:var(--r);
+      box-shadow: 0 16px 40px rgba(0,0,0,.25);
+      padding:14px;
+    }
+    .card h2{margin:0 0 6px 0; font-size:18px}
+    .muted{color:var(--muted); margin:0 0 12px 0}
+    .small{font-size:12px}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 12px}
+    .tab{
+      padding:8px 10px; border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+    }
+    .tab.active{
+      background:rgba(58,166,255,.16);
+      border-color:rgba(58,166,255,.28);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .row.actions{display:flex; gap:10px; flex-wrap:wrap}
+    .field label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px 2px}
+    input, select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(22,52,94,.9);
+      background:rgba(7,18,37,.55);
+      color:var(--text);
+      outline:none;
+      resize:vertical;
+    }
+    textarea{min-height:84px}
+    input:focus, select:focus, textarea:focus{border-color:rgba(58,166,255,.9); box-shadow:0 0 0 3px rgba(58,166,255,.15)}
+    .btn{
+      border:0;
+      padding:10px 12px;
+      border-radius:14px;
+      color:#061226;
+      background:var(--accent);
+      font-weight:800;
       cursor:pointer;
     }
-    .smallbtn:hover{background: rgba(255,255,255,.12)}
-    .smallbtn.bad{border-color: rgba(255,77,109,.35); background: rgba(255,77,109,.12)}
-    .smallbtn.good{border-color: rgba(43,212,189,.35); background: rgba(43,212,189,.12)}
-
-    .print-area{
-      margin-top:16px;
-      background: var(--white);
-      color:#0b1220;
-      border-radius: var(--r);
+    .btn.ghost{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .btn.danger{
+      background:rgba(255,77,109,.18);
+      color:#ffd7de;
+      border:1px solid rgba(255,77,109,.35);
+    }
+    .btn:hover{filter:brightness(1.05)}
+    .list{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+    .item{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:10px;
+      padding:10px;
+      border-radius:14px;
+      background:rgba(7,18,37,.45);
+      border:1px solid rgba(22,52,94,.7);
+    }
+    .item b{display:block}
+    .item .meta{color:var(--muted); font-size:12px; margin-top:3px}
+    .item .right{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(58,166,255,.12);
+      border:1px solid rgba(58,166,255,.22);
+      color:var(--text);
+    }
+    .linkbtn{
+      background:transparent; border:1px solid rgba(255,255,255,.14);
+      color:var(--text); border-radius:12px; padding:8px 10px; cursor:pointer;
+    }
+    .linkbtn:hover{background:rgba(255,255,255,.06)}
+    .sigBox{
+      border:1px dashed rgba(255,255,255,.22);
+      background:rgba(7,18,37,.35);
+      border-radius:16px;
+      padding:10px;
+    }
+    canvas{
+      width:100%;
+      height:160px;
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
-      overflow:hidden;
+      touch-action:none;
     }
-    .print-head{
-      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
-      padding:18px 18px 12px;
-      border-bottom:1px solid #e5e7eb;
+    .sigActions{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+    .span2{grid-column: 1 / span 2}
+    .foot{padding:14px 2px 22px}
+    code{background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; border:1px solid rgba(255,255,255,.10)}
+    .doc{
+      line-height:1.5;
+      color:var(--text);
     }
-    .print-brand{display:flex; gap:12px; align-items:center}
-    .print-logo{
-      width:52px; height:52px; border-radius:14px; overflow:hidden;
-      border:1px solid #e5e7eb; background:#fff;
-      display:flex; align-items:center; justify-content:center;
+    .doc h3{margin:12px 0 6px}
+    .doc ul{margin:6px 0 10px; padding-left:18px}
+    .note{
+      border:1px solid rgba(33,209,159,.25);
+      background:rgba(33,209,159,.08);
+      padding:10px;
+      border-radius:14px;
+      margin-top:10px;
+      color:#dbfff5;
     }
-    .print-logo img{width:100%; height:100%; object-fit:cover}
-    .print-title{font-weight:900; letter-spacing:.6px}
-    .print-sub{font-size:12px; color:#475569; margin-top:3px}
-    .print-meta{font-size:12px; color:#334155; text-align:right}
-    .print-meta div{margin:2px 0}
-    .print-body{padding:14px 18px 18px}
-    .print-table th,.print-table td{border-bottom:1px solid #e5e7eb; color:#0b1220}
-    .print-table th{color:#475569}
-    .sign-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:22px}
-    .sign .lbl{font-size:11px; color:#475569; margin-bottom:8px}
-    .sign .line{border-bottom:1px solid #0b1220; height:22px}
 
-    .two-cols{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
-    @media (max-width:900px){ .two-cols{grid-template-columns:1fr} }
-
-    /* PRINT */
-    @media print{
-      body{background:#fff !important}
-      .no-print{display:none !important}
-      .wrap{max-width:100%; padding:0}
-      .print-area{border:none; border-radius:0; margin:0}
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .span2{grid-column:auto}
+      .row{grid-template-columns:1fr}
+      .brand{min-width:unset}
     }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="topbar no-print">
-      <div class="brand">
-        <div class="logo" title="Logo (logo.png)">
-          <img id="logoPreview" src="logo.png" alt="Masculine Security Logo" onerror="this.style.display='none'; this.parentElement.textContent='LOGO';" />
-        </div>
-        <div class="btitle">
-          <h1>MASCULINE SECURITY — Dienstplan</h1>
-          <p>Werschenregerstraße 6 · 28237 Bremen · Tel: 015778697052 · <a href="mailto:Kontakt.mass.bremen@hotmail.com">Kontakt.mass.bremen@hotmail.com</a></p>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn primary" id="btnPrint">Print</button>
-        <button class="btn" id="btnPDF">Export PDF</button>
-        <button class="btn" id="btnExcel">Export Excel</button>
-        <button class="btn" id="btnCSV">Export CSV</button>
-        <button class="btn bad" id="btnReset">Reset</button>
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" id="logoImg" alt="Masculine Security Logo"/>
+      <div class="brandText">
+        <div class="brandName">Masculine Security</div>
+        <div class="brandSub">Einsatzmeldung • PDF • Signatur • Offline (All-in-One HTML)</div>
       </div>
     </div>
 
-    <div class="grid">
-      <!-- SETTINGS -->
-      <div class="card no-print">
-        <div class="hd">
-          <h2>Settings</h2>
-          <span class="pill"><span class="dot"></span> LocalStorage</span>
-        </div>
-        <div class="bd">
-          <div class="row">
-            <div>
-              <label>Monat (z.B. März 2026)</label>
-              <input id="metaMonth" placeholder="März 2026" />
-            </div>
-            <div>
-              <label>Objekt (z.B. Baustelle / Hotel / Lager)</label>
-              <input id="metaObjekt" placeholder="Baustelle Bremen" />
-            </div>
-          </div>
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Standort</label>
-              <input id="metaLocation" placeholder="Bremen & Umgebung" />
-            </div>
-            <div>
-              <label>Logo (file name)</label>
-              <input value="logo.png" disabled />
-            </div>
-          </div>
-          <p class="hint">
-            ✅ Logo: repo-gaaga ku upload garee <b>logo.png</b> (isla folder-ka index.html). Markaas auto ayuu u muuqanayaa.
-          </p>
-        </div>
-      </div>
+    <div class="topActions">
+      <label class="btn ghost" style="display:inline-flex; align-items:center; gap:8px">
+        Logo PNG
+        <input id="logoFile" type="file" accept="image/png" style="display:none">
+      </label>
+      <button class="btn ghost" id="btnClearLogo" title="Remove stored logo">Remove Logo</button>
 
-      <!-- ADD DIENSTPLAN ENTRY -->
-      <div class="card no-print">
-        <div class="hd">
-          <h2>Add Dienstplan Entry</h2>
-          <span class="pill good"><span class="dot"></span> Professional</span>
-        </div>
-        <div class="bd">
+      <button class="btn ghost" id="btnBackup">Backup</button>
+      <button class="btn ghost" id="btnRestore">Restore</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tabs">
+      <button class="tab active" data-tab="app">App</button>
+      <button class="tab" data-tab="doc">Documentation</button>
+    </div>
+
+    <!-- APP -->
+    <section id="tab-app">
+      <section class="grid">
+        <!-- Mitarbeiter -->
+        <div class="card">
+          <h2>Mitarbeiter</h2>
+          <p class="muted">Ku dar shaqaalaha (Bewacher-ID optional).</p>
+
           <div class="row">
-            <div>
-              <label>Date</label>
-              <input id="fDate" type="date" />
+            <div class="field">
+              <label>Vorname & Nachname</label>
+              <input id="empName" placeholder="z.B. Ahmed Ali" />
             </div>
-            <div>
-              <label>Name</label>
-              <input id="fName" placeholder="Mustafa" />
+            <div class="field">
+              <label>Bewacher-ID (optional)</label>
+              <input id="empBewacher" placeholder="z.B. HB-123456" />
             </div>
           </div>
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Shift</label>
-              <select id="fShift">
-                <option value="">—</option>
-                <option>Tag</option>
-                <option>Nacht</option>
-                <option>Früh</option>
-                <option>Spät</option>
+
+          <div class="row">
+            <div class="field">
+              <label>Telefon (optional)</label>
+              <input id="empPhone" placeholder="z.B. 0157..." />
+            </div>
+            <div class="field">
+              <label>Position (optional)</label>
+              <input id="empRole" placeholder="z.B. Wachmann" />
+            </div>
+          </div>
+
+          <div class="row actions">
+            <button class="btn" id="btnAddEmp">Add Mitarbeiter</button>
+            <button class="btn danger" id="btnClearEmp">Clear</button>
+          </div>
+
+          <div class="list" id="empList"></div>
+        </div>
+
+        <!-- Kunde/Objekt -->
+        <div class="card">
+          <h2>Kunde & Objekt</h2>
+          <p class="muted">Ku kaydi Kunde/Objekt (hotel/baustelle/event...).</p>
+
+          <div class="row">
+            <div class="field">
+              <label>Kunde (Firma/Name)</label>
+              <input id="custName" placeholder="z.B. Hotel Bremen GmbH" />
+            </div>
+            <div class="field">
+              <label>Objektname</label>
+              <input id="objName" placeholder="z.B. Eingang / Lobby" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Einsatzort (Adresse)</label>
+              <input id="objAddr" placeholder="Straße, PLZ Ort" />
+            </div>
+            <div class="field">
+              <label>Objekt-Typ</label>
+              <select id="objType">
+                <option value="Hotel">Hotel</option>
+                <option value="Baustelle">Baustelle</option>
+                <option value="Event">Event</option>
+                <option value="Asylheim">Asylheim</option>
+                <option value="Nachtwache">Nachtwache</option>
+                <option value="Sonstiges">Sonstiges</option>
               </select>
             </div>
-            <div>
-              <label>Time (z.B. 18:00-06:00)</label>
-              <input id="fTime" placeholder="18:00-06:00" />
+          </div>
+
+          <div class="row actions">
+            <button class="btn" id="btnSaveObj">Save Objekt</button>
+            <button class="btn danger" id="btnClearObj">Clear</button>
+          </div>
+
+          <div class="list" id="objList"></div>
+        </div>
+
+        <!-- Einsatzmeldung -->
+        <div class="card span2">
+          <h2>Einsatzmeldung erstellen</h2>
+          <p class="muted">Doorta Mitarbeiter + Objekt, geli shift, kadib PDF.</p>
+
+          <div class="row">
+            <div class="field">
+              <label>Mitarbeiter wählen</label>
+              <select id="selEmp"></select>
+            </div>
+            <div class="field">
+              <label>Objekt wählen</label>
+              <select id="selObj"></select>
             </div>
           </div>
-          <div class="row" style="margin-top:12px">
-            <div>
-              <label>Objekt (optional)</label>
-              <input id="fObjekt" placeholder="Baustelle / Hotel ..." />
+
+          <div class="row">
+            <div class="field">
+              <label>Datum</label>
+              <input id="shiftDate" type="date"/>
             </div>
-            <div>
-              <label>Notes (optional)</label>
-              <input id="fNotes" placeholder="Key / Rundgang / Besonderheiten" />
+            <div class="field">
+              <label>Start</label>
+              <input id="shiftStart" type="time"/>
+            </div>
+            <div class="field">
+              <label>Ende</label>
+              <input id="shiftEnd" type="time"/>
             </div>
           </div>
 
-          <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
-            <button class="btn good" id="btnAddEntry">Add</button>
-            <button class="btn" id="btnClearEntries">Clear Entries</button>
+          <div class="row">
+            <div class="field" style="grid-column:1/-1">
+              <label>Tätigkeit / Bemerkung (optional)</label>
+              <input id="shiftNote" placeholder="z.B. Kontrollgänge, Eingangskontrolle..." />
+            </div>
           </div>
-          <p class="hint" id="msg" style="margin-top:10px"></p>
+
+          <div class="row">
+            <div class="field" style="grid-column:1/-1">
+              <label>Unterschrift Mitarbeiter (draw)</label>
+              <div class="sigBox">
+                <canvas id="sigCanvas" width="900" height="240"></canvas>
+                <div class="sigActions">
+                  <button class="btn ghost" id="btnSigClear">Clear signature</button>
+                  <button class="btn ghost" id="btnSigSave">Save signature</button>
+                </div>
+                <div class="muted small">Tip: mobile ku sawir finger, desktop ku sawir mouse.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row actions">
+            <button class="btn" id="btnCreate">Save Einsatz</button>
+            <button class="btn" id="btnPDF">Generate PDF</button>
+            <button class="btn danger" id="btnDelete">Delete selected Einsatz</button>
+          </div>
+
+          <div class="list" id="einsatzList"></div>
+
+          <div class="note small">
+            ✅ Logo: “Logo PNG” ku upload garee (PNG kaliya). Logo + signature waxay galaan PDF.
+          </div>
         </div>
+      </section>
+
+      <footer class="foot">
+        <div class="muted small">
+          Data waa local (browser). Backup/Restore isticmaal. PDF: browser print → “Save as PDF”.
+        </div>
+      </footer>
+    </section>
+
+    <!-- DOCUMENTATION -->
+    <section id="tab-doc" style="display:none">
+      <div class="card">
+        <h2>Documentation</h2>
+        <p class="muted">Buugga isticmaalka (Somali + German terms).</p>
+
+        <div class="doc">
+          <h3>1) Maxay app-kan qabanayaa?</h3>
+          <ul>
+            <li>Ku kaydi <b>Mitarbeiter</b> (shaqaale) + Bewacher-ID (optional)</li>
+            <li>Ku kaydi <b>Kunde/Objekt</b> (hotel/baustelle/event…)</li>
+            <li>Samee <b>Einsatz</b> (date + start/end + note)</li>
+            <li>Ku dar <b>Unterschrift</b> (signature)</li>
+            <li>Ka saar <b>PDF Einsatzmeldung</b> (print-to-PDF)</li>
+            <li>Logo PNG: upload → app + PDF labadaba</li>
+          </ul>
+
+          <h3>2) Workflow (sida saxda ah)</h3>
+          <ul>
+            <li><b>Mitarbeiter</b> → buuxi → “Add Mitarbeiter”</li>
+            <li><b>Kunde & Objekt</b> → buuxi → “Save Objekt”</li>
+            <li><b>Einsatz</b> → dooro Mitarbeiter + Objekt → geli date/time → “Save Einsatz”</li>
+            <li>“Select” Einsatz-ka list-ka</li>
+            <li>“Generate PDF” → print dialog → dooro “Save as PDF”</li>
+          </ul>
+
+          <h3>3) Backup & Restore</h3>
+          <ul>
+            <li><b>Backup</b> → wuxuu soo dejinayaa JSON (xogta oo dhan)</li>
+            <li><b>Restore</b> → upload JSON si data u soo laabato</li>
+          </ul>
+
+          <h3>4) Important (Prüfung/Control)</h3>
+          <ul>
+            <li>PDF Einsatzmeldung + Signature waa “proof” fiican (Zoll/BG/Kunde audit)</li>
+            <li>App-kan waa “Einsatznachweis” (ma aha payroll system)</li>
+          </ul>
+
+          <h3>5) Company data (PDF gudaha)</h3>
+          <ul>
+            <li>Masculine Security</li>
+            <li>Werschenregerstraße 6, 28237 Bremen</li>
+            <li>Tel: 015778697052</li>
+            <li>E-Mail: <a href="mailto:Kontakt.mass.bremen@hotmail.com" style="color:#9fd0ff; font-weight:800; text-decoration:none">Kontakt.mass.bremen@hotmail.com</a></li>
+          </ul>
+
+          <div class="note">
+            Haddii PDF button uu diido: browser-ka ka ogolow Popups/Print.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ========= Store =========
+    const STORE_KEY = "ms_einsatzmeldung_allinone_v1";
+    const $ = (id)=>document.getElementById(id);
+    const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
+
+    function loadStore(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(!raw) return { employees:[], objects:[], einsaetze:[], sigDataUrl:null, logoDataUrl:null };
+        const data = JSON.parse(raw);
+        return {
+          employees: Array.isArray(data.employees) ? data.employees : [],
+          objects: Array.isArray(data.objects) ? data.objects : [],
+          einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
+          sigDataUrl: data.sigDataUrl || null,
+          logoDataUrl: data.logoDataUrl || null
+        };
+      }catch{
+        return { employees:[], objects:[], einsaetze:[], sigDataUrl:null, logoDataUrl:null };
+      }
+    }
+    function saveStore(store){
+      localStorage.setItem(STORE_KEY, JSON.stringify(store));
+    }
+
+    let store = loadStore();
+    let selectedEinsatzId = null;
+
+    // ========= Tabs =========
+    document.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.getAttribute("data-tab");
+        $("tab-app").style.display = (tab==="app") ? "" : "none";
+        $("tab-doc").style.display = (tab==="doc") ? "" : "none";
+      });
+    });
+
+    // ========= Logo =========
+    function applyLogo(){
+      const img = $("logoImg");
+      if(store.logoDataUrl){
+        img.src = store.logoDataUrl;
+        img.style.display = "block";
+      }else{
+        img.removeAttribute("src");
+        img.style.display = "none";
+      }
+    }
+
+    $("logoFile").addEventListener("change", ()=>{
+      const file = $("logoFile").files?.[0];
+      if(!file) return;
+      if(file.type !== "image/png"){
+        alert("PNG kaliya ✅ (image/png).");
+        $("logoFile").value = "";
+        return;
+      }
+      // Optional: keep logo smaller in storage by limiting size check
+      const maxMB = 3;
+      if(file.size > maxMB * 1024 * 1024){
+        alert("Logo waa weyn yahay. Fadlan ka dhig < 3MB.");
+        $("logoFile").value = "";
+        return;
+      }
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        store.logoDataUrl = String(fr.result || "");
+        saveStore(store);
+        applyLogo();
+        alert("Logo saved ✅");
+      };
+      fr.readAsDataURL(file);
+      $("logoFile").value = "";
+    });
+
+    $("btnClearLogo").addEventListener("click", ()=>{
+      if(!confirm("Remove stored logo?")) return;
+      store.logoDataUrl = null;
+      saveStore(store);
+      applyLogo();
+    });
+
+    // ========= Render =========
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function renderEmployees(){
+      const box = $("empList");
+      box.innerHTML = "";
+      if(store.employees.length===0){
+        box.innerHTML = `<div class="muted small">No Mitarbeiter yet.</div>`;
+      }else{
+        store.employees.forEach(emp=>{
+          const div = document.createElement("div");
+          div.className="item";
+          div.innerHTML = `
+            <div>
+              <b>${escapeHtml(emp.name)}</b>
+              <div class="meta">${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
+              ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
+              ${emp.phone ? ` • ${escapeHtml(emp.phone)}`:""}</div>
+            </div>
+            <div class="right">
+              <span class="pill">Mitarbeiter</span>
+              <button class="linkbtn" data-del-emp="${emp.id}">Delete</button>
+            </div>
+          `;
+          box.appendChild(div);
+        });
+      }
+      const sel = $("selEmp");
+      sel.innerHTML = "";
+      if(store.employees.length===0){
+        sel.innerHTML = `<option value="">— no Mitarbeiter —</option>`;
+      }else{
+        store.employees.forEach(emp=>{
+          const opt = document.createElement("option");
+          opt.value = emp.id;
+          opt.textContent = emp.name + (emp.bewacher ? ` (${emp.bewacher})` : "");
+          sel.appendChild(opt);
+        });
+      }
+    }
+
+    function renderObjects(){
+      const box = $("objList");
+      box.innerHTML = "";
+      if(store.objects.length===0){
+        box.innerHTML = `<div class="muted small">No Objekt yet.</div>`;
+      }else{
+        store.objects.forEach(obj=>{
+          const div = document.createElement("div");
+          div.className="item";
+          div.innerHTML = `
+            <div>
+              <b>${escapeHtml(obj.cust)} — ${escapeHtml(obj.obj)}</b>
+              <div class="meta">${escapeHtml(obj.type)} • ${escapeHtml(obj.addr)}</div>
+            </div>
+            <div class="right">
+              <span class="pill">Objekt</span>
+              <button class="linkbtn" data-del-obj="${obj.id}">Delete</button>
+            </div>
+          `;
+          box.appendChild(div);
+        });
+      }
+      const sel = $("selObj");
+      sel.innerHTML = "";
+      if(store.objects.length===0){
+        sel.innerHTML = `<option value="">— no Objekt —</option>`;
+      }else{
+        store.objects.forEach(obj=>{
+          const opt = document.createElement("option");
+          opt.value = obj.id;
+          opt.textContent = `${obj.cust} — ${obj.obj}`;
+          sel.appendChild(opt);
+        });
+      }
+    }
+
+    function renderEinsaetze(){
+      const box = $("einsatzList");
+      box.innerHTML = "";
+      if(store.einsaetze.length===0){
+        box.innerHTML = `<div class="muted small">No Einsätze saved yet.</div>`;
+        return;
+      }
+      store.einsaetze
+        .slice()
+        .sort((a,b)=> (b.createdAt||0) - (a.createdAt||0))
+        .forEach(ein=>{
+          const emp = store.employees.find(x=>x.id===ein.empId);
+          const obj = store.objects.find(x=>x.id===ein.objId);
+          const title = `${emp?emp.name:"(missing Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
+          const meta = `${ein.date} • ${ein.start}–${ein.end} • ${obj?obj.cust:""} • ${obj?obj.addr:""}`;
+          const active = (selectedEinsatzId === ein.id);
+          const div = document.createElement("div");
+          div.className="item";
+          div.innerHTML = `
+            <div>
+              <b>${escapeHtml(title)} ${active ? "✓" : ""}</b>
+              <div class="meta">${escapeHtml(meta)}</div>
+              ${ein.note ? `<div class="meta">Note: ${escapeHtml(ein.note)}</div>` : ""}
+            </div>
+            <div class="right">
+              <span class="pill">${ein.type || "Einsatz"}</span>
+              <button class="linkbtn" data-pick-ein="${ein.id}">${active ? "Selected" : "Select"}</button>
+            </div>
+          `;
+          box.appendChild(div);
+        });
+    }
+
+    function renderAll(){
+      renderEmployees();
+      renderObjects();
+      renderEinsaetze();
+      applyLogo();
+    }
+
+    // ========= CRUD: Mitarbeiter =========
+    $("btnAddEmp").addEventListener("click", ()=>{
+      const name = $("empName").value.trim();
+      if(!name) return alert("Bitte Name eingeben.");
+      const emp = {
+        id: uid(),
+        name,
+        bewacher: $("empBewacher").value.trim(),
+        phone: $("empPhone").value.trim(),
+        role: $("empRole").value.trim()
+      };
+      store.employees.push(emp);
+      saveStore(store);
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      renderAll();
+    });
+    $("btnClearEmp").addEventListener("click", ()=>{
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+    });
+    $("empList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-emp");
+      if(!id) return;
+      if(!confirm("Delete Mitarbeiter?")) return;
+      store.employees = store.employees.filter(x=>x.id!==id);
+      saveStore(store);
+      renderAll();
+    });
+
+    // ========= CRUD: Objekt =========
+    $("btnSaveObj").addEventListener("click", ()=>{
+      const cust = $("custName").value.trim();
+      const obj = $("objName").value.trim();
+      const addr = $("objAddr").value.trim();
+      const type = $("objType").value;
+      if(!cust || !obj || !addr) return alert("Bitte Kunde, Objektname, Adresse ausfüllen.");
+      store.objects.push({ id: uid(), cust, obj, addr, type });
+      saveStore(store);
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      renderAll();
+    });
+    $("btnClearObj").addEventListener("click", ()=>{
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+    });
+    $("objList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-obj");
+      if(!id) return;
+      if(!confirm("Delete Objekt?")) return;
+      store.objects = store.objects.filter(x=>x.id!==id);
+      saveStore(store);
+      renderAll();
+    });
+
+    // ========= CRUD: Einsatz =========
+    $("btnCreate").addEventListener("click", ()=>{
+      const empId = $("selEmp").value;
+      const objId = $("selObj").value;
+      const date = $("shiftDate").value;
+      const start = $("shiftStart").value;
+      const end = $("shiftEnd").value;
+      const note = $("shiftNote").value.trim();
+
+      if(!empId) return alert("Mitarbeiter wählen.");
+      if(!objId) return alert("Objekt wählen.");
+      if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
+
+      const obj = store.objects.find(x=>x.id===objId);
+      store.einsaetze.push({
+        id: uid(),
+        empId, objId,
+        date, start, end,
+        note,
+        type: obj?.type || "Einsatz",
+        sigDataUrl: store.sigDataUrl || null,
+        createdAt: Date.now()
+      });
+      saveStore(store);
+      $("shiftNote").value="";
+      renderAll();
+    });
+
+    $("einsatzList").addEventListener("click",(e)=>{
+      const pick = e.target?.getAttribute?.("data-pick-ein");
+      if(!pick) return;
+      selectedEinsatzId = pick;
+      renderEinsaetze();
+    });
+
+    $("btnDelete").addEventListener("click", ()=>{
+      if(!selectedEinsatzId) return alert("Select Einsatz first.");
+      if(!confirm("Delete selected Einsatz?")) return;
+      store.einsaetze = store.einsaetze.filter(x=>x.id!==selectedEinsatzId);
+      selectedEinsatzId = null;
+      saveStore(store);
+      renderEinsaetze();
+    });
+
+    // ========= Signature Canvas =========
+    const canvas = $("sigCanvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let last = null;
+
+    function resizeCanvasToDevice(){
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.max(1, window.devicePixelRatio || 1);
+      const w = Math.floor(rect.width * ratio);
+      const h = Math.floor(rect.height * ratio);
+
+      const tmp = document.createElement("canvas");
+      tmp.width = canvas.width; tmp.height = canvas.height;
+      tmp.getContext("2d").drawImage(canvas, 0, 0);
+
+      canvas.width = w;
+      canvas.height = h;
+
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(ratio, ratio);
+
+      ctx.drawImage(tmp, 0, 0, rect.width, rect.height);
+    }
+
+    function posFromEvent(ev){
+      const rect = canvas.getBoundingClientRect();
+      const isTouch = ev.touches && ev.touches[0];
+      const clientX = isTouch ? ev.touches[0].clientX : ev.clientX;
+      const clientY = isTouch ? ev.touches[0].clientY : ev.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    function drawLine(a,b){
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "rgba(255,255,255,.92)";
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+    function startDraw(ev){
+      drawing = true;
+      last = posFromEvent(ev);
+    }
+    function moveDraw(ev){
+      if(!drawing) return;
+      ev.preventDefault();
+      const p = posFromEvent(ev);
+      drawLine(last, p);
+      last = p;
+    }
+    function endDraw(){
+      drawing = false;
+      last = null;
+    }
+
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mousemove", moveDraw);
+    window.addEventListener("mouseup", endDraw);
+
+    canvas.addEventListener("touchstart", startDraw, {passive:false});
+    canvas.addEventListener("touchmove", moveDraw, {passive:false});
+    canvas.addEventListener("touchend", endDraw);
+
+    $("btnSigClear").addEventListener("click", ()=>{
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      store.sigDataUrl = null;
+      saveStore(store);
+    });
+
+    $("btnSigSave").addEventListener("click", ()=>{
+      const rect = canvas.getBoundingClientRect();
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = Math.floor(rect.width);
+      exportCanvas.height = Math.floor(rect.height);
+      const ectx = exportCanvas.getContext("2d");
+      ectx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      store.sigDataUrl = exportCanvas.toDataURL("image/png");
+      saveStore(store);
+      alert("Signature saved ✅");
+    });
+
+    function restoreSignature(){
+      if(!store.sigDataUrl) return;
+      const img = new Image();
+      img.onload = ()=>{
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+      };
+      img.src = store.sigDataUrl;
+    }
+
+    window.addEventListener("resize", ()=>setTimeout(resizeCanvasToDevice, 150));
+
+    // ========= Backup / Restore =========
+    $("btnBackup").addEventListener("click", ()=>{
+      const blob = new Blob([JSON.stringify(store, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "einsatzmeldung-backup.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $("btnRestore").addEventListener("click", ()=>{
+      const input = document.createElement("input");
+      input.type="file";
+      input.accept="application/json";
+      input.onchange = ()=>{
+        const file = input.files?.[0];
+        if(!file) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          try{
+            const data = JSON.parse(String(r.result||""));
+            store = {
+              employees: Array.isArray(data.employees) ? data.employees : [],
+              objects: Array.isArray(data.objects) ? data.objects : [],
+              einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
+              sigDataUrl: data.sigDataUrl || null,
+              logoDataUrl: data.logoDataUrl || null
+            };
+            saveStore(store);
+            selectedEinsatzId = null;
+            renderAll();
+            setTimeout(()=>{
+              resizeCanvasToDevice();
+              restoreSignature();
+            }, 120);
+            alert("Restore done ✅");
+          }catch{
+            alert("Restore failed (invalid JSON).");
+          }
+        };
+        r.readAsText(file);
+      };
+      input.click();
+    });
+
+    // ========= PDF Generation (Print-to-PDF) =========
+    function formatDateISOToDE(iso){
+      if(!iso) return "";
+      const [y,m,d] = iso.split("-");
+      if(!y||!m||!d) return iso;
+      return `${d}.${m}.${y}`;
+    }
+
+    async function generatePdfForEinsatz(ein){
+      const emp = store.employees.find(x=>x.id===ein.empId);
+      const obj = store.objects.find(x=>x.id===ein.objId);
+
+      const company = {
+        name: "Masculine Security",
+        address: "Werschenregerstraße 6, 28237 Bremen",
+        phone: "015778697052",
+        email: "Kontakt.mass.bremen@hotmail.com"
+      };
+
+      const sig = ein.sigDataUrl || store.sigDataUrl || null;
+      const logo = store.logoDataUrl || null;
+
+      const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Einsatzmeldung ${formatDateISOToDE(ein.date)}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: Arial, sans-serif; color:#111; }
+    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .brand { display:flex; gap:12px; align-items:center; }
+    .logo { width:56px; height:56px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+    h1 { margin:0; font-size:18px; }
+    .sub { color:#444; margin-top:4px; font-size:12px; }
+    .box { border:1px solid #111; border-radius:10px; padding:12px; margin-top:12px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .label { font-size:11px; color:#333; margin-bottom:4px; }
+    .val { font-size:12px; font-weight:700; }
+    .line { height:1px; background:#111; opacity:.18; margin:12px 0; }
+    .sig { display:flex; justify-content:space-between; gap:12px; margin-top:10px; }
+    .sigbox { flex:1; border:1px solid #111; border-radius:10px; padding:10px; min-height:86px; }
+    .sigimg { max-height:64px; max-width:100%; display:block; }
+    .foot { margin-top:10px; font-size:10px; color:#333; }
+    a { color:#111; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="brand">
+      ${logo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``}
+      <div>
+        <h1>Einsatzmeldung</h1>
+        <div class="sub">${company.name} • ${company.address}</div>
+        <div class="sub">Tel: ${company.phone} • E-Mail: <a href="mailto:${company.email}">${company.email}</a></div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+      <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="grid">
+      <div>
+        <div class="label">Mitarbeiter</div>
+        <div class="val">${escapeHtml(emp?.name || "—")}</div>
+        <div class="sub">Bewacher-ID: ${escapeHtml(emp?.bewacher || "—")}</div>
+        <div class="sub">Position: ${escapeHtml(emp?.role || "—")}</div>
+      </div>
+      <div>
+        <div class="label">Kunde / Objekt</div>
+        <div class="val">${escapeHtml(obj?.cust || "—")} — ${escapeHtml(obj?.obj || "—")}</div>
+        <div class="sub">Adresse: ${escapeHtml(obj?.addr || "—")}</div>
       </div>
     </div>
 
-    <!-- DOCUMENTATION (PRESENT / ABSENT) -->
-    <div class="card no-print" style="margin-top:16px">
-      <div class="hd">
-        <h2>Documentation — Anwesend / Abwesend</h2>
-        <span class="pill bad"><span class="dot"></span> Pflicht Nachweis</span>
+    <div class="line"></div>
+
+    <div class="grid">
+      <div>
+        <div class="label">Schichtzeit</div>
+        <div class="val">${escapeHtml(ein.start)} – ${escapeHtml(ein.end)}</div>
       </div>
-      <div class="bd">
-        <div class="two-cols">
-          <div>
-            <label>Date</label>
-            <input id="dDate" type="date" />
-          </div>
-          <div>
-            <label>Objekt (optional)</label>
-            <input id="dObjekt" placeholder="Baustelle / Hotel ..." />
-          </div>
-        </div>
-
-        <div class="two-cols" style="margin-top:12px">
-          <div>
-            <label>Anwesend (Present) — hal magac line kasta</label>
-            <textarea id="dPresent" placeholder="Mustafa&#10;Ali&#10;Ahmed"></textarea>
-          </div>
-          <div>
-            <label>Abwesend (Absent) — + sabab (optional)</label>
-            <textarea id="dAbsent" placeholder="Mohamed - Krank&#10;Hassan - Urlaub"></textarea>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
-          <button class="btn good" id="btnSaveDoc">Save Documentation</button>
-          <button class="btn" id="btnClearDoc">Clear</button>
-        </div>
-
-        <p class="hint">
-          Tani waa qeybta “Dokumentation” (presence/absence) oo aad Kunde ama Objektleiter u tusi karto.
-        </p>
+      <div>
+        <div class="label">Tätigkeit / Bemerkung</div>
+        <div class="val">${escapeHtml(ein.note || "—")}</div>
       </div>
     </div>
 
-    <!-- TABLES (UI) -->
-    <div class="card no-print" style="margin-top:16px">
-      <div class="hd">
-        <h2>Current Data</h2>
-        <span class="pill"><span class="dot"></span> Dienstplan + Documentation</span>
+    <div class="sig">
+      <div class="sigbox">
+        <div class="label">Unterschrift Mitarbeiter</div>
+        ${sig ? `<img class="sigimg" src="${sig}" alt="Signature"/>` : `<div class="sub">—</div>`}
       </div>
-      <div class="bd" style="padding:0">
-        <div style="padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06)">
-          <b style="font-size:13px">Dienstplan Entries</b>
-        </div>
-        <div style="overflow:auto">
-          <table id="tblEntries">
-            <thead>
-              <tr>
-                <th style="min-width:110px">Date</th>
-                <th style="min-width:140px">Name</th>
-                <th style="min-width:90px">Shift</th>
-                <th style="min-width:120px">Time</th>
-                <th style="min-width:170px">Objekt</th>
-                <th style="min-width:220px">Notes</th>
-                <th class="t-actions" style="min-width:110px">Action</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div style="padding:14px 16px; border-top:1px solid rgba(255,255,255,.06)">
-          <b style="font-size:13px">Documentation Logs</b>
-        </div>
-        <div style="overflow:auto">
-          <table id="tblDocs">
-            <thead>
-              <tr>
-                <th style="min-width:110px">Date</th>
-                <th style="min-width:170px">Objekt</th>
-                <th style="min-width:240px">Present</th>
-                <th style="min-width:240px">Absent</th>
-                <th class="t-actions" style="min-width:110px">Action</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
+      <div class="sigbox">
+        <div class="label">Unterschrift Auftraggeber / Objektverantwortlicher</div>
+        <div class="sub" style="margin-top:42px">______________________________</div>
       </div>
     </div>
 
-    <!-- PRINTABLE AREA -->
-    <div class="print-area" id="printArea">
-      <div class="print-head">
-        <div class="print-brand">
-          <div class="print-logo">
-            <img id="logoPrint" src="logo.png" alt="Logo" onerror="this.style.display='none';" />
-          </div>
-          <div>
-            <div class="print-title">MASCULINE SECURITY</div>
-            <div class="print-sub">Werschenregerstraße 6 · 28237 Bremen · 015778697052 · Kontakt.mass.bremen@hotmail.com</div>
-          </div>
-        </div>
-        <div class="print-meta">
-          <div><b>Monat:</b> <span id="pMonth">—</span></div>
-          <div><b>Objekt:</b> <span id="pObjekt">—</span></div>
-          <div><b>Standort:</b> <span id="pLocation">—</span></div>
-          <div><b>Stand:</b> <span id="pStand">—</span></div>
-        </div>
-      </div>
-
-      <div class="print-body">
-        <div style="font-weight:900; margin-bottom:8px">Dienstplan</div>
-        <div style="overflow:auto">
-          <table class="print-table" id="printEntries">
-            <thead>
-              <tr>
-                <th>Date</th><th>Name</th><th>Shift</th><th>Time</th><th>Objekt</th><th>Notes</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div style="height:14px"></div>
-
-        <div style="font-weight:900; margin-bottom:8px">Documentation — Anwesend / Abwesend</div>
-        <div style="overflow:auto">
-          <table class="print-table" id="printDocs">
-            <thead>
-              <tr>
-                <th>Date</th><th>Objekt</th><th>Present</th><th>Absent</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="sign-grid">
-          <div class="sign">
-            <div class="lbl">Unterschrift Objektleiter / Kunde</div>
-            <div class="line"></div>
-          </div>
-          <div class="sign">
-            <div class="lbl">Unterschrift Masculine Security</div>
-            <div class="line"></div>
-          </div>
-        </div>
-      </div>
+    <div class="foot">
+      Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.
     </div>
-
-    <p class="hint no-print" style="margin-top:14px">
-      ✅ GitHub: upload <b>index.html</b> + <b>logo.png</b>. (logo.png waa sawirka aad soo dirtay) — kadib Netlify/GitHub Pages auto update.
-    </p>
   </div>
 
   <script>
-    // -----------------------------
-    // Storage Keys
-    // -----------------------------
-    const K_META = "ms_meta_v1";
-    const K_ENTRIES = "ms_entries_v1";
-    const K_DOCS = "ms_docs_v1";
+    window.onload = () => setTimeout(()=>{ window.print(); }, 250);
+  </script>
+</body>
+</html>`;
 
-    // -----------------------------
-    // Helpers
-    // -----------------------------
-    const $ = (id) => document.getElementById(id);
-    const nowDateStr = () => new Date().toLocaleDateString("de-DE");
-    const uid = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now() + Math.random());
-
-    function setMsg(text, good=true){
-      const el = $("msg");
-      el.textContent = text || "";
-      el.style.color = good ? "rgba(43,212,189,.95)" : "rgba(255,77,109,.95)";
+      const w = window.open("", "_blank");
+      if(!w) return alert("Popup blocked. Allow popups to print PDF.");
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
     }
 
-    function safeParse(json, fallback){
-      try{ return JSON.parse(json) ?? fallback; }catch(e){ return fallback; }
-    }
+    $("btnPDF").addEventListener("click", async ()=>{
+      if(!selectedEinsatzId) return alert("Select Einsatz first.");
+      const ein = store.einsaetze.find(x=>x.id===selectedEinsatzId);
+      if(!ein) return alert("Einsatz not found.");
+      await generatePdfForEinsatz(ein);
+    });
 
-    function loadMeta(){
-      return safeParse(localStorage.getItem(K_META), {
-        month:"",
-        objekt:"",
-        location:"Bremen & Umgebung"
-      });
-    }
-    function saveMeta(meta){
-      localStorage.setItem(K_META, JSON.stringify(meta));
-    }
+    // ========= Init =========
+    (function init(){
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth()+1).padStart(2,"0");
+      const dd = String(now.getDate()).padStart(2,"0");
+      $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
+      $("shiftStart").value = "18:00";
+      $("shiftEnd").value = "06:00";
 
-    function loadEntries(){
-      return safeParse(localStorage.getItem(K_ENTRIES), []);
-    }
-    function saveEntries(rows){
-      localStorage.setItem(K_ENTRIES, JSON.stringify(rows));
-    }
-
-    function loadDocs(){
-      return safeParse(localStorage.getItem(K_DOCS), []);
-    }
-    function saveDocs(rows){
-      localStorage.setItem(K_DOCS, JSON.stringify(rows));
-    }
-
-    function normalizeLines(text){
-      return (text || "")
-        .split(/\r?\n/)
-        .map(s => s.trim())
-        .filter(Boolean)
-        .join(" | ");
-    }
-
-    // -----------------------------
-    // Render
-    // -----------------------------
-    function renderAll(){
-      const meta = loadMeta();
-      const entries = loadEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-      const docs = loadDocs().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-
-      // Fill meta inputs
-      $("metaMonth").value = meta.month || "";
-      $("metaObjekt").value = meta.objekt || "";
-      $("metaLocation").value = meta.location || "";
-
-      // Print header meta
-      $("pMonth").textContent = meta.month || "—";
-      $("pObjekt").textContent = meta.objekt || "—";
-      $("pLocation").textContent = meta.location || "—";
-      $("pStand").textContent = nowDateStr();
-
-      // Entries table (UI)
-      const tbody = $("tblEntries").querySelector("tbody");
-      tbody.innerHTML = "";
-      entries.forEach(row=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(row.date||"")}</td>
-          <td>${escapeHtml(row.name||"")}</td>
-          <td>${escapeHtml(row.shift||"")}</td>
-          <td>${escapeHtml(row.time||"")}</td>
-          <td>${escapeHtml(row.objekt||"")}</td>
-          <td>${escapeHtml(row.notes||"")}</td>
-          <td class="t-actions">
-            <button class="smallbtn bad" data-del="${row.id}">Delete</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Entries table (PRINT)
-      const pbody = $("printEntries").querySelector("tbody");
-      pbody.innerHTML = "";
-      entries.forEach(row=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(row.date||"")}</td>
-          <td>${escapeHtml(row.name||"")}</td>
-          <td>${escapeHtml(row.shift||"")}</td>
-          <td>${escapeHtml(row.time||"")}</td>
-          <td>${escapeHtml(row.objekt||"")}</td>
-          <td>${escapeHtml(row.notes||"")}</td>
-        `;
-        pbody.appendChild(tr);
-      });
-      if(!entries.length){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="6" style="color:#475569;font-size:12px;padding:12px">No entries yet.</td>`;
-        pbody.appendChild(tr);
-      }
-
-      // Docs table (UI)
-      const dtbody = $("tblDocs").querySelector("tbody");
-      dtbody.innerHTML = "";
-      docs.forEach(d=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(d.date||"")}</td>
-          <td>${escapeHtml(d.objekt||"")}</td>
-          <td>${escapeHtml(d.present||"")}</td>
-          <td>${escapeHtml(d.absent||"")}</td>
-          <td class="t-actions">
-            <button class="smallbtn bad" data-deldoc="${d.id}">Delete</button>
-          </td>
-        `;
-        dtbody.appendChild(tr);
-      });
-
-      // Docs table (PRINT)
-      const dpbody = $("printDocs").querySelector("tbody");
-      dpbody.innerHTML = "";
-      docs.forEach(d=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(d.date||"")}</td>
-          <td>${escapeHtml(d.objekt||"")}</td>
-          <td>${escapeHtml(d.present||"")}</td>
-          <td>${escapeHtml(d.absent||"")}</td>
-        `;
-        dpbody.appendChild(tr);
-      });
-      if(!docs.length){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4" style="color:#475569;font-size:12px;padding:12px">No documentation yet.</td>`;
-        dpbody.appendChild(tr);
-      }
-
-      // Hook delete buttons
-      tbody.querySelectorAll("[data-del]").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          const id = btn.getAttribute("data-del");
-          const rows = loadEntries().filter(x=>x.id !== id);
-          saveEntries(rows);
-          renderAll();
-        });
-      });
-      dtbody.querySelectorAll("[data-deldoc]").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          const id = btn.getAttribute("data-deldoc");
-          const rows = loadDocs().filter(x=>x.id !== id);
-          saveDocs(rows);
-          renderAll();
-        });
-      });
-    }
-
-    function escapeHtml(s){
-      return String(s ?? "").replace(/[&<>"']/g, (m)=>({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[m]));
-    }
-
-    // -----------------------------
-    // Actions
-    // -----------------------------
-    function init(){
-      // Default dates
-      const today = new Date().toISOString().slice(0,10);
-      $("fDate").value = today;
-      $("dDate").value = today;
-
-      // Load meta initial
-      const meta = loadMeta();
-      $("metaMonth").value = meta.month || "";
-      $("metaObjekt").value = meta.objekt || "";
-      $("metaLocation").value = meta.location || "";
-
-      // Meta change -> save + render
-      ["metaMonth","metaObjekt","metaLocation"].forEach(id=>{
-        $(id).addEventListener("input", ()=>{
-          saveMeta({
-            month: $("metaMonth").value.trim(),
-            objekt: $("metaObjekt").value.trim(),
-            location: $("metaLocation").value.trim()
-          });
-          renderAll();
-        });
-      });
-
-      // Add entry
-      $("btnAddEntry").addEventListener("click", ()=>{
-        setMsg("");
-        const date = $("fDate").value;
-        const name = $("fName").value.trim();
-        const shift = $("fShift").value.trim();
-        const time = $("fTime").value.trim();
-        const objekt = ($("fObjekt").value.trim() || loadMeta().objekt || "").trim();
-        const notes = $("fNotes").value.trim();
-
-        if(!date || !name || !time){
-          setMsg("Fadlan buuxi: Date, Name, Time (ugu yaraan).", false);
-          return;
-        }
-        const rows = loadEntries();
-        rows.push({ id: uid(), date, name, shift, time, objekt, notes });
-        saveEntries(rows);
-
-        $("fName").value = "";
-        $("fShift").value = "";
-        $("fTime").value = "";
-        $("fObjekt").value = "";
-        $("fNotes").value = "";
-        setMsg("✅ Entry saved.");
-        renderAll();
-      });
-
-      // Clear entries
-      $("btnClearEntries").addEventListener("click", ()=>{
-        if(confirm("Clear all Dienstplan entries?")){
-          saveEntries([]);
-          renderAll();
-        }
-      });
-
-      // Save documentation
-      $("btnSaveDoc").addEventListener("click", ()=>{
-        const date = $("dDate").value;
-        const objekt = ($("dObjekt").value.trim() || loadMeta().objekt || "").trim();
-        const present = normalizeLines($("dPresent").value);
-        const absent = normalizeLines($("dAbsent").value);
-
-        if(!date){
-          alert("Date waa qasab (documentation).");
-          return;
-        }
-        if(!present && !absent){
-          alert("Fadlan qor ugu yaraan: Present ama Absent.");
-          return;
-        }
-
-        const docs = loadDocs();
-        docs.push({ id: uid(), date, objekt, present, absent });
-        saveDocs(docs);
-
-        $("dPresent").value = "";
-        $("dAbsent").value = "";
-        $("dObjekt").value = "";
-        alert("✅ Documentation saved.");
-        renderAll();
-      });
-
-      // Clear documentation inputs only
-      $("btnClearDoc").addEventListener("click", ()=>{
-        $("dPresent").value = "";
-        $("dAbsent").value = "";
-        $("dObjekt").value = "";
-      });
-
-      // Print
-      $("btnPrint").addEventListener("click", ()=> window.print());
-
-      // PDF export
-      $("btnPDF").addEventListener("click", exportPDF);
-
-      // Excel export (XLSX)
-      $("btnExcel").addEventListener("click", exportExcelXLSX);
-
-      // CSV export
-      $("btnCSV").addEventListener("click", exportCSV);
-
-      // Reset all
-      $("btnReset").addEventListener("click", ()=>{
-        if(confirm("Reset ALL data (meta + dienstplan + documentation)?")){
-          localStorage.removeItem(K_META);
-          localStorage.removeItem(K_ENTRIES);
-          localStorage.removeItem(K_DOCS);
-          setMsg("✅ Reset done.");
-          initDefaults();
-          renderAll();
-        }
-      });
-
-      initDefaults();
       renderAll();
-    }
-
-    function initDefaults(){
-      // If first time, keep defaults
-      const meta = loadMeta();
-      if(!meta.location) meta.location = "Bremen & Umgebung";
-      saveMeta(meta);
-    }
-
-    async function exportPDF(){
-      // Wait for libs
-      if(!window.jspdf || !window.jspdf.jsPDF){
-        alert("PDF library ma load-gareyn. Hubi internet-ka / CDN.");
-        return;
-      }
-      const meta = loadMeta();
-      const entries = loadEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-      const docs = loadDocs().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF("p","mm","a4");
-
-      // Header
-      doc.setFont("helvetica","bold");
-      doc.setFontSize(14);
-      doc.text("MASCULINE SECURITY — Dienstplan", 14, 16);
-
-      doc.setFont("helvetica","normal");
-      doc.setFontSize(10);
-      doc.text("Werschenregerstraße 6 · 28237 Bremen", 14, 22);
-      doc.text("015778697052 · Kontakt.mass.bremen@hotmail.com", 14, 27);
-
-      doc.setFont("helvetica","bold");
-      doc.text(`Monat: `, 14, 34);
-      doc.setFont("helvetica","normal");
-      doc.text(`${meta.month || "-"}`, 30, 34);
-
-      doc.setFont("helvetica","bold");
-      doc.text(`Objekt: `, 14, 39);
-      doc.setFont("helvetica","normal");
-      doc.text(`${meta.objekt || "-"}`, 30, 39);
-
-      doc.setFont("helvetica","bold");
-      doc.text(`Standort: `, 14, 44);
-      doc.setFont("helvetica","normal");
-      doc.text(`${meta.location || "-"}`, 34, 44);
-
-      doc.setFont("helvetica","bold");
-      doc.text(`Stand: `, 14, 49);
-      doc.setFont("helvetica","normal");
-      doc.text(`${nowDateStr()}`, 30, 49);
-
-      // Dienstplan table
-      doc.setFont("helvetica","bold");
-      doc.text("Dienstplan", 14, 58);
-
-      const entryRows = entries.map(e=>[
-        e.date||"", e.name||"", e.shift||"", e.time||"", e.objekt||"", e.notes||""
-      ]);
-      doc.autoTable({
-        startY: 62,
-        head: [["Date","Name","Shift","Time","Objekt","Notes"]],
-        body: entryRows.length ? entryRows : [["","","","","",""]],
-        styles: { fontSize: 9, cellPadding: 2 },
-        headStyles: { fillColor: [235, 239, 245], textColor: 20 },
-      });
-
-      // Documentation table
-      let y = doc.lastAutoTable.finalY + 10;
-      doc.setFont("helvetica","bold");
-      doc.text("Documentation — Anwesend / Abwesend", 14, y);
-      y += 4;
-
-      const docRows = docs.map(d=>[
-        d.date||"", d.objekt||"", d.present||"", d.absent||""
-      ]);
-      doc.autoTable({
-        startY: y+2,
-        head: [["Date","Objekt","Present","Absent"]],
-        body: docRows.length ? docRows : [["","","",""]],
-        styles: { fontSize: 9, cellPadding: 2 },
-        headStyles: { fillColor: [235, 239, 245], textColor: 20 },
-      });
-
-      // Signatures
-      y = doc.lastAutoTable.finalY + 14;
-      doc.setFont("helvetica","normal");
-      doc.setFontSize(10);
-      doc.text("Unterschrift Objektleiter / Kunde", 14, y);
-      doc.line(14, y+10, 90, y+10);
-
-      doc.text("Unterschrift Masculine Security", 114, y);
-      doc.line(114, y+10, 196, y+10);
-
-      const fname = `dienstplan_${(meta.month||"monat").replace(/\s+/g,"_")}.pdf`;
-      doc.save(fname);
-    }
-
-    function exportExcelXLSX(){
-      if(!window.XLSX){
-        alert("Excel library ma load-gareyn. Hubi internet-ka / CDN.");
-        return;
-      }
-      const meta = loadMeta();
-      const entries = loadEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-      const docs = loadDocs().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-
-      const wb = XLSX.utils.book_new();
-
-      // Sheet 1: Meta
-      const metaAoA = [
-        ["Company","MASCULINE SECURITY"],
-        ["Address","Werschenregerstraße 6 · 28237 Bremen"],
-        ["Phone","015778697052"],
-        ["Email","Kontakt.mass.bremen@hotmail.com"],
-        ["Monat", meta.month || ""],
-        ["Objekt", meta.objekt || ""],
-        ["Standort", meta.location || ""],
-        ["Stand", nowDateStr()],
-      ];
-      const wsMeta = XLSX.utils.aoa_to_sheet(metaAoA);
-      XLSX.utils.book_append_sheet(wb, wsMeta, "Meta");
-
-      // Sheet 2: Dienstplan
-      const entryHeader = ["Date","Name","Shift","Time","Objekt","Notes"];
-      const entryAoA = [entryHeader].concat(entries.map(e=>[
-        e.date||"", e.name||"", e.shift||"", e.time||"", e.objekt||"", e.notes||""
-      ]));
-      const wsEntries = XLSX.utils.aoa_to_sheet(entryAoA);
-      XLSX.utils.book_append_sheet(wb, wsEntries, "Dienstplan");
-
-      // Sheet 3: Documentation
-      const docHeader = ["Date","Objekt","Present","Absent"];
-      const docAoA = [docHeader].concat(docs.map(d=>[
-        d.date||"", d.objekt||"", d.present||"", d.absent||""
-      ]));
-      const wsDocs = XLSX.utils.aoa_to_sheet(docAoA);
-      XLSX.utils.book_append_sheet(wb, wsDocs, "Documentation");
-
-      const fname = `dienstplan_${(meta.month||"monat").replace(/\s+/g,"_")}.xlsx`;
-      XLSX.writeFile(wb, fname);
-    }
-
-    function exportCSV(){
-      const meta = loadMeta();
-      const entries = loadEntries().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-      const docs = loadDocs().slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-
-      // One CSV that includes both sections
-      const esc = (v)=>{
-        const s = String(v ?? "");
-        if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-        return s;
-      };
-
-      const lines = [];
-      lines.push("MASCULINE SECURITY");
-      lines.push(`Monat,${esc(meta.month||"")}`);
-      lines.push(`Objekt,${esc(meta.objekt||"")}`);
-      lines.push(`Standort,${esc(meta.location||"")}`);
-      lines.push(`Stand,${esc(nowDateStr())}`);
-      lines.push("");
-      lines.push("DIENSTPLAN");
-      lines.push(["Date","Name","Shift","Time","Objekt","Notes"].join(","));
-      entries.forEach(e=>{
-        lines.push([e.date,e.name,e.shift,e.time,e.objekt,e.notes].map(esc).join(","));
-      });
-      if(!entries.length) lines.push(",,,,,");
-      lines.push("");
-      lines.push("DOCUMENTATION");
-      lines.push(["Date","Objekt","Present","Absent"].join(","));
-      docs.forEach(d=>{
-        lines.push([d.date,d.objekt,d.present,d.absent].map(esc).join(","));
-      });
-      if(!docs.length) lines.push(",,,");
-      const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
-      const fname = `dienstplan_${(meta.month||"monat").replace(/\s+/g,"_")}.csv`;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fname;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    // -----------------------------
-    // Boot
-    // -----------------------------
-    window.addEventListener("DOMContentLoaded", init);
+      setTimeout(()=>{
+        resizeCanvasToDevice();
+        restoreSignature();
+        applyLogo();
+      }, 120);
+    })();
   </script>
 </body>
 </html>
