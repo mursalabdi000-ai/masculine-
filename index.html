@@ -139,7 +139,6 @@
       color:#dbfff5;
     }
 
-    /* Mitarbeiter Multi-select */
     .pickWrap{
       border:1px solid rgba(255,255,255,.12);
       background:rgba(7,18,37,.35);
@@ -170,7 +169,6 @@
       color:var(--text);
     }
 
-    /* Signatures */
     .sigBox{
       border:1px dashed rgba(255,255,255,.22);
       background:rgba(7,18,37,.35);
@@ -187,7 +185,6 @@
     }
     .sigActions{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 
-    /* Autosave status */
     .status{
       display:flex; align-items:center; gap:8px; flex-wrap:wrap;
       padding:8px 10px;
@@ -218,17 +215,16 @@
       .row{grid-template-columns:1fr}
       .brand{min-width:unset}
     }
-    pre, code{white-space:pre-wrap; word-break:break-word}
   </style>
 </head>
 
 <body>
   <header class="topbar">
     <div class="brand">
-      <img class="logo" id="logoImg" alt="Masculine Security Logo"/>
+      <img class="logo" id="logoImg" alt="Logo"/>
       <div class="brandText">
-        <div class="brandName">Masculine Security</div>
-        <div class="brandSub">Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift</div>
+        <div class="brandName" id="brandName">Masculine Security</div>
+        <div class="brandSub" id="brandSub">Auto-Save • Multi Mitarbeiter • Arbeitgeber Unterschrift</div>
       </div>
     </div>
 
@@ -238,7 +234,6 @@
         <span id="saveText">Ready</span>
       </div>
 
-      <!-- ✅ Logo position -->
       <select id="logoPos" title="Logo position in PDF">
         <option value="left">Logo Left (PDF)</option>
         <option value="right">Logo Right (PDF)</option>
@@ -259,6 +254,7 @@
   <main class="wrap">
     <div class="tabs">
       <button class="tab active" data-tab="app" type="button">App</button>
+      <button class="tab" data-tab="settings" type="button">Einstellungen</button>
       <button class="tab" data-tab="doc" type="button">Documentation</button>
     </div>
 
@@ -345,7 +341,7 @@
         <!-- Einsatz -->
         <div class="card span2">
           <h2>Einsatzmeldung erstellen</h2>
-          <p class="muted">✅ Bemerkung/Note waa la saaray (removed).</p>
+          <p class="muted">Company data waxaa lagu geliyaa <b>Einstellungen</b> (waxayna ku muuqanayaan PDF kasta).</p>
 
           <div class="row">
             <div class="field">
@@ -360,7 +356,7 @@
 
           <div class="row">
             <div class="field" style="grid-column:1/-1">
-              <label>Mitarbeiter auswählen (One list for more Mitarbeiter)</label>
+              <label>Mitarbeiter auswählen</label>
               <div class="pickWrap">
                 <div class="pickHdr">
                   <div class="muted small">Tick ku saar 1 ama ka badan (auto-save).</div>
@@ -389,7 +385,6 @@
             </div>
           </div>
 
-          <!-- ✅ Unterschrift Mitarbeiter hortiisa (before list in PDF; in app we keep both here) -->
           <div class="row">
             <div class="field">
               <label>Unterschrift Mitarbeiter (auto-save)</label>
@@ -420,8 +415,7 @@
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ Logo Position: top-right menu-ka ka dooro (PDF).  
-            ✅ Bemerkung waa la saaray (App + PDF).
+            ✅ Saved Company Settings → mustaqbalka PDF kasta si automatic ah ayuu u isticmaali doonaa.
           </div>
         </div>
       </section>
@@ -431,16 +425,78 @@
       </footer>
     </section>
 
+    <!-- SETTINGS -->
+    <section id="tab-settings" style="display:none">
+      <div class="card">
+        <h2>Einstellungen — Firmendaten (saved)</h2>
+        <p class="muted">Halkan ku geli xogta shirkadda. Waxay ku save-gareysaa browser-ka oo PDF kasta way ku muuqanaysaa.</p>
+
+        <div class="row">
+          <div class="field">
+            <label>Firmenname</label>
+            <input id="setCompanyName" placeholder="z.B. Masculine Security"/>
+          </div>
+          <div class="field">
+            <label>Straße & Hausnummer</label>
+            <input id="setStreet" placeholder="z.B. Werschenregerstraße 6"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>PLZ & Ort</label>
+            <input id="setCity" placeholder="z.B. 28237 Bremen"/>
+          </div>
+          <div class="field">
+            <label>Telefon</label>
+            <input id="setPhone" placeholder="z.B. 0157..."/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>E-Mail</label>
+            <input id="setEmail" placeholder="z.B. Kontakt.mass.bremen@hotmail.com"/>
+          </div>
+          <div class="field">
+            <label>Steuernummer / USt-IdNr (optional)</label>
+            <input id="setTax" placeholder="optional"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Hinweis (optional, PDF footer)</label>
+            <input id="setFooterNote" placeholder="z.B. Aufbewahrung empfohlen."/>
+          </div>
+          <div class="field">
+            <label>Default Einsatz-Typ (optional)</label>
+            <input id="setDefaultType" placeholder="z.B. Hotel / Baustelle"/>
+          </div>
+        </div>
+
+        <div class="row actions">
+          <button class="btn" id="btnSaveSettings" type="button">Save Settings</button>
+          <button class="btn ghost" id="btnCompanyPdf" type="button">Export Firmendaten PDF</button>
+          <button class="btn danger" id="btnResetSettings" type="button">Reset</button>
+        </div>
+
+        <div class="note small">
+          ✅ “Export Firmendaten PDF” = mustaqbalka waxaad u isticmaali kartaa PDF ahaan (company profile).
+        </div>
+      </div>
+    </section>
+
     <!-- DOC -->
     <section id="tab-doc" style="display:none">
       <div class="card">
-        <h2>Documentation (Updated)</h2>
+        <h2>Documentation</h2>
         <div class="doc">
-          <h3>Waxyaabaha la beddelay</h3>
+          <h3>Firmendaten (Settings)</h3>
           <ul>
-            <li>✅ <b>Logo position</b> (PDF): Left / Right / Hide</li>
-            <li>✅ <b>Bemerkung</b> waa la saaray (App + PDF)</li>
-            <li>✅ PDF: <b>Unterschrift Mitarbeiter</b> waxaa la dhigay <b>hortiisa</b> (ka hor Mitarbeiter list)</li>
+            <li>Einstellungen → geli <b>Company Name, Address, Phone, Email</b>.</li>
+            <li>Waa <b>saved</b> (browser) → PDF kasta auto ayuu u isticmaalaa.</li>
+            <li><b>Export Firmendaten PDF</b> → hal PDF oo company profile ah.</li>
           </ul>
         </div>
       </div>
@@ -451,8 +507,8 @@
     // =========================
     // Storage
     // =========================
-    const STORE_KEY = "ms_einsatz_store_v6";
-    const DRAFT_KEY = "ms_einsatz_draft_v6";
+    const STORE_KEY = "ms_einsatz_store_v7";
+    const DRAFT_KEY = "ms_einsatz_draft_v7";
 
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -464,9 +520,19 @@
     let store = safeParse(localStorage.getItem(STORE_KEY), null) || {
       employees:[], objects:[], einsaetze:[],
       logoDataUrl:null,
-      logoPosition:"left", // ✅ NEW
+      logoPosition:"left",
       sigEmpDataUrl:null,
-      sigAgDataUrl:null
+      sigAgDataUrl:null,
+      company: {
+        name: "Masculine Security",
+        street: "Werschenregerstraße 6",
+        city: "28237 Bremen",
+        phone: "015778697052",
+        email: "Kontakt.mass.bremen@hotmail.com",
+        tax: "",
+        footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
+        defaultType: ""
+      }
     };
 
     function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
@@ -558,15 +624,27 @@
     // =========================
     // Tabs
     // =========================
+    function showTab(name){
+      $("tab-app").style.display = (name==="app") ? "" : "none";
+      $("tab-settings").style.display = (name==="settings") ? "" : "none";
+      $("tab-doc").style.display = (name==="doc") ? "" : "none";
+    }
     document.querySelectorAll(".tab").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
         btn.classList.add("active");
-        const tab = btn.getAttribute("data-tab");
-        $("tab-app").style.display = (tab==="app") ? "" : "none";
-        $("tab-doc").style.display = (tab==="doc") ? "" : "none";
+        showTab(btn.getAttribute("data-tab"));
       });
     });
+
+    // =========================
+    // Brand / Company UI
+    // =========================
+    function refreshBrand(){
+      const c = store.company || {};
+      $("brandName").textContent = c.name || "Security";
+      $("brandSub").textContent = `${(c.street||"")} • ${(c.city||"")} • Auto-Save`;
+    }
 
     // =========================
     // Logo + Position
@@ -581,11 +659,7 @@
         img.style.display = "none";
       }
     }
-
-    // set logo position select from store
-    function applyLogoPos(){
-      $("logoPos").value = store.logoPosition || "left";
-    }
+    function applyLogoPos(){ $("logoPos").value = store.logoPosition || "left"; }
 
     $("logoPos").addEventListener("change", ()=>{
       store.logoPosition = $("logoPos").value;
@@ -616,7 +690,69 @@
     });
 
     // =========================
-    // Render
+    // Settings (Company data)
+    // =========================
+    function loadSettingsToUI(){
+      const c = store.company || {};
+      $("setCompanyName").value = c.name || "";
+      $("setStreet").value = c.street || "";
+      $("setCity").value = c.city || "";
+      $("setPhone").value = c.phone || "";
+      $("setEmail").value = c.email || "";
+      $("setTax").value = c.tax || "";
+      $("setFooterNote").value = c.footerNote || "";
+      $("setDefaultType").value = c.defaultType || "";
+    }
+
+    function saveSettingsFromUI(){
+      store.company = store.company || {};
+      store.company.name = $("setCompanyName").value.trim() || "Security";
+      store.company.street = $("setStreet").value.trim();
+      store.company.city = $("setCity").value.trim();
+      store.company.phone = $("setPhone").value.trim();
+      store.company.email = $("setEmail").value.trim();
+      store.company.tax = $("setTax").value.trim();
+      store.company.footerNote = $("setFooterNote").value.trim();
+      store.company.defaultType = $("setDefaultType").value.trim();
+      saveStore();
+      refreshBrand();
+      setSaveStatus("saved");
+    }
+
+    $("btnSaveSettings").addEventListener("click", ()=>{
+      saveSettingsFromUI();
+      alert("Settings saved ✅");
+    });
+
+    $("btnResetSettings").addEventListener("click", ()=>{
+      if(!confirm("Reset company settings?")) return;
+      store.company = {
+        name: "Masculine Security",
+        street: "Werschenregerstraße 6",
+        city: "28237 Bremen",
+        phone: "015778697052",
+        email: "Kontakt.mass.bremen@hotmail.com",
+        tax: "",
+        footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
+        defaultType: ""
+      };
+      saveStore();
+      loadSettingsToUI();
+      refreshBrand();
+    });
+
+    // auto-save settings while typing (99% automatic)
+    ["setCompanyName","setStreet","setCity","setPhone","setEmail","setTax","setFooterNote","setDefaultType"].forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        // save to store with debounce
+        clearTimeout(saveTimer);
+        setSaveStatus("saving");
+        saveTimer = setTimeout(()=>{ saveSettingsFromUI(); }, 300);
+      });
+    });
+
+    // =========================
+    // Render lists
     // =========================
     let selectedEinsatzId = null;
 
@@ -753,6 +889,8 @@
       renderEinsaetze();
       applyLogo();
       applyLogoPos();
+      refreshBrand();
+      loadSettingsToUI();
     }
 
     // =========================
@@ -889,7 +1027,7 @@
         if(!drawing) return;
         drawing = false;
         last = null;
-        saveSignatureImage(); // ✅ auto-save
+        saveSignatureImage();
       }
 
       canvas.addEventListener("mousedown", start);
@@ -939,13 +1077,14 @@
       if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
 
       const obj = store.objects.find(x=>x.id===objId);
+      const fallbackType = (store.company?.defaultType || "").trim();
 
       store.einsaetze.push({
         id: uid(),
         objId,
         empIds,
         date, start, end,
-        type: obj?.type || "Einsatz",
+        type: obj?.type || fallbackType || "Einsatz",
         sigEmpDataUrl: store.sigEmpDataUrl || null,
         sigAgDataUrl: store.sigAgDataUrl || null,
         createdAt: Date.now()
@@ -1010,7 +1149,7 @@
     });
 
     // =========================
-    // PDF
+    // PDF helpers
     // =========================
     function formatDateISOToDE(iso){
       if(!iso) return "";
@@ -1019,17 +1158,105 @@
       return `${d}.${m}.${y}`;
     }
 
+    function companyAddressLine(c){
+      const street = (c.street||"").trim();
+      const city = (c.city||"").trim();
+      return [street, city].filter(Boolean).join(", ");
+    }
+
+    // =========================
+    // Export Company PDF (saved data)
+    // =========================
+    $("btnCompanyPdf").addEventListener("click", ()=>{
+      const c = store.company || {};
+      const logo = store.logoDataUrl || null;
+      const logoPos = store.logoPosition || "left";
+      const showLogo = (logoPos !== "hide") && !!logo;
+      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
+      const leftBlock = (logoPos === "left") ? logoHTML : ``;
+      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
+      const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Firmendaten — ${escapeHtml(c.name||"Company")}</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: Arial, sans-serif; color:#111; }
+    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .leftHead { display:flex; gap:12px; align-items:center; }
+    .logo { width:64px; height:64px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+    h1 { margin:0; font-size:20px; }
+    .sub { color:#444; margin-top:4px; font-size:12px; }
+    .box { border:1px solid #111; border-radius:10px; padding:14px; margin-top:12px; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .label { font-size:11px; color:#333; margin-bottom:4px; }
+    .val { font-size:12px; font-weight:700; }
+    a{color:#111; text-decoration:none;}
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="leftHead">
+      ${leftBlock}
+      <div>
+        <h1>Firmendaten</h1>
+        <div class="sub">${escapeHtml(c.name||"")}</div>
+      </div>
+    </div>
+    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+      ${rightBlock}
+      <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="row">
+      <div>
+        <div class="label">Adresse</div>
+        <div class="val">${escapeHtml(companyAddressLine(c) || "—")}</div>
+      </div>
+      <div>
+        <div class="label">Kontakt</div>
+        <div class="val">Tel: ${escapeHtml(c.phone||"—")}</div>
+        <div class="sub">E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"—")}</a></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="label">Steuernummer / USt-IdNr</div>
+      <div class="val">${escapeHtml(c.tax || "—")}</div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = () => setTimeout(()=>{ window.print(); }, 250);
+  <\/script>
+</body>
+</html>`;
+
+      const w = window.open("", "_blank");
+      if(!w) return alert("Popup blocked. Allow popups to print PDF.");
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    });
+
+    // =========================
+    // Generate Einsatz PDF (uses saved company settings)
+    // =========================
     async function generatePdfForEinsatz(ein){
       const obj = store.objects.find(x=>x.id===ein.objId);
       const logo = store.logoDataUrl || null;
       const logoPos = store.logoPosition || "left";
+      const c = store.company || {};
 
-      const company = {
-        name: "Masculine Security",
-        address: "Werschenregerstraße 6, 28237 Bremen",
-        phone: "015778697052",
-        email: "Kontakt.mass.bremen@hotmail.com"
-      };
+      const showLogo = (logoPos !== "hide") && !!logo;
+      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
+      const leftBlock = (logoPos === "left") ? logoHTML : ``;
+      const rightBlock = (logoPos === "right") ? logoHTML : ``;
 
       const employees = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)).filter(Boolean);
       const empRows = employees.length
@@ -1045,13 +1272,6 @@
 
       const sigEmpImg = ein.sigEmpDataUrl || store.sigEmpDataUrl || null;
       const sigAgImg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
-
-      const showLogo = (logoPos !== "hide") && !!logo;
-
-      // ✅ Logo position logic
-      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
-      const leftBlock = (logoPos === "left") ? logoHTML : ``;
-      const rightBlock = (logoPos === "right") ? logoHTML : ``;
 
       const html = `
 <!doctype html>
@@ -1087,8 +1307,9 @@
       ${leftBlock}
       <div>
         <h1>Einsatzmeldung</h1>
-        <div class="sub">${company.name} • ${company.address}</div>
-        <div class="sub">Tel: ${company.phone} • E-Mail: <a href="mailto:${company.email}">${company.email}</a></div>
+        <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+        <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+        ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
       </div>
     </div>
     <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
@@ -1111,7 +1332,6 @@
       </div>
     </div>
 
-    <!-- ✅ Unterschrift Mitarbeiter hortiisa (before Mitarbeiter table) -->
     <div class="sig">
       <div class="sigbox">
         <div class="label">Unterschrift Mitarbeiter</div>
@@ -1138,7 +1358,7 @@
       <tbody>${empRows}</tbody>
     </table>
 
-    <div class="foot">Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.</div>
+    <div class="foot">${escapeHtml(c.footerNote || "")}</div>
   </div>
 
   <script>
@@ -1162,7 +1382,7 @@
     });
 
     // =========================
-    // Auto-save bindings (inputs)
+    // Auto-save bindings (app inputs)
     // =========================
     const autosaveIds = [
       "empName","empBewacher","empPhone","empRole",
@@ -1172,7 +1392,6 @@
     ];
     autosaveIds.forEach(id=>{
       const el = $(id);
-      if(!el) return;
       el.addEventListener("input", queueAutoSave);
       el.addEventListener("change", queueAutoSave);
     });
@@ -1199,7 +1418,6 @@
       if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
 
       if(d.logoPosition) $("logoPos").value = d.logoPosition;
-
       if(d.selObj) $("selObj").value = d.selObj;
 
       setSelectedEmpIds(d.selectedEmpIds || []);
@@ -1207,30 +1425,159 @@
     }
 
     // =========================
+    // Misc buttons
+    // =========================
+    $("btnEmpSelectAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=true);
+      updateSelectedCount();
+      queueAutoSave();
+    });
+    $("btnEmpClearAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=false);
+      updateSelectedCount();
+      queueAutoSave();
+    });
+
+    $("btnAddEmp").addEventListener("click", ()=>{
+      const name = $("empName").value.trim();
+      if(!name) return alert("Bitte Name eingeben.");
+      store.employees.push({
+        id: uid(),
+        name,
+        bewacher: $("empBewacher").value.trim(),
+        phone: $("empPhone").value.trim(),
+        role: $("empRole").value.trim()
+      });
+      saveStore();
+      renderAll();
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
+    });
+
+    $("btnClearEmp").addEventListener("click", ()=>{
+      $("empName").value=""; $("empBewacher").value=""; $("empPhone").value=""; $("empRole").value="";
+      queueAutoSave();
+    });
+
+    $("empList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-emp");
+      if(!id) return;
+      if(!confirm("Delete Mitarbeiter?")) return;
+      store.employees = store.employees.filter(x=>x.id!==id);
+      saveStore();
+      renderAll();
+      queueAutoSave();
+    });
+
+    $("btnSaveObj").addEventListener("click", ()=>{
+      const cust = $("custName").value.trim();
+      const obj  = $("objName").value.trim();
+      const addr = $("objAddr").value.trim();
+      const type = $("objType").value;
+      if(!cust || !obj || !addr) return alert("Bitte Kunde, Objektname, Adresse ausfüllen.");
+      store.objects.push({ id: uid(), cust, obj, addr, type });
+      saveStore();
+      renderAll();
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
+    });
+
+    $("btnClearObj").addEventListener("click", ()=>{
+      $("custName").value=""; $("objName").value=""; $("objAddr").value=""; $("objType").value="Hotel";
+      queueAutoSave();
+    });
+
+    $("objList").addEventListener("click",(e)=>{
+      const id = e.target?.getAttribute?.("data-del-obj");
+      if(!id) return;
+      if(!confirm("Delete Objekt?")) return;
+      store.objects = store.objects.filter(x=>x.id!==id);
+      saveStore();
+      renderAll();
+      queueAutoSave();
+    });
+
+    $("btnCreate").addEventListener("click", ()=>{
+      const objId = $("selObj").value;
+      const empIds = getSelectedEmpIds();
+      const date = $("shiftDate").value;
+      const start = $("shiftStart").value;
+      const end = $("shiftEnd").value;
+
+      if(!objId) return alert("Objekt wählen.");
+      if(empIds.length===0) return alert("Mindestens 1 Mitarbeiter auswählen.");
+      if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
+
+      const obj = store.objects.find(x=>x.id===objId);
+      const fallbackType = (store.company?.defaultType || "").trim();
+
+      store.einsaetze.push({
+        id: uid(),
+        objId,
+        empIds,
+        date, start, end,
+        type: obj?.type || fallbackType || "Einsatz",
+        sigEmpDataUrl: store.sigEmpDataUrl || null,
+        sigAgDataUrl: store.sigAgDataUrl || null,
+        createdAt: Date.now()
+      });
+
+      saveStore();
+      renderEinsaetze();
+      alert("Einsatz saved ✅");
+    });
+
+    $("einsatzList").addEventListener("click",(e)=>{
+      const pick = e.target?.getAttribute?.("data-pick-ein");
+      if(!pick) return;
+      selectedEinsatzId = pick;
+      renderEinsaetze();
+    });
+
+    $("btnDelete").addEventListener("click", ()=>{
+      if(!selectedEinsatzId) return alert("Select Einsatz first.");
+      if(!confirm("Delete selected Einsatz?")) return;
+      store.einsaetze = store.einsaetze.filter(x=>x.id!==selectedEinsatzId);
+      selectedEinsatzId = null;
+      saveStore();
+      renderEinsaetze();
+    });
+
+    // =========================
     // Init
     // =========================
     (function init(){
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth()+1).padStart(2,"0");
-      const dd = String(now.getDate()).padStart(2,"0");
+      // defaults if no store.company
+      store.company = store.company || {
+        name:"Masculine Security", street:"", city:"", phone:"", email:"",
+        tax:"", footerNote:"", defaultType:""
+      };
 
+      // set logo pos select
+      applyLogoPos();
+
+      // render all
       renderAll();
 
+      // set default date/time if no draft
       const hasDraft = !!localStorage.getItem(DRAFT_KEY);
       if(!hasDraft){
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth()+1).padStart(2,"0");
+        const dd = String(now.getDate()).padStart(2,"0");
         $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
         $("shiftStart").value = "18:00";
         $("shiftEnd").value = "06:00";
       }
 
-      applyLogo();
-      applyLogoPos();
+      // restore draft & signatures
       restoreDraftToUI();
       sigEmp.restore();
       sigAg.restore();
 
       setSaveStatus("saved");
+      showTab("app");
     })();
   </script>
 </body>
