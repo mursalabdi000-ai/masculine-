@@ -15,6 +15,7 @@
       --muted:#9bb1d5;
       --accent:#3aa6ff;
       --danger:#ff4d6d;
+      --good:#21d19f;
       --r:18px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
@@ -66,7 +67,6 @@
     .card h2{margin:0 0 6px 0; font-size:18px}
     .muted{color:var(--muted); margin:0 0 12px 0}
     .small{font-size:12px}
-
     .tabs{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 12px}
     .tab{
       padding:8px 10px; border-radius:999px;
@@ -102,6 +102,7 @@
     }
     textarea{min-height:84px}
     input:focus, select:focus, textarea:focus{border-color:rgba(58,166,255,.9); box-shadow:0 0 0 3px rgba(58,166,255,.15)}
+
     .btn{
       border:0;
       padding:10px 12px;
@@ -123,6 +124,7 @@
       border:1px solid rgba(255,77,109,.35);
     }
     .btn:hover{filter:brightness(1.05)}
+
     .list{display:flex; flex-direction:column; gap:8px; margin-top:10px}
     .item{
       display:flex; justify-content:space-between; align-items:flex-start;
@@ -148,6 +150,7 @@
       color:var(--text); border-radius:12px; padding:8px 10px; cursor:pointer;
     }
     .linkbtn:hover{background:rgba(255,255,255,.06)}
+
     .sigBox{
       border:1px dashed rgba(255,255,255,.22);
       background:rgba(7,18,37,.35);
@@ -178,6 +181,57 @@
       color:#dbfff5;
     }
 
+    /* Mitarbeiter Multi-select list */
+    .pickWrap{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(7,18,37,.35);
+      border-radius:16px;
+      padding:10px;
+    }
+    .pickHdr{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .pickList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:220px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .pickRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(22,52,94,.7);
+      background:rgba(7,18,37,.45);
+    }
+    .pickLeft{
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .chk{
+      width:18px; height:18px; margin-top:2px;
+      accent-color: var(--accent);
+    }
+    .pickName{font-weight:800}
+    .pickMeta{color:var(--muted); font-size:12px; margin-top:2px}
+    .countPill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(33,209,159,.12);
+      border:1px solid rgba(33,209,159,.22);
+      color:var(--text);
+    }
+
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
       .span2{grid-column:auto}
@@ -185,7 +239,6 @@
       .brand{min-width:unset}
     }
 
-    /* Keep accidental text from ever showing as huge blocks */
     pre, code{white-space:pre-wrap; word-break:break-word}
   </style>
 </head>
@@ -195,7 +248,7 @@
       <img class="logo" id="logoImg" alt="Masculine Security Logo"/>
       <div class="brandText">
         <div class="brandName">Masculine Security</div>
-        <div class="brandSub">Einsatzmeldung • PDF • Signatur • Offline (All-in-One HTML)</div>
+        <div class="brandSub">Einsatzmeldung • PDF • Signatur • Offline (Multi Mitarbeiter + Arbeitgeber Unterschrift)</div>
       </div>
     </div>
 
@@ -300,16 +353,32 @@
         <!-- Einsatzmeldung -->
         <div class="card span2">
           <h2>Einsatzmeldung erstellen</h2>
-          <p class="muted">Doorta Mitarbeiter + Objekt, geli shift, kadib PDF.</p>
+          <p class="muted">Hadda waxaad dooran kartaa <b>in ka badan 1 Mitarbeiter</b>.</p>
 
           <div class="row">
             <div class="field">
-              <label>Mitarbeiter wählen</label>
-              <select id="selEmp"></select>
-            </div>
-            <div class="field">
               <label>Objekt wählen</label>
               <select id="selObj"></select>
+            </div>
+            <div class="field">
+              <label>Selected Mitarbeiter</label>
+              <div class="countPill" id="selEmpCount">0 selected</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" style="grid-column:1/-1">
+              <label>Mitarbeiter auswählen (Multi-List)</label>
+              <div class="pickWrap">
+                <div class="pickHdr">
+                  <div class="muted small">Tick ku saar shaqaalaha (1 ama ka badan).</div>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap">
+                    <button class="btn ghost" id="btnEmpSelectAll" type="button">Select all</button>
+                    <button class="btn ghost" id="btnEmpClearAll" type="button">Clear all</button>
+                  </div>
+                </div>
+                <div class="pickList" id="empPickList"></div>
+              </div>
             </div>
           </div>
 
@@ -335,16 +404,28 @@
             </div>
           </div>
 
+          <!-- Signatures -->
           <div class="row">
-            <div class="field" style="grid-column:1/-1">
+            <div class="field">
               <label>Unterschrift Mitarbeiter (draw)</label>
               <div class="sigBox">
-                <canvas id="sigCanvas" width="900" height="240"></canvas>
+                <canvas id="sigCanvasEmp" width="900" height="240"></canvas>
                 <div class="sigActions">
-                  <button class="btn ghost" id="btnSigClear">Clear signature</button>
-                  <button class="btn ghost" id="btnSigSave">Save signature</button>
+                  <button class="btn ghost" id="btnSigClearEmp" type="button">Clear</button>
+                  <button class="btn ghost" id="btnSigSaveEmp" type="button">Save</button>
                 </div>
-                <div class="muted small">Tip: mobile ku sawir finger, desktop ku sawir mouse.</div>
+                <div class="muted small">Tip: mobile finger • desktop mouse.</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Unterschrift Arbeitgeber / Auftraggeber (draw)</label>
+              <div class="sigBox">
+                <canvas id="sigCanvasAg" width="900" height="240"></canvas>
+                <div class="sigActions">
+                  <button class="btn ghost" id="btnSigClearAg" type="button">Clear</button>
+                  <button class="btn ghost" id="btnSigSaveAg" type="button">Save</button>
+                </div>
+                <div class="muted small">Halkan ku sawir saxiixa Arbeitgeber/Auftraggeber.</div>
               </div>
             </div>
           </div>
@@ -358,7 +439,7 @@
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ Logo: “Logo PNG” ku upload garee (PNG kaliya). Logo + signature waxay galaan PDF.
+            ✅ Multi-Mitarbeiter + Arbeitgeber Unterschrift waa la daray. Logo PNG upload → PDF wuu galayaa.
           </div>
         </div>
       </section>
@@ -377,38 +458,21 @@
         <p class="muted">Buugga isticmaalka (Somali + German terms).</p>
 
         <div class="doc">
-          <h3>1) Maxay app-kan qabanayaa?</h3>
+          <h3>Waxyaabaha cusub</h3>
           <ul>
-            <li>Ku kaydi <b>Mitarbeiter</b> (shaqaale) + Bewacher-ID (optional)</li>
-            <li>Ku kaydi <b>Kunde/Objekt</b> (hotel/baustelle/event…)</li>
-            <li>Samee <b>Einsatz</b> (date + start/end + note)</li>
-            <li>Ku dar <b>Unterschrift</b> (signature)</li>
-            <li>Ka saar <b>PDF Einsatzmeldung</b> (print-to-PDF)</li>
-            <li>Logo PNG: upload → app + PDF labadaba</li>
+            <li><b>One list for more Mitarbeiter</b> → waxaad tick ku saari kartaa shaqaale badan hal Einsatz</li>
+            <li><b>Arbeitgeber/Auftraggeber Unterschrift</b> → canvas cusub + PDF gudaheeda</li>
           </ul>
 
-          <h3>2) Workflow (sida saxda ah)</h3>
+          <h3>Workflow</h3>
           <ul>
-            <li><b>Mitarbeiter</b> → buuxi → “Add Mitarbeiter”</li>
-            <li><b>Kunde & Objekt</b> → buuxi → “Save Objekt”</li>
-            <li><b>Einsatz</b> → dooro Mitarbeiter + Objekt → geli date/time → “Save Einsatz”</li>
-            <li>“Select” Einsatz-ka list-ka</li>
-            <li>“Generate PDF” → print dialog → dooro “Save as PDF”</li>
+            <li>Mitarbeiter ku dar</li>
+            <li>Objekt ku dar</li>
+            <li>Einsatz: dooro Objekt → tick ku saar Mitarbeiter (1 ama ka badan) → Save Einsatz</li>
+            <li>Select Einsatz-ka list-ka → Generate PDF → Save as PDF</li>
           </ul>
 
-          <h3>3) Backup & Restore</h3>
-          <ul>
-            <li><b>Backup</b> → wuxuu soo dejinayaa JSON (xogta oo dhan)</li>
-            <li><b>Restore</b> → upload JSON si data u soo laabato</li>
-          </ul>
-
-          <h3>4) Important (Prüfung/Control)</h3>
-          <ul>
-            <li>PDF Einsatzmeldung + Signature waa “proof” fiican (Zoll/BG/Kunde audit)</li>
-            <li>App-kan waa “Einsatznachweis” (ma aha payroll system)</li>
-          </ul>
-
-          <h3>5) Company data (PDF gudaha)</h3>
+          <h3>Company data (PDF gudaha)</h3>
           <ul>
             <li>Masculine Security</li>
             <li>Werschenregerstraße 6, 28237 Bremen</li>
@@ -417,7 +481,7 @@
           </ul>
 
           <div class="note">
-            Haddii PDF button uu diido: browser-ka ka ogolow Popups/Print.
+            Haddii PDF uusan furmin: popups/print allow.
           </div>
         </div>
       </div>
@@ -426,24 +490,33 @@
 
   <script>
     // ========= Store =========
-    const STORE_KEY = "ms_einsatzmeldung_allinone_v2";
+    const STORE_KEY = "ms_einsatzmeldung_allinone_v3_multi";
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
 
     function loadStore(){
       try{
         const raw = localStorage.getItem(STORE_KEY);
-        if(!raw) return { employees:[], objects:[], einsaetze:[], sigDataUrl:null, logoDataUrl:null };
+        if(!raw) return {
+          employees:[], objects:[], einsaetze:[],
+          sigEmpDataUrl:null, sigAgDataUrl:null,
+          logoDataUrl:null
+        };
         const data = JSON.parse(raw);
         return {
           employees: Array.isArray(data.employees) ? data.employees : [],
           objects: Array.isArray(data.objects) ? data.objects : [],
           einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
-          sigDataUrl: data.sigDataUrl || null,
+          sigEmpDataUrl: data.sigEmpDataUrl || null,
+          sigAgDataUrl: data.sigAgDataUrl || null,
           logoDataUrl: data.logoDataUrl || null
         };
       }catch{
-        return { employees:[], objects:[], einsaetze:[], sigDataUrl:null, logoDataUrl:null };
+        return {
+          employees:[], objects:[], einsaetze:[],
+          sigEmpDataUrl:null, sigAgDataUrl:null,
+          logoDataUrl:null
+        };
       }
     }
     function saveStore(store){
@@ -508,7 +581,7 @@
       applyLogo();
     });
 
-    // ========= Render =========
+    // ========= Render helpers =========
     function escapeHtml(s){
       return String(s ?? "")
         .replaceAll("&","&amp;")
@@ -518,6 +591,17 @@
         .replaceAll("'","&#039;");
     }
 
+    function getSelectedEmpIds(){
+      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked'))
+        .map(i=>i.value);
+    }
+
+    function updateSelectedCount(){
+      const n = getSelectedEmpIds().length;
+      $("selEmpCount").textContent = `${n} selected`;
+    }
+
+    // ========= Render =========
     function renderEmployees(){
       const box = $("empList");
       box.innerHTML = "";
@@ -536,24 +620,45 @@
             </div>
             <div class="right">
               <span class="pill">Mitarbeiter</span>
-              <button class="linkbtn" data-del-emp="${emp.id}">Delete</button>
+              <button class="linkbtn" data-del-emp="${emp.id}" type="button">Delete</button>
             </div>
           `;
           box.appendChild(div);
         });
       }
-      const sel = $("selEmp");
-      sel.innerHTML = "";
+
+      // Multi pick list
+      const pick = $("empPickList");
+      pick.innerHTML = "";
       if(store.employees.length===0){
-        sel.innerHTML = `<option value="">— no Mitarbeiter —</option>`;
+        pick.innerHTML = `<div class="muted small">No Mitarbeiter to select.</div>`;
       }else{
         store.employees.forEach(emp=>{
-          const opt = document.createElement("option");
-          opt.value = emp.id;
-          opt.textContent = emp.name + (emp.bewacher ? ` (${emp.bewacher})` : "");
-          sel.appendChild(opt);
+          const row = document.createElement("div");
+          row.className = "pickRow";
+          row.innerHTML = `
+            <div class="pickLeft">
+              <input class="chk" type="checkbox" data-emp-chk="1" value="${emp.id}">
+              <div>
+                <div class="pickName">${escapeHtml(emp.name)}</div>
+                <div class="pickMeta">
+                  ${emp.bewacher ? `Bewacher-ID: ${escapeHtml(emp.bewacher)}` : "Bewacher-ID: —"}
+                  ${emp.role ? ` • ${escapeHtml(emp.role)}`:""}
+                </div>
+              </div>
+            </div>
+            <div class="pill">Select</div>
+          `;
+          pick.appendChild(row);
+        });
+
+        // Listen
+        pick.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
+          chk.addEventListener("change", updateSelectedCount);
         });
       }
+
+      updateSelectedCount();
     }
 
     function renderObjects(){
@@ -572,7 +677,7 @@
             </div>
             <div class="right">
               <span class="pill">Objekt</span>
-              <button class="linkbtn" data-del-obj="${obj.id}">Delete</button>
+              <button class="linkbtn" data-del-obj="${obj.id}" type="button">Delete</button>
             </div>
           `;
           box.appendChild(div);
@@ -603,11 +708,16 @@
         .slice()
         .sort((a,b)=> (b.createdAt||0) - (a.createdAt||0))
         .forEach(ein=>{
-          const emp = store.employees.find(x=>x.id===ein.empId);
           const obj = store.objects.find(x=>x.id===ein.objId);
-          const title = `${emp?emp.name:"(missing Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
+
+          const empNames = (Array.isArray(ein.empIds) ? ein.empIds : [])
+            .map(id => store.employees.find(e=>e.id===id)?.name || "(missing)")
+            .join(", ");
+
+          const title = `${empNames || "(no Mitarbeiter)"} • ${obj?obj.obj:"(missing Objekt)"}`;
           const meta = `${ein.date} • ${ein.start}–${ein.end} • ${obj?obj.cust:""} • ${obj?obj.addr:""}`;
           const active = (selectedEinsatzId === ein.id);
+
           const div = document.createElement("div");
           div.className="item";
           div.innerHTML = `
@@ -618,7 +728,7 @@
             </div>
             <div class="right">
               <span class="pill">${ein.type || "Einsatz"}</span>
-              <button class="linkbtn" data-pick-ein="${ein.id}">${active ? "Selected" : "Select"}</button>
+              <button class="linkbtn" data-pick-ein="${ein.id}" type="button">${active ? "Selected" : "Select"}</button>
             </div>
           `;
           box.appendChild(div);
@@ -660,6 +770,16 @@
       renderAll();
     });
 
+    // Multi list quick actions
+    $("btnEmpSelectAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=true);
+      updateSelectedCount();
+    });
+    $("btnEmpClearAll").addEventListener("click", ()=>{
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=false);
+      updateSelectedCount();
+    });
+
     // ========= CRUD: Objekt =========
     $("btnSaveObj").addEventListener("click", ()=>{
       const cust = $("custName").value.trim();
@@ -684,32 +804,141 @@
       renderAll();
     });
 
+    // ========= Signature Canvas helpers =========
+    function setupSignature(canvasId, clearBtnId, saveBtnId, storeKey){
+      const canvas = $(canvasId);
+      const ctx = canvas.getContext("2d");
+      let drawing = false;
+      let last = null;
+
+      function resizeCanvasToDevice(){
+        const rect = canvas.getBoundingClientRect();
+        const ratio = Math.max(1, window.devicePixelRatio || 1);
+        const w = Math.floor(rect.width * ratio);
+        const h = Math.floor(rect.height * ratio);
+
+        const tmp = document.createElement("canvas");
+        tmp.width = canvas.width; tmp.height = canvas.height;
+        tmp.getContext("2d").drawImage(canvas, 0, 0);
+
+        canvas.width = w;
+        canvas.height = h;
+
+        ctx.setTransform(1,0,0,1,0,0);
+        ctx.scale(ratio, ratio);
+
+        ctx.drawImage(tmp, 0, 0, rect.width, rect.height);
+      }
+
+      function posFromEvent(ev){
+        const rect = canvas.getBoundingClientRect();
+        const isTouch = ev.touches && ev.touches[0];
+        const clientX = isTouch ? ev.touches[0].clientX : ev.clientX;
+        const clientY = isTouch ? ev.touches[0].clientY : ev.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function drawLine(a,b){
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "rgba(255,255,255,.92)";
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      function startDraw(ev){ drawing = true; last = posFromEvent(ev); }
+      function moveDraw(ev){
+        if(!drawing) return;
+        ev.preventDefault();
+        const p = posFromEvent(ev);
+        drawLine(last, p);
+        last = p;
+      }
+      function endDraw(){ drawing = false; last = null; }
+
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", moveDraw);
+      window.addEventListener("mouseup", endDraw);
+
+      canvas.addEventListener("touchstart", startDraw, {passive:false});
+      canvas.addEventListener("touchmove", moveDraw, {passive:false});
+      canvas.addEventListener("touchend", endDraw);
+
+      $(clearBtnId).addEventListener("click", ()=>{
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        store[storeKey] = null;
+        saveStore(store);
+      });
+
+      $(saveBtnId).addEventListener("click", ()=>{
+        const rect = canvas.getBoundingClientRect();
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = Math.floor(rect.width);
+        exportCanvas.height = Math.floor(rect.height);
+        const ectx = exportCanvas.getContext("2d");
+        ectx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+        store[storeKey] = exportCanvas.toDataURL("image/png");
+        saveStore(store);
+        alert("Signature saved ✅");
+      });
+
+      function restore(){
+        const dataUrl = store[storeKey];
+        if(!dataUrl) return;
+        const img = new Image();
+        img.onload = ()=>{
+          const rect = canvas.getBoundingClientRect();
+          ctx.clearRect(0,0,canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = dataUrl;
+      }
+
+      return { resizeCanvasToDevice, restore };
+    }
+
+    const sigEmp = setupSignature("sigCanvasEmp", "btnSigClearEmp", "btnSigSaveEmp", "sigEmpDataUrl");
+    const sigAg  = setupSignature("sigCanvasAg",  "btnSigClearAg",  "btnSigSaveAg",  "sigAgDataUrl");
+
+    window.addEventListener("resize", ()=>setTimeout(()=>{
+      sigEmp.resizeCanvasToDevice();
+      sigAg.resizeCanvasToDevice();
+    }, 150));
+
     // ========= CRUD: Einsatz =========
     $("btnCreate").addEventListener("click", ()=>{
-      const empId = $("selEmp").value;
       const objId = $("selObj").value;
+      const empIds = getSelectedEmpIds();
       const date = $("shiftDate").value;
       const start = $("shiftStart").value;
       const end = $("shiftEnd").value;
       const note = $("shiftNote").value.trim();
 
-      if(!empId) return alert("Mitarbeiter wählen.");
       if(!objId) return alert("Objekt wählen.");
+      if(empIds.length === 0) return alert("Mindestens 1 Mitarbeiter auswählen.");
       if(!date || !start || !end) return alert("Datum/Start/Ende ausfüllen.");
 
       const obj = store.objects.find(x=>x.id===objId);
+
       store.einsaetze.push({
         id: uid(),
-        empId, objId,
+        empIds,
+        objId,
         date, start, end,
         note,
         type: obj?.type || "Einsatz",
-        sigDataUrl: store.sigDataUrl || null,
+        sigEmpDataUrl: store.sigEmpDataUrl || null,
+        sigAgDataUrl: store.sigAgDataUrl || null,
         createdAt: Date.now()
       });
+
       saveStore(store);
       $("shiftNote").value="";
       renderAll();
+      alert("Einsatz saved ✅");
     });
 
     $("einsatzList").addEventListener("click",(e)=>{
@@ -727,103 +956,6 @@
       saveStore(store);
       renderEinsaetze();
     });
-
-    // ========= Signature Canvas =========
-    const canvas = $("sigCanvas");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let last = null;
-
-    function resizeCanvasToDevice(){
-      const rect = canvas.getBoundingClientRect();
-      const ratio = Math.max(1, window.devicePixelRatio || 1);
-      const w = Math.floor(rect.width * ratio);
-      const h = Math.floor(rect.height * ratio);
-
-      const tmp = document.createElement("canvas");
-      tmp.width = canvas.width; tmp.height = canvas.height;
-      tmp.getContext("2d").drawImage(canvas, 0, 0);
-
-      canvas.width = w;
-      canvas.height = h;
-
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.scale(ratio, ratio);
-
-      ctx.drawImage(tmp, 0, 0, rect.width, rect.height);
-    }
-
-    function posFromEvent(ev){
-      const rect = canvas.getBoundingClientRect();
-      const isTouch = ev.touches && ev.touches[0];
-      const clientX = isTouch ? ev.touches[0].clientX : ev.clientX;
-      const clientY = isTouch ? ev.touches[0].clientY : ev.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
-    }
-    function drawLine(a,b){
-      ctx.lineWidth = 2.2;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.strokeStyle = "rgba(255,255,255,.92)";
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
-    }
-    function startDraw(ev){
-      drawing = true;
-      last = posFromEvent(ev);
-    }
-    function moveDraw(ev){
-      if(!drawing) return;
-      ev.preventDefault();
-      const p = posFromEvent(ev);
-      drawLine(last, p);
-      last = p;
-    }
-    function endDraw(){
-      drawing = false;
-      last = null;
-    }
-
-    canvas.addEventListener("mousedown", startDraw);
-    canvas.addEventListener("mousemove", moveDraw);
-    window.addEventListener("mouseup", endDraw);
-
-    canvas.addEventListener("touchstart", startDraw, {passive:false});
-    canvas.addEventListener("touchmove", moveDraw, {passive:false});
-    canvas.addEventListener("touchend", endDraw);
-
-    $("btnSigClear").addEventListener("click", ()=>{
-      ctx.clearRect(0,0,canvas.width, canvas.height);
-      store.sigDataUrl = null;
-      saveStore(store);
-    });
-
-    $("btnSigSave").addEventListener("click", ()=>{
-      const rect = canvas.getBoundingClientRect();
-      const exportCanvas = document.createElement("canvas");
-      exportCanvas.width = Math.floor(rect.width);
-      exportCanvas.height = Math.floor(rect.height);
-      const ectx = exportCanvas.getContext("2d");
-      ectx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
-      store.sigDataUrl = exportCanvas.toDataURL("image/png");
-      saveStore(store);
-      alert("Signature saved ✅");
-    });
-
-    function restoreSignature(){
-      if(!store.sigDataUrl) return;
-      const img = new Image();
-      img.onload = ()=>{
-        const rect = canvas.getBoundingClientRect();
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, rect.width, rect.height);
-      };
-      img.src = store.sigDataUrl;
-    }
-
-    window.addEventListener("resize", ()=>setTimeout(resizeCanvasToDevice, 150));
 
     // ========= Backup / Restore =========
     $("btnBackup").addEventListener("click", ()=>{
@@ -850,16 +982,17 @@
               employees: Array.isArray(data.employees) ? data.employees : [],
               objects: Array.isArray(data.objects) ? data.objects : [],
               einsaetze: Array.isArray(data.einsaetze) ? data.einsaetze : [],
-              sigDataUrl: data.sigDataUrl || null,
+              sigEmpDataUrl: data.sigEmpDataUrl || null,
+              sigAgDataUrl: data.sigAgDataUrl || null,
               logoDataUrl: data.logoDataUrl || null
             };
             saveStore(store);
             selectedEinsatzId = null;
             renderAll();
             setTimeout(()=>{
-              resizeCanvasToDevice();
-              restoreSignature();
-            }, 120);
+              sigEmp.resizeCanvasToDevice(); sigAg.resizeCanvasToDevice();
+              sigEmp.restore(); sigAg.restore();
+            }, 150);
             alert("Restore done ✅");
           }catch{
             alert("Restore failed (invalid JSON).");
@@ -878,11 +1011,10 @@
       return `${d}.${m}.${y}`;
     }
 
-    // ✅ IMPORTANT FIX: We will escape closing script tags inside the PDF HTML string:
-    // use <\/script> so this main page script is NEVER terminated early.
+    // ✅ IMPORTANT FIX: Use <\/script> inside PDF HTML to avoid breaking this main script.
     async function generatePdfForEinsatz(ein){
-      const emp = store.employees.find(x=>x.id===ein.empId);
       const obj = store.objects.find(x=>x.id===ein.objId);
+      const logo = store.logoDataUrl || null;
 
       const company = {
         name: "Masculine Security",
@@ -891,8 +1023,23 @@
         email: "Kontakt.mass.bremen@hotmail.com"
       };
 
-      const sig = ein.sigDataUrl || store.sigDataUrl || null;
-      const logo = store.logoDataUrl || null;
+      const employees = (Array.isArray(ein.empIds) ? ein.empIds : [])
+        .map(id => store.employees.find(e=>e.id===id))
+        .filter(Boolean);
+
+      const empRows = employees.length
+        ? employees.map((e, idx)=>`
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #111;">${idx+1}</td>
+            <td style="padding:6px 8px; border:1px solid #111;"><b>${escapeHtml(e.name)}</b></td>
+            <td style="padding:6px 8px; border:1px solid #111;">${escapeHtml(e.bewacher || "—")}</td>
+            <td style="padding:6px 8px; border:1px solid #111;">${escapeHtml(e.role || "—")}</td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="4" style="padding:8px; border:1px solid #111;">—</td></tr>`;
+
+      const sigEmp = ein.sigEmpDataUrl || store.sigEmpDataUrl || null;
+      const sigAg  = ein.sigAgDataUrl  || store.sigAgDataUrl  || null;
 
       const html = `
 <!doctype html>
@@ -918,6 +1065,8 @@
     .sigimg { max-height:64px; max-width:100%; display:block; }
     .foot { margin-top:10px; font-size:10px; color:#333; }
     a { color:#111; text-decoration:none; }
+    table{ border-collapse:collapse; width:100%; font-size:12px; }
+    th{ text-align:left; padding:6px 8px; border:1px solid #111; background:#f2f2f2; }
   </style>
 </head>
 <body>
@@ -939,39 +1088,42 @@
   <div class="box">
     <div class="grid">
       <div>
-        <div class="label">Mitarbeiter</div>
-        <div class="val">${escapeHtml(emp?.name || "—")}</div>
-        <div class="sub">Bewacher-ID: ${escapeHtml(emp?.bewacher || "—")}</div>
-        <div class="sub">Position: ${escapeHtml(emp?.role || "—")}</div>
-      </div>
-      <div>
         <div class="label">Kunde / Objekt</div>
         <div class="val">${escapeHtml(obj?.cust || "—")} — ${escapeHtml(obj?.obj || "—")}</div>
         <div class="sub">Adresse: ${escapeHtml(obj?.addr || "—")}</div>
+      </div>
+      <div>
+        <div class="label">Schichtzeit</div>
+        <div class="val">${escapeHtml(ein.start)} – ${escapeHtml(ein.end)}</div>
+        <div class="sub"><b>Bemerkung:</b> ${escapeHtml(ein.note || "—")}</div>
       </div>
     </div>
 
     <div class="line"></div>
 
-    <div class="grid">
-      <div>
-        <div class="label">Schichtzeit</div>
-        <div class="val">${escapeHtml(ein.start)} – ${escapeHtml(ein.end)}</div>
-      </div>
-      <div>
-        <div class="label">Tätigkeit / Bemerkung</div>
-        <div class="val">${escapeHtml(ein.note || "—")}</div>
-      </div>
-    </div>
+    <div class="label">Mitarbeiter (Liste)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:44px;">#</th>
+          <th>Name</th>
+          <th style="width:160px;">Bewacher-ID</th>
+          <th style="width:160px;">Position</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${empRows}
+      </tbody>
+    </table>
 
     <div class="sig">
       <div class="sigbox">
         <div class="label">Unterschrift Mitarbeiter</div>
-        ${sig ? `<img class="sigimg" src="${sig}" alt="Signature"/>` : `<div class="sub">—</div>`}
+        ${sigEmp ? `<img class="sigimg" src="${sigEmp}" alt="Signature Mitarbeiter"/>` : `<div class="sub">—</div>`}
       </div>
       <div class="sigbox">
-        <div class="label">Unterschrift Auftraggeber / Objektverantwortlicher</div>
-        <div class="sub" style="margin-top:42px">______________________________</div>
+        <div class="label">Unterschrift Arbeitgeber / Auftraggeber</div>
+        ${sigAg ? `<img class="sigimg" src="${sigAg}" alt="Signature Arbeitgeber"/>` : `<div class="sub">—</div>`}
       </div>
     </div>
 
@@ -1012,10 +1164,11 @@
 
       renderAll();
       setTimeout(()=>{
-        resizeCanvasToDevice();
-        restoreSignature();
+        sigEmp.resizeCanvasToDevice(); sigAg.resizeCanvasToDevice();
+        sigEmp.restore(); sigAg.restore();
         applyLogo();
-      }, 120);
+        updateSelectedCount();
+      }, 150);
     })();
   </script>
 </body>
