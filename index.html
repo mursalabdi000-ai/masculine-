@@ -9,15 +9,12 @@
   <style>
     :root{
       --bg:#071225;
-      --panel:#0b1a33;
-      --panel2:#0c2242;
       --card:#0f2a4f;
       --line:#16345e;
       --text:#e7f0ff;
       --muted:#9bb1d5;
       --accent:#3aa6ff;
       --danger:#ff4d6d;
-      --good:#21d19f;
       --r:18px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
@@ -113,6 +110,7 @@
       background:var(--accent);
       font-weight:800;
       cursor:pointer;
+      user-select:none;
     }
     .btn.ghost{
       background:rgba(255,255,255,.08);
@@ -168,10 +166,7 @@
     .span2{grid-column: 1 / span 2}
     .foot{padding:14px 2px 22px}
     code{background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px; border:1px solid rgba(255,255,255,.10)}
-    .doc{
-      line-height:1.5;
-      color:var(--text);
-    }
+    .doc{line-height:1.5}
     .doc h3{margin:12px 0 6px}
     .doc ul{margin:6px 0 10px; padding-left:18px}
     .note{
@@ -189,6 +184,9 @@
       .row{grid-template-columns:1fr}
       .brand{min-width:unset}
     }
+
+    /* Keep accidental text from ever showing as huge blocks */
+    pre, code{white-space:pre-wrap; word-break:break-word}
   </style>
 </head>
 <body>
@@ -428,7 +426,7 @@
 
   <script>
     // ========= Store =========
-    const STORE_KEY = "ms_einsatzmeldung_allinone_v1";
+    const STORE_KEY = "ms_einsatzmeldung_allinone_v2";
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
 
@@ -486,7 +484,6 @@
         $("logoFile").value = "";
         return;
       }
-      // Optional: keep logo smaller in storage by limiting size check
       const maxMB = 3;
       if(file.size > maxMB * 1024 * 1024){
         alert("Logo waa weyn yahay. Fadlan ka dhig < 3MB.");
@@ -881,6 +878,8 @@
       return `${d}.${m}.${y}`;
     }
 
+    // ✅ IMPORTANT FIX: We will escape closing script tags inside the PDF HTML string:
+    // use <\/script> so this main page script is NEVER terminated early.
     async function generatePdfForEinsatz(ein){
       const emp = store.employees.find(x=>x.id===ein.empId);
       const obj = store.objects.find(x=>x.id===ein.objId);
@@ -983,7 +982,7 @@
 
   <script>
     window.onload = () => setTimeout(()=>{ window.print(); }, 250);
-  </script>
+  <\/script>
 </body>
 </html>`;
 
