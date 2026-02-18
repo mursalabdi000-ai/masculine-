@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Masculine Security — Einsatzmeldung (99% Auto)</title>
+  <title>Masculine Security — Einsatzmeldung (99% Auto + Download/Restore)</title>
   <meta name="theme-color" content="#0b3a78"/>
 
   <style>
@@ -53,7 +53,6 @@
     .brandName{font-weight:800; letter-spacing:.2px}
     .brandSub{color:var(--muted); font-size:12px; margin-top:2px}
 
-    /* ✅ clickable */
     a.link{
       color:inherit;
       text-decoration:none;
@@ -219,9 +218,6 @@
 
     .span2{grid-column: 1 / span 2}
     .foot{padding:14px 2px 22px}
-    .doc{line-height:1.55}
-    .doc h3{margin:12px 0 6px}
-    .doc ul{margin:6px 0 10px; padding-left:18px}
 
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
@@ -248,7 +244,6 @@
         <span id="saveText">Ready</span>
       </div>
 
-      <!-- ✅ App Logo Position -->
       <select id="logoPosApp" title="Logo position in App">
         <option value="left">App: Left</option>
         <option value="right">App: Right</option>
@@ -256,7 +251,6 @@
         <option value="hide">App: Hide</option>
       </select>
 
-      <!-- ✅ PDF Logo Position (NOW with TOP) -->
       <select id="logoPos" title="Logo position in PDF">
         <option value="left">Logo Left (PDF)</option>
         <option value="right">Logo Right (PDF)</option>
@@ -270,8 +264,8 @@
       </label>
       <button class="btn ghost" id="btnClearLogo" type="button">Remove Logo</button>
 
-      <button class="btn ghost" id="btnBackup" type="button">Backup</button>
-      <button class="btn ghost" id="btnRestore" type="button">Restore</button>
+      <button class="btn ghost" id="btnBackup" type="button">Backup (Full)</button>
+      <button class="btn ghost" id="btnRestore" type="button">Restore (Full)</button>
     </div>
   </header>
 
@@ -279,7 +273,6 @@
     <div class="tabs">
       <button class="tab active" data-tab="app" type="button">App</button>
       <button class="tab" data-tab="settings" type="button">Einstellungen</button>
-      <button class="tab" data-tab="doc" type="button">Documentation</button>
     </div>
 
     <!-- APP -->
@@ -409,6 +402,18 @@
             </div>
           </div>
 
+          <!-- ✅ Export range dates -->
+          <div class="row">
+            <div class="field">
+              <label>Von (Download)</label>
+              <input id="expFrom" type="date"/>
+            </div>
+            <div class="field">
+              <label>Bis (Download)</label>
+              <input id="expTo" type="date"/>
+            </div>
+          </div>
+
           <div class="row">
             <div class="field">
               <label>Unterschrift Mitarbeiter (auto-save)</label>
@@ -434,12 +439,18 @@
             <button class="btn" id="btnCreate" type="button">Save Einsatz</button>
             <button class="btn" id="btnPDF" type="button">Generate PDF</button>
             <button class="btn danger" id="btnDelete" type="button">Delete selected Einsatz</button>
+
+            <!-- ✅ NEW: download days before -->
+            <button class="btn ghost" id="btnExportRangeJson" type="button">Download Einsätze (JSON)</button>
+            <button class="btn ghost" id="btnExportRangeCsv" type="button">Download Einsätze (CSV)</button>
+            <button class="btn ghost" id="btnImportRangeJson" type="button">Import Einsätze (JSON)</button>
           </div>
 
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ PDF: Mitarbeiter Unterschrift column gaar ah (row kasta). Arbeitgeber Unterschrift = hoosta. Logo (PDF) = left/right/top/hide.
+            ✅ “Download Einsätze” = haddii maalmo ka hor loo baahdo → xogta dib ayaad u download-gareyn kartaa. <br>
+            ✅ JSON = backup + restore (device kale). CSV = Excel/Sheets.
           </div>
         </div>
       </section>
@@ -501,28 +512,7 @@
 
         <div class="row actions">
           <button class="btn" id="btnSaveSettings" type="button">Save Settings</button>
-          <button class="btn ghost" id="btnCompanyPdf" type="button">Export Firmendaten PDF</button>
           <button class="btn danger" id="btnResetSettings" type="button">Reset</button>
-        </div>
-
-        <div class="note small">
-          ✅ Firmendaten saved → header clickable Tel/E-Mail.
-        </div>
-      </div>
-    </section>
-
-    <!-- DOC -->
-    <section id="tab-doc" style="display:none">
-      <div class="card">
-        <h2>Documentation</h2>
-        <div class="doc">
-          <h3>What's included</h3>
-          <ul>
-            <li>Auto-save (draft + store)</li>
-            <li>Clickable Tel/E-Mail in header</li>
-            <li>Logo positions: App (left/right/top/hide), PDF (left/right/top/hide)</li>
-            <li>PDF: Mitarbeiter signature column (blank box), Arbeitgeber signature bottom</li>
-          </ul>
         </div>
       </div>
     </section>
@@ -530,10 +520,11 @@
 
   <script>
     // =========================
-    // Storage
+    // Storage + Migration
     // =========================
-    const STORE_KEY = "ms_einsatz_store_v10";
-    const DRAFT_KEY = "ms_einsatz_draft_v10";
+    const STORE_KEY = "ms_einsatz_store_v12";
+    const DRAFT_KEY = "ms_einsatz_draft_v12";
+    const OLD_STORE_KEYS = ["ms_einsatz_store_v11","ms_einsatz_store_v10","ms_einsatz_store_v9","ms_einsatz_store_v8","ms_einsatz_store_v7"];
 
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -542,25 +533,50 @@
       try{ return JSON.parse(raw); }catch{ return fallback; }
     }
 
-    let store = safeParse(localStorage.getItem(STORE_KEY), null) || {
-      employees:[], objects:[], einsaetze:[],
-      logoDataUrl:null,
-      logoPosition:"left",       // PDF left/right/top/hide
-      logoPositionApp:"left",    // App left/right/top/hide
-      sigEmpDataUrl:null,
-      sigAgDataUrl:null,
-      company: {
-        name: "Masculine Security",
-        street: "Werschenregerstraße 6",
-        city: "28237 Bremen",
-        phone: "015778697052",
-        email: "Kontakt.mass.bremen@hotmail.com",
-        tax: "",
-        footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
-        defaultType: ""
-      }
-    };
+    function defaultStore(){
+      return {
+        employees:[], objects:[], einsaetze:[],
+        logoDataUrl:null,
+        logoPosition:"left",
+        logoPositionApp:"left",
+        sigEmpDataUrl:null,
+        sigAgDataUrl:null,
+        company: {
+          name: "Masculine Security",
+          street: "Werschenregerstraße 6",
+          city: "28237 Bremen",
+          phone: "015778697052",
+          email: "Kontakt.mass.bremen@hotmail.com",
+          tax: "",
+          footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
+          defaultType: ""
+        }
+      };
+    }
 
+    function migrateIfNeeded(current){
+      if(current) return current;
+      for(const k of OLD_STORE_KEYS){
+        const old = safeParse(localStorage.getItem(k), null);
+        if(old && typeof old === "object"){
+          const base = defaultStore();
+          const merged = {
+            ...base,
+            ...old,
+            company: { ...base.company, ...(old.company||{}) }
+          };
+          if(!merged.logoPosition) merged.logoPosition = "left";
+          if(!merged.logoPositionApp) merged.logoPositionApp = "left";
+          localStorage.setItem(STORE_KEY, JSON.stringify(merged));
+          return merged;
+        }
+      }
+      const fresh = defaultStore();
+      localStorage.setItem(STORE_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+
+    let store = migrateIfNeeded(safeParse(localStorage.getItem(STORE_KEY), null));
     function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
 
     // =========================
@@ -604,6 +620,9 @@
         shiftStart: $("shiftStart").value,
         shiftEnd: $("shiftEnd").value,
 
+        expFrom: $("expFrom").value,
+        expTo: $("expTo").value,
+
         selectedEmpIds: getSelectedEmpIds(),
         logoPosition: $("logoPos").value,
         logoPositionApp: $("logoPosApp").value,
@@ -629,7 +648,22 @@
     window.addEventListener("beforeunload", ()=>{ try{ saveDraftNow(); saveStore(); }catch{} });
 
     // =========================
-    // Clickable header line
+    // Tabs
+    // =========================
+    function showTab(name){
+      $("tab-app").style.display = (name==="app") ? "" : "none";
+      $("tab-settings").style.display = (name==="settings") ? "" : "none";
+    }
+    document.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        showTab(btn.getAttribute("data-tab"));
+      });
+    });
+
+    // =========================
+    // Header clickable + Logo UI
     // =========================
     function refreshBrand(){
       const c = store.company || {};
@@ -650,47 +684,13 @@
         ? `E-Mail: <a class="link" href="mailto:${encodeURIComponent(email)}">${escapeHtml(email)}</a>`
         : `E-Mail: —`;
 
+      const logoOk = !!store.logoDataUrl;
+      const logoTxt = logoOk ? "Logo: OK" : "Logo: —";
+
       $("brandSub").innerHTML =
-        `${addr ? escapeHtml(addr) : "—"} • ${telHtml} • ${mailHtml} • Auto-Save`;
+        `${addr ? escapeHtml(addr) : "—"} • ${telHtml} • ${mailHtml} • ${logoTxt} • Auto-Save`;
     }
 
-    // =========================
-    // Selections
-    // =========================
-    function getSelectedEmpIds(){
-      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked')).map(i=>i.value);
-    }
-    function setSelectedEmpIds(ids){
-      const set = new Set((ids||[]).map(String));
-      document.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
-        chk.checked = set.has(String(chk.value));
-      });
-      updateSelectedCount();
-    }
-    function updateSelectedCount(){
-      const n = getSelectedEmpIds().length;
-      $("selEmpCount").textContent = `${n} selected`;
-    }
-
-    // =========================
-    // Tabs
-    // =========================
-    function showTab(name){
-      $("tab-app").style.display = (name==="app") ? "" : "none";
-      $("tab-settings").style.display = (name==="settings") ? "" : "none";
-      $("tab-doc").style.display = (name==="doc") ? "" : "none";
-    }
-    document.querySelectorAll(".tab").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        showTab(btn.getAttribute("data-tab"));
-      });
-    });
-
-    // =========================
-    // Logo + Positions
-    // =========================
     function applyLogo(){
       const img = $("logoImg");
       if(store.logoDataUrl){
@@ -702,14 +702,11 @@
       }
     }
 
-    function applyLogoPos(){
-      $("logoPos").value = store.logoPosition || "left";
-    }
+    function applyLogoPos(){ $("logoPos").value = store.logoPosition || "left"; }
 
     function applyLogoPositionUI(){
       const pos = store.logoPositionApp || "left";
       const brand = $("brandWrap");
-      if(!brand) return;
       brand.classList.remove("right","top","hideLogo");
       if(pos === "right") brand.classList.add("right");
       if(pos === "top") brand.classList.add("top");
@@ -740,6 +737,7 @@
         store.logoDataUrl = String(fr.result||"");
         saveStore();
         applyLogo();
+        refreshBrand();
         $("logoFile").value="";
       };
       fr.readAsDataURL(file);
@@ -750,7 +748,25 @@
       store.logoDataUrl = null;
       saveStore();
       applyLogo();
+      refreshBrand();
     });
+
+    // =========================
+    // Selection helpers
+    // =========================
+    function getSelectedEmpIds(){
+      return Array.from(document.querySelectorAll('input[data-emp-chk="1"]:checked')).map(i=>i.value);
+    }
+    function setSelectedEmpIds(ids){
+      const set = new Set((ids||[]).map(String));
+      document.querySelectorAll('input[data-emp-chk="1"]').forEach(chk=>{
+        chk.checked = set.has(String(chk.value));
+      });
+      updateSelectedCount();
+    }
+    function updateSelectedCount(){
+      $("selEmpCount").textContent = `${getSelectedEmpIds().length} selected`;
+    }
 
     // =========================
     // Settings
@@ -790,16 +806,7 @@
 
     $("btnResetSettings").addEventListener("click", ()=>{
       if(!confirm("Reset company settings?")) return;
-      store.company = {
-        name: "Masculine Security",
-        street: "Werschenregerstraße 6",
-        city: "28237 Bremen",
-        phone: "015778697052",
-        email: "Kontakt.mass.bremen@hotmail.com",
-        tax: "",
-        footerNote: "Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
-        defaultType: ""
-      };
+      store.company = defaultStore().company;
       saveStore();
       loadSettingsToUI();
       refreshBrand();
@@ -957,7 +964,7 @@
     }
 
     // =========================
-    // Signature (Crisp + correct)
+    // Signature
     // =========================
     function setupSignature(canvasId, clearBtnId, storeKey){
       const canvas = $(canvasId);
@@ -1086,7 +1093,7 @@
     const sigAg  = setupSignature("sigCanvasAg","btnSigClearAg","sigAgDataUrl");
 
     // =========================
-    // Mitarbeiter CRUD
+    // CRUD Mitarbeiter
     // =========================
     $("btnAddEmp").addEventListener("click", ()=>{
       const name = $("empName").value.trim();
@@ -1120,7 +1127,7 @@
     });
 
     // =========================
-    // Objekt CRUD
+    // CRUD Objekt
     // =========================
     $("btnSaveObj").addEventListener("click", ()=>{
       const cust = $("custName").value.trim();
@@ -1151,7 +1158,7 @@
     });
 
     // =========================
-    // Einsätze CRUD
+    // Einsätze
     // =========================
     $("btnEmpSelectAll").addEventListener("click", ()=>{
       document.querySelectorAll('input[data-emp-chk="1"]').forEach(c=>c.checked=true);
@@ -1211,16 +1218,20 @@
     });
 
     // =========================
-    // Backup / Restore
+    // Backup / Restore (Full)
     // =========================
-    $("btnBackup").addEventListener("click", ()=>{
-      const payload = { store, draft: collectDraft() };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    function downloadText(filename, text, mime="text/plain"){
+      const blob = new Blob([text], {type:mime});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "einsatzmeldung-backup.json";
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(a.href);
+    }
+
+    $("btnBackup").addEventListener("click", ()=>{
+      const payload = { store, draft: collectDraft() };
+      downloadText("einsatzmeldung-backup-full.json", JSON.stringify(payload, null, 2), "application/json");
     });
 
     $("btnRestore").addEventListener("click", ()=>{
@@ -1248,7 +1259,166 @@
     });
 
     // =========================
-    // PDF helpers
+    // Range Export/Import (maalmo ka hor)
+    // =========================
+    function ymdToNum(ymd){
+      if(!ymd) return null;
+      const s = ymd.replaceAll("-","");
+      const n = Number(s);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function getEinsaetzeInRange(fromYmd, toYmd){
+      const fromN = ymdToNum(fromYmd);
+      const toN   = ymdToNum(toYmd);
+      if(!fromN && !toN) return store.einsaetze.slice();
+      return store.einsaetze.filter(e=>{
+        const d = ymdToNum(e.date);
+        if(!d) return false;
+        if(fromN && d < fromN) return false;
+        if(toN && d > toN) return false;
+        return true;
+      });
+    }
+
+    function resolveObj(objId){ return store.objects.find(o=>o.id===objId) || null; }
+    function resolveEmp(empId){ return store.employees.find(e=>e.id===empId) || null; }
+
+    function csvEscape(v){
+      const s = String(v ?? "");
+      return `"${s.replaceAll('"','""')}"`;
+    }
+
+    $("btnExportRangeJson").addEventListener("click", ()=>{
+      const from = $("expFrom").value;
+      const to   = $("expTo").value;
+      const items = getEinsaetzeInRange(from,to);
+      if(items.length===0) return alert("No Einsätze in this range.");
+
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        range: {from: from||null, to: to||null},
+        company: store.company || null,
+        logoDataUrl: store.logoDataUrl || null,
+        logoPosition: store.logoPosition || "left",
+        logoPositionApp: store.logoPositionApp || "left",
+        employees: store.employees || [],
+        objects: store.objects || [],
+        einsaetze: items || []
+      };
+
+      const name = `einsatz-export-${from||"all"}-to-${to||"all"}.json`;
+      downloadText(name, JSON.stringify(payload, null, 2), "application/json");
+    });
+
+    $("btnExportRangeCsv").addEventListener("click", ()=>{
+      const from = $("expFrom").value;
+      const to   = $("expTo").value;
+      const items = getEinsaetzeInRange(from,to);
+      if(items.length===0) return alert("No Einsätze in this range.");
+
+      const header = [
+        "Datum","Start","Ende","Typ",
+        "Kunde","Objekt","Adresse","Objekt-Typ",
+        "Mitarbeiter Name","Bewacher-ID","Position","Telefon"
+      ].map(csvEscape).join(",");
+
+      const rows = [header];
+
+      items.forEach(e=>{
+        const obj = resolveObj(e.objId);
+        const kunde = obj?.cust || "";
+        const objekt = obj?.obj || "";
+        const addr = obj?.addr || "";
+        const otype = obj?.type || e.type || "";
+        const empIds = e.empIds || [];
+
+        if(empIds.length===0){
+          rows.push([
+            e.date||"", e.start||"", e.end||"", e.type||"",
+            kunde,objekt,addr,otype,
+            "", "", "", ""
+          ].map(csvEscape).join(","));
+          return;
+        }
+
+        empIds.forEach(empId=>{
+          const emp = resolveEmp(empId);
+          rows.push([
+            e.date||"", e.start||"", e.end||"", e.type||"",
+            kunde,objekt,addr,otype,
+            emp?.name||"", emp?.bewacher||"", emp?.role||"", emp?.phone||""
+          ].map(csvEscape).join(","));
+        });
+      });
+
+      const name = `einsatz-export-${from||"all"}-to-${to||"all"}.csv`;
+      downloadText(name, rows.join("\n"), "text/csv;charset=utf-8");
+    });
+
+    // ✅ Import JSON (merge or replace)
+    $("btnImportRangeJson").addEventListener("click", ()=>{
+      const input = document.createElement("input");
+      input.type="file";
+      input.accept="application/json";
+      input.onchange = ()=>{
+        const file = input.files?.[0];
+        if(!file) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          const payload = safeParse(String(r.result||""), null);
+          if(!payload || typeof payload !== "object") return alert("Invalid JSON.");
+
+          const incomingEmployees = Array.isArray(payload.employees) ? payload.employees : [];
+          const incomingObjects   = Array.isArray(payload.objects) ? payload.objects : [];
+          const incomingEinsaetze = Array.isArray(payload.einsaetze) ? payload.einsaetze : [];
+
+          if(incomingEinsaetze.length===0) return alert("No Einsätze inside JSON.");
+
+          const mode = confirm("OK = MERGE (keep existing)\nCancel = REPLACE (overwrite all)");
+          if(!mode){
+            // REPLACE
+            store = defaultStore();
+          }
+
+          // keep company/logo if payload has them
+          if(payload.company) store.company = { ...store.company, ...payload.company };
+          if(payload.logoDataUrl) store.logoDataUrl = payload.logoDataUrl;
+          if(payload.logoPosition) store.logoPosition = payload.logoPosition;
+          if(payload.logoPositionApp) store.logoPositionApp = payload.logoPositionApp;
+
+          // MERGE employees/objects by id (no duplicates)
+          const empMap = new Map((store.employees||[]).map(e=>[String(e.id), e]));
+          incomingEmployees.forEach(e=>{
+            if(e && e.id) empMap.set(String(e.id), e);
+          });
+          store.employees = Array.from(empMap.values());
+
+          const objMap = new Map((store.objects||[]).map(o=>[String(o.id), o]));
+          incomingObjects.forEach(o=>{
+            if(o && o.id) objMap.set(String(o.id), o);
+          });
+          store.objects = Array.from(objMap.values());
+
+          // MERGE einsaetze by id
+          const einMap = new Map((store.einsaetze||[]).map(x=>[String(x.id), x]));
+          incomingEinsaetze.forEach(x=>{
+            if(x && x.id) einMap.set(String(x.id), x);
+          });
+          store.einsaetze = Array.from(einMap.values());
+
+          saveStore();
+          renderAll();
+          sigEmp.restore(); sigAg.restore();
+          alert("Import done ✅");
+        };
+        r.readAsText(file);
+      };
+      input.click();
+    });
+
+    // =========================
+    // PDF
     // =========================
     function formatDateISOToDE(iso){
       if(!iso) return "";
@@ -1275,151 +1445,17 @@
       });
       setTimeout(()=>window.print(), 1200);
     }
-
-    // =========================
-    // Company PDF (logo visible with logoBox)
-    // =========================
-    $("btnCompanyPdf").addEventListener("click", ()=>{
-      const c = store.company || {};
-      const logo = store.logoDataUrl || null;
+    function warnIfNoLogoForPdf(){
       const logoPos = store.logoPosition || "left";
-      const showLogo = (logoPos !== "hide") && !!logo;
-
-      const logoHTML = showLogo ? `
-        <div class="logoBox"><img class="logo" src="${logo}" alt="Logo"/></div>
-      ` : ``;
-
-      const headerHTML = (()=>{
-        if(!showLogo){
-          return `
-            <div class="head">
-              <div class="leftHead">
-                <div>
-                  <h1>Firmendaten</h1>
-                  <div class="sub">${escapeHtml(c.name||"")}</div>
-                </div>
-              </div>
-              <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
-            </div>
-          `;
-        }
-        if(logoPos === "top"){
-          return `
-            <div class="headTop">
-              ${logoHTML}
-              <div class="head">
-                <div class="leftHead">
-                  <div>
-                    <h1>Firmendaten</h1>
-                    <div class="sub">${escapeHtml(c.name||"")}</div>
-                  </div>
-                </div>
-                <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
-              </div>
-            </div>
-          `;
-        }
-        if(logoPos === "right"){
-          return `
-            <div class="head">
-              <div class="leftHead">
-                <div>
-                  <h1>Firmendaten</h1>
-                  <div class="sub">${escapeHtml(c.name||"")}</div>
-                </div>
-              </div>
-              <div style="text-align:right; display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
-                ${logoHTML}
-                <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
-              </div>
-            </div>
-          `;
-        }
-        return `
-          <div class="head">
-            <div class="leftHead">
-              ${logoHTML}
-              <div>
-                <h1>Firmendaten</h1>
-                <div class="sub">${escapeHtml(c.name||"")}</div>
-              </div>
-            </div>
-            <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
-          </div>
-        `;
-      })();
-
-      const html = `
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <title>Firmendaten — ${escapeHtml(c.name||"Company")}</title>
-  <style>
-    @page { size: A4; margin: 18mm; }
-    body { font-family: Arial, sans-serif; color:#111; }
-    .head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-    .leftHead{ display:flex; gap:12px; align-items:center; }
-    .headTop{ display:flex; flex-direction:column; gap:10px; }
-
-    .logoBox{
-      width:64px; height:64px;
-      border:1px solid #111;
-      border-radius:10px;
-      padding:6px;
-      background:#fff;
-      display:flex; align-items:center; justify-content:center;
+      const showLogo = (logoPos !== "hide") && !!store.logoDataUrl;
+      if(logoPos !== "hide" && !showLogo){
+        alert("Logo ma jiro (PDF). Fadlan ‘Logo PNG’ upload garee, kadib Generate PDF.");
+      }
     }
-    .logo{ width:100%; height:100%; object-fit:contain; display:block; }
 
-    h1 { margin:0; font-size:20px; }
-    .sub { color:#444; margin-top:4px; font-size:12px; }
-    .box { border:1px solid #111; border-radius:10px; padding:14px; margin-top:12px; }
-    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .label { font-size:11px; color:#333; margin-bottom:4px; }
-    .val { font-size:12px; font-weight:700; }
-    a{color:#111; text-decoration:none;}
-  </style>
-</head>
-<body>
-  ${headerHTML}
-
-  <div class="box">
-    <div class="row">
-      <div>
-        <div class="label">Adresse</div>
-        <div class="val">${escapeHtml(companyAddressLine(c) || "—")}</div>
-      </div>
-      <div>
-        <div class="label">Kontakt</div>
-        <div class="val">Tel: ${escapeHtml(c.phone||"—")}</div>
-        <div class="sub">E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"—")}</a></div>
-      </div>
-    </div>
-
-    <div style="margin-top:12px;">
-      <div class="label">Steuernummer / USt-IdNr</div>
-      <div class="val">${escapeHtml(c.tax || "—")}</div>
-    </div>
-  </div>
-
-  <script>
-    window.onload = () => (${waitForImagesThenPrint.toString()})() ;
-  <\/script>
-</body>
-</html>`;
-
-      const w = window.open("", "_blank");
-      if(!w) return alert("Popup blocked. Allow popups to print PDF.");
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-    });
-
-    // =========================
-    // Einsatz PDF (logo visible + top/right/left)
-    // =========================
     async function generatePdfForEinsatz(ein){
+      warnIfNoLogoForPdf();
+
       const obj = store.objects.find(x=>x.id===ein.objId);
       const c = store.company || {};
 
@@ -1493,7 +1529,6 @@
           `;
         }
 
-        // left default
         return `
           <div class="head">
             <div class="leftHead">
@@ -1562,7 +1597,7 @@
     .label { font-size:11px; color:#333; margin-bottom:4px; }
     .val { font-size:12px; font-weight:700; }
     .line { height:1px; background:#111; opacity:.18; margin:12px 0; }
-    .sigimg { max-height:70px; max-width:100%; display:block; image-rendering:auto; }
+    .sigimg { max-height:70px; max-width:100%; display:block; }
     .foot { margin-top:10px; font-size:10px; color:#333; }
     a { color:#111; text-decoration:none; }
     table{ border-collapse:collapse; width:100%; font-size:12px; }
@@ -1641,7 +1676,7 @@
     });
 
     // =========================
-    // Restore draft
+    // Draft restore
     // =========================
     function restoreDraftToUI(){
       const d = safeParse(localStorage.getItem(DRAFT_KEY), null) || {};
@@ -1661,6 +1696,9 @@
       if(d.shiftStart) $("shiftStart").value = d.shiftStart;
       if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
 
+      if(d.expFrom) $("expFrom").value = d.expFrom;
+      if(d.expTo) $("expTo").value = d.expTo;
+
       if(d.logoPosition) $("logoPos").value = d.logoPosition;
       if(d.logoPositionApp) $("logoPosApp").value = d.logoPositionApp;
       if(d.selObj) $("selObj").value = d.selObj;
@@ -1674,6 +1712,7 @@
       "empName","empBewacher","empPhone","empRole",
       "custName","objName","objAddr","objType",
       "selObj","shiftDate","shiftStart","shiftEnd",
+      "expFrom","expTo",
       "logoPos","logoPosApp"
     ];
     autosaveIds.forEach(id=>{
@@ -1683,15 +1722,18 @@
     });
 
     // =========================
-    // Init
+    // Init defaults
     // =========================
-    (function init(){
-      store.company = store.company || {
-        name:"Masculine Security", street:"", city:"", phone:"", email:"",
-        tax:"", footerNote:"Hinweis: Diese Einsatzmeldung dient als Nachweis der Einsatzzeiten. Aufbewahrung empfohlen.",
-        defaultType:""
-      };
+    function initExportDefaults(){
+      const today = new Date();
+      const to = today.toISOString().slice(0,10);
+      const past = new Date(today.getTime() - 7*24*60*60*1000);
+      const from = past.toISOString().slice(0,10);
+      if(!$("expTo").value) $("expTo").value = to;
+      if(!$("expFrom").value) $("expFrom").value = from;
+    }
 
+    (function init(){
       renderAll();
 
       const hasDraft = !!localStorage.getItem(DRAFT_KEY);
@@ -1703,12 +1745,14 @@
         $("shiftDate").value = `${yyyy}-${mm}-${dd}`;
         $("shiftStart").value = "18:00";
         $("shiftEnd").value = "06:00";
+        initExportDefaults();
       }
 
       restoreDraftToUI();
+      if(!$("expFrom").value || !$("expTo").value) initExportDefaults();
+
       applyLogoPos();
       applyLogoPositionUI();
-
       sigEmp.restore();
       sigAg.restore();
 
