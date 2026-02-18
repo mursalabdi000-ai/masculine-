@@ -40,6 +40,10 @@
       flex-wrap:wrap;
     }
     .brand{display:flex; gap:12px; align-items:center; min-width:260px}
+    .brand.right{flex-direction:row-reverse}
+    .brand.top{flex-direction:column; align-items:flex-start}
+    .brand.hideLogo #logoImg{display:none!important}
+
     .logo{
       width:44px; height:44px; border-radius:12px;
       object-fit:contain; background:rgba(255,255,255,.06);
@@ -49,7 +53,7 @@
     .brandName{font-weight:800; letter-spacing:.2px}
     .brandSub{color:var(--muted); font-size:12px; margin-top:2px}
 
-    /* ✅ clickable links */
+    /* ✅ clickable */
     a.link{
       color:inherit;
       text-decoration:none;
@@ -230,11 +234,10 @@
 
 <body>
   <header class="topbar">
-    <div class="brand">
+    <div class="brand" id="brandWrap">
       <img class="logo" id="logoImg" alt="Logo"/>
       <div class="brandText">
         <div class="brandName" id="brandName">Masculine Security</div>
-        <!-- ✅ clickable will be injected by JS -->
         <div class="brandSub" id="brandSub"></div>
       </div>
     </div>
@@ -245,9 +248,19 @@
         <span id="saveText">Ready</span>
       </div>
 
+      <!-- ✅ App Logo Position -->
+      <select id="logoPosApp" title="Logo position in App">
+        <option value="left">App: Left</option>
+        <option value="right">App: Right</option>
+        <option value="top">App: Top</option>
+        <option value="hide">App: Hide</option>
+      </select>
+
+      <!-- ✅ PDF Logo Position (NOW with TOP) -->
       <select id="logoPos" title="Logo position in PDF">
         <option value="left">Logo Left (PDF)</option>
         <option value="right">Logo Right (PDF)</option>
+        <option value="top">Logo Top (PDF)</option>
         <option value="hide">Hide Logo (PDF)</option>
       </select>
 
@@ -426,7 +439,7 @@
           <div class="list" id="einsatzList"></div>
 
           <div class="note small">
-            ✅ PDF: Mitarbeiter Unterschrift column gaar ah (row kasta). Arbeitgeber Unterschrift = hoosta.
+            ✅ PDF: Mitarbeiter Unterschrift column gaar ah (row kasta). Arbeitgeber Unterschrift = hoosta. Logo (PDF) = left/right/top/hide.
           </div>
         </div>
       </section>
@@ -493,7 +506,7 @@
         </div>
 
         <div class="note small">
-          ✅ “Export Firmendaten PDF” = company profile PDF.
+          ✅ Firmendaten saved → header clickable Tel/E-Mail.
         </div>
       </div>
     </section>
@@ -503,9 +516,12 @@
       <div class="card">
         <h2>Documentation</h2>
         <div class="doc">
-          <h3>Clickable Links</h3>
+          <h3>What's included</h3>
           <ul>
-            <li>Header-ka Tel & E-Mail hadda waa <b>clickable</b> (tel:/mailto:).</li>
+            <li>Auto-save (draft + store)</li>
+            <li>Clickable Tel/E-Mail in header</li>
+            <li>Logo positions: App (left/right/top/hide), PDF (left/right/top/hide)</li>
+            <li>PDF: Mitarbeiter signature column (blank box), Arbeitgeber signature bottom</li>
           </ul>
         </div>
       </div>
@@ -516,8 +532,8 @@
     // =========================
     // Storage
     // =========================
-    const STORE_KEY = "ms_einsatz_store_v9";
-    const DRAFT_KEY = "ms_einsatz_draft_v9";
+    const STORE_KEY = "ms_einsatz_store_v10";
+    const DRAFT_KEY = "ms_einsatz_draft_v10";
 
     const $ = (id)=>document.getElementById(id);
     const uid = ()=> Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -529,7 +545,8 @@
     let store = safeParse(localStorage.getItem(STORE_KEY), null) || {
       employees:[], objects:[], einsaetze:[],
       logoDataUrl:null,
-      logoPosition:"left",
+      logoPosition:"left",       // PDF left/right/top/hide
+      logoPositionApp:"left",    // App left/right/top/hide
       sigEmpDataUrl:null,
       sigAgDataUrl:null,
       company: {
@@ -589,6 +606,7 @@
 
         selectedEmpIds: getSelectedEmpIds(),
         logoPosition: $("logoPos").value,
+        logoPositionApp: $("logoPosApp").value,
         lastSavedAt: Date.now()
       };
     }
@@ -671,7 +689,7 @@
     });
 
     // =========================
-    // Logo + Position
+    // Logo + Positions
     // =========================
     function applyLogo(){
       const img = $("logoImg");
@@ -683,11 +701,32 @@
         img.style.display = "none";
       }
     }
-    function applyLogoPos(){ $("logoPos").value = store.logoPosition || "left"; }
+
+    function applyLogoPos(){
+      $("logoPos").value = store.logoPosition || "left";
+    }
+
+    function applyLogoPositionUI(){
+      const pos = store.logoPositionApp || "left";
+      const brand = $("brandWrap");
+      if(!brand) return;
+      brand.classList.remove("right","top","hideLogo");
+      if(pos === "right") brand.classList.add("right");
+      if(pos === "top") brand.classList.add("top");
+      if(pos === "hide") brand.classList.add("hideLogo");
+      $("logoPosApp").value = pos;
+    }
 
     $("logoPos").addEventListener("change", ()=>{
       store.logoPosition = $("logoPos").value;
       saveStore();
+      queueAutoSave();
+    });
+
+    $("logoPosApp").addEventListener("change", ()=>{
+      store.logoPositionApp = $("logoPosApp").value;
+      saveStore();
+      applyLogoPositionUI();
       queueAutoSave();
     });
 
@@ -912,6 +951,7 @@
       renderEinsaetze();
       applyLogo();
       applyLogoPos();
+      applyLogoPositionUI();
       refreshBrand();
       loadSettingsToUI();
     }
@@ -1237,16 +1277,77 @@
     }
 
     // =========================
-    // Company PDF
+    // Company PDF (logo visible with logoBox)
     // =========================
     $("btnCompanyPdf").addEventListener("click", ()=>{
       const c = store.company || {};
       const logo = store.logoDataUrl || null;
       const logoPos = store.logoPosition || "left";
       const showLogo = (logoPos !== "hide") && !!logo;
-      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
-      const leftBlock = (logoPos === "left") ? logoHTML : ``;
-      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
+      const logoHTML = showLogo ? `
+        <div class="logoBox"><img class="logo" src="${logo}" alt="Logo"/></div>
+      ` : ``;
+
+      const headerHTML = (()=>{
+        if(!showLogo){
+          return `
+            <div class="head">
+              <div class="leftHead">
+                <div>
+                  <h1>Firmendaten</h1>
+                  <div class="sub">${escapeHtml(c.name||"")}</div>
+                </div>
+              </div>
+              <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+            </div>
+          `;
+        }
+        if(logoPos === "top"){
+          return `
+            <div class="headTop">
+              ${logoHTML}
+              <div class="head">
+                <div class="leftHead">
+                  <div>
+                    <h1>Firmendaten</h1>
+                    <div class="sub">${escapeHtml(c.name||"")}</div>
+                  </div>
+                </div>
+                <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+              </div>
+            </div>
+          `;
+        }
+        if(logoPos === "right"){
+          return `
+            <div class="head">
+              <div class="leftHead">
+                <div>
+                  <h1>Firmendaten</h1>
+                  <div class="sub">${escapeHtml(c.name||"")}</div>
+                </div>
+              </div>
+              <div style="text-align:right; display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+                ${logoHTML}
+                <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="head">
+            <div class="leftHead">
+              ${logoHTML}
+              <div>
+                <h1>Firmendaten</h1>
+                <div class="sub">${escapeHtml(c.name||"")}</div>
+              </div>
+            </div>
+            <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
+          </div>
+        `;
+      })();
 
       const html = `
 <!doctype html>
@@ -1257,9 +1358,20 @@
   <style>
     @page { size: A4; margin: 18mm; }
     body { font-family: Arial, sans-serif; color:#111; }
-    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-    .leftHead { display:flex; gap:12px; align-items:center; }
-    .logo { width:64px; height:64px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+    .head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .leftHead{ display:flex; gap:12px; align-items:center; }
+    .headTop{ display:flex; flex-direction:column; gap:10px; }
+
+    .logoBox{
+      width:64px; height:64px;
+      border:1px solid #111;
+      border-radius:10px;
+      padding:6px;
+      background:#fff;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .logo{ width:100%; height:100%; object-fit:contain; display:block; }
+
     h1 { margin:0; font-size:20px; }
     .sub { color:#444; margin-top:4px; font-size:12px; }
     .box { border:1px solid #111; border-radius:10px; padding:14px; margin-top:12px; }
@@ -1270,19 +1382,7 @@
   </style>
 </head>
 <body>
-  <div class="head">
-    <div class="leftHead">
-      ${leftBlock}
-      <div>
-        <h1>Firmendaten</h1>
-        <div class="sub">${escapeHtml(c.name||"")}</div>
-      </div>
-    </div>
-    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-      ${rightBlock}
-      <div class="sub">${new Date().toLocaleDateString("de-DE")}</div>
-    </div>
-  </div>
+  ${headerHTML}
 
   <div class="box">
     <div class="row">
@@ -1317,18 +1417,101 @@
     });
 
     // =========================
-    // Einsatz PDF (UPDATED: signature column + employer bottom)
+    // Einsatz PDF (logo visible + top/right/left)
     // =========================
     async function generatePdfForEinsatz(ein){
       const obj = store.objects.find(x=>x.id===ein.objId);
-      const logo = store.logoDataUrl || null;
-      const logoPos = store.logoPosition || "left";
       const c = store.company || {};
 
+      const logo = store.logoDataUrl || null;
+      const logoPos = store.logoPosition || "left";
       const showLogo = (logoPos !== "hide") && !!logo;
-      const logoHTML = showLogo ? `<img class="logo" src="${logo}" alt="Logo"/>` : ``;
-      const leftBlock = (logoPos === "left") ? logoHTML : ``;
-      const rightBlock = (logoPos === "right") ? logoHTML : ``;
+
+      const logoHTML = showLogo ? `
+        <div class="logoBox"><img class="logo" src="${logo}" alt="Logo"/></div>
+      ` : ``;
+
+      const headerHTML = (()=>{
+        if(!showLogo){
+          return `
+            <div class="head">
+              <div class="leftHead">
+                <div>
+                  <h1>Einsatzmeldung</h1>
+                  <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+                  <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+                  ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+                <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        if(logoPos === "top"){
+          return `
+            <div class="headTop">
+              ${logoHTML}
+              <div class="head">
+                <div class="leftHead">
+                  <div>
+                    <h1>Einsatzmeldung</h1>
+                    <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+                    <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+                    ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+                  <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        if(logoPos === "right"){
+          return `
+            <div class="head">
+              <div class="leftHead">
+                <div>
+                  <h1>Einsatzmeldung</h1>
+                  <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+                  <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+                  ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
+                </div>
+              </div>
+              <div style="text-align:right; display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+                ${logoHTML}
+                <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+                <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // left default
+        return `
+          <div class="head">
+            <div class="leftHead">
+              ${logoHTML}
+              <div>
+                <h1>Einsatzmeldung</h1>
+                <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
+                <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
+                ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
+              <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
+            </div>
+          </div>
+        `;
+      })();
 
       const employees = (ein.empIds||[]).map(id => store.employees.find(e=>e.id===id)).filter(Boolean);
 
@@ -1357,9 +1540,21 @@
   <style>
     @page { size: A4; margin: 18mm; }
     body { font-family: Arial, sans-serif; color:#111; }
-    .head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-    .leftHead { display:flex; gap:12px; align-items:center; }
-    .logo { width:56px; height:56px; object-fit:contain; border:1px solid #ddd; border-radius:10px; padding:6px; }
+
+    .head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .leftHead{ display:flex; gap:12px; align-items:center; }
+    .headTop{ display:flex; flex-direction:column; gap:10px; }
+
+    .logoBox{
+      width:64px; height:64px;
+      border:1px solid #111;
+      border-radius:10px;
+      padding:6px;
+      background:#fff;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .logo{ width:100%; height:100%; object-fit:contain; display:block; }
+
     h1 { margin:0; font-size:18px; }
     .sub { color:#444; margin-top:4px; font-size:12px; }
     .box { border:1px solid #111; border-radius:10px; padding:12px; margin-top:12px; }
@@ -1375,22 +1570,7 @@
   </style>
 </head>
 <body>
-  <div class="head">
-    <div class="leftHead">
-      ${leftBlock}
-      <div>
-        <h1>Einsatzmeldung</h1>
-        <div class="sub">${escapeHtml(c.name||"")} • ${escapeHtml(companyAddressLine(c) || "")}</div>
-        <div class="sub">Tel: ${escapeHtml(c.phone||"")} • E-Mail: <a href="mailto:${escapeHtml(c.email||"")}">${escapeHtml(c.email||"")}</a></div>
-        ${c.tax ? `<div class="sub">Steuernummer/USt-IdNr: ${escapeHtml(c.tax)}</div>` : ``}
-      </div>
-    </div>
-    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-      ${rightBlock}
-      <div class="sub"><b>Datum:</b> ${formatDateISOToDE(ein.date)}</div>
-      <div class="sub"><b>Typ:</b> ${(obj?.type||ein.type||"Einsatz")}</div>
-    </div>
-  </div>
+  ${headerHTML}
 
   <div class="box">
     <div class="grid">
@@ -1453,9 +1633,6 @@
       w.document.close();
     }
 
-    // =========================
-    // PDF Button
-    // =========================
     $("btnPDF").addEventListener("click", async ()=>{
       if(!selectedEinsatzId) return alert("Select Einsatz first.");
       const ein = store.einsaetze.find(x=>x.id===selectedEinsatzId);
@@ -1485,6 +1662,7 @@
       if(d.shiftEnd) $("shiftEnd").value = d.shiftEnd;
 
       if(d.logoPosition) $("logoPos").value = d.logoPosition;
+      if(d.logoPositionApp) $("logoPosApp").value = d.logoPositionApp;
       if(d.selObj) $("selObj").value = d.selObj;
 
       setSelectedEmpIds(d.selectedEmpIds || []);
@@ -1496,7 +1674,7 @@
       "empName","empBewacher","empPhone","empRole",
       "custName","objName","objAddr","objType",
       "selObj","shiftDate","shiftStart","shiftEnd",
-      "logoPos"
+      "logoPos","logoPosApp"
     ];
     autosaveIds.forEach(id=>{
       const el = $(id);
@@ -1528,6 +1706,9 @@
       }
 
       restoreDraftToUI();
+      applyLogoPos();
+      applyLogoPositionUI();
+
       sigEmp.restore();
       sigAg.restore();
 
