@@ -12,7 +12,7 @@
     :root{
       --paper:#fff; --bg:#0b1220; --panel:#0f1a30; --panel2:#0c162a;
       --muted:rgba(255,255,255,.75); --line:rgba(255,255,255,.14);
-      --r:18px; --shadow:0 14px 40px rgba(0,0,0,.35);
+      --shadow:0 14px 40px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
     body{
@@ -61,6 +61,7 @@
     .split{height:1px;background:var(--line);margin:12px 0}
     .hint{font-size:12px;color:var(--muted);line-height:1.35}
 
+    /* PAPER */
     .paperHost{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow)}
     .paper{background:#fff;color:#111;border-radius:14px;padding:16px}
     .pTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
@@ -97,7 +98,6 @@
   <div class="topbar">
     <div class="brand">
       <div class="logo">
-        <!-- ✅ FEST DEFAULT LOGO -->
         <img id="topLogoImg" alt="Logo" src="logo.png">
       </div>
       <div>
@@ -176,8 +176,10 @@
       </div>
 
       <div class="hint">
-        ✅ 1:1 Layout sida form-ka — kaliya header-ka table: <b>Unterschrift Mitarbeiter / Selbständige</b>.<br>
-        ✅ Logo: default <b>logo.png</b> (fest) — waxaad “Logo ersetzen” ku beddeli kartaa.
+        ✅ Table header: <b>Unterschrift Mitarbeiter / Selbständige</b><br>
+        ✅ Unterschrift Arbeitskräfte removed<br>
+        ✅ Einsatz-ID + Speicherort removed<br>
+        ✅ Fest Logo: <b>logo.png</b>
       </div>
     </div>
 
@@ -186,7 +188,6 @@
         <div class="pTop">
           <div class="pBrand">
             <div class="pLogoBox">
-              <!-- ✅ FEST DEFAULT LOGO -->
               <img id="paperLogoImg" alt="Logo" src="logo.png">
             </div>
             <div>
@@ -251,15 +252,8 @@
             </div>
           </div>
 
-          <div class="pSigBox" style="margin-top:10px">
-            <div class="pLabel">Unterschrift Einsatzkraft (Mitarbeiter / Selbständige)</div>
-            <div class="pSigLine"></div>
-          </div>
-        </div>
-
-        <div style="margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div class="small">Einsatz-ID: <b id="pId">—</b></div>
-          <div class="small">Speicherort: lokal (Gerät)</div>
+          <!-- Unterschrift Arbeitskräfte removed -->
+          <!-- Einsatz-ID + Speicherort removed -->
         </div>
       </div>
     </div>
@@ -273,12 +267,10 @@
   const LS_LOGO = "ms_logo_fest_v1";
   const $ = (id) => document.getElementById(id);
   const todayISO = () => new Date().toISOString().slice(0,10);
-  const uid = () => "MS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
   const clean = (s) => (s==null ? "" : String(s).replace(/\s+/g," ").trim());
 
   function applyLogo(){
     const data = localStorage.getItem(LS_LOGO);
-    // ✅ If user uploaded a logo before, use it. Otherwise keep default 'logo.png' (fest).
     if(data){
       $("topLogoImg").src = data;
       $("paperLogoImg").src = data;
@@ -299,12 +291,11 @@
     $("pName").textContent = clean($("fName").value) || "—";
     $("pBewID").textContent = clean($("fBewID").value) || "—";
     $("pPosition").textContent = clean($("fPosition").value) || "—";
-    $("pId").textContent = uid();
   }
 
   async function generatePDF(){
     updatePreview();
-    applyLogo(); // make sure logo is on paper before capture
+    applyLogo();
     const el = $("paper");
     const scale = Math.min(2, (window.devicePixelRatio || 1));
     const cnv = await html2canvas(el, {scale, useCORS:true, backgroundColor:"#ffffff", scrollX:0, scrollY:0});
@@ -313,11 +304,9 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p","mm","a4");
     const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
     const margin = 8;
     const maxW = pageW - margin*2;
-    const maxH = pageH - margin*2;
-    const ratio = Math.min(maxW/cnv.width, maxH/cnv.height);
+    const ratio = Math.min(maxW/cnv.width, 1);
     const w = cnv.width * ratio;
     const h = cnv.height * ratio;
     pdf.addImage(imgData, "PNG", (pageW-w)/2, margin, w, h, undefined, "FAST");
@@ -356,7 +345,6 @@
   $("btnPDF").addEventListener("click", ()=>generatePDF().catch(err=>{console.error(err);alert("PDF Fehler: "+(err?.message||err));}));
   $("btnPrint").addEventListener("click", printA4);
 
-  // init
   $("fDate").value = todayISO();
   applyLogo();
   updatePreview();
