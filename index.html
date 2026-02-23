@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Masculine Security — Einsatzmeldung (App)</title>
+  <title>Masculine Security — Einsatzmeldung (Mitarbeiter & Selbständige)</title>
 
   <!-- PDF libs -->
   <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -107,6 +107,7 @@
     table{width:100%;border-collapse:collapse;margin-top:10px}
     th,td{border:1px solid var(--paperline);padding:10px;font-size:12px;vertical-align:top}
     th{background:#f2f4f7;text-align:left;color:#111827}
+
     .sigRow{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-top:12px}
     .sigBox{border:1px solid var(--paperline);border-radius:14px;padding:12px;min-height:120px}
     .sigLabel{font-size:12px;color:var(--ink2);font-weight:800;margin:0 0 8px 0}
@@ -116,6 +117,21 @@
     .statusDot{width:8px;height:8px;border-radius:999px;background:var(--bad);display:inline-block}
     .statusDot.ok{background:var(--ok)}
     .hidden{display:none !important}
+
+    /* ===== PRINT (A4, clean) ===== */
+    @media print{
+      @page{ size: A4; margin: 10mm; }
+      html,body{ background:#fff !important; color:#000 !important; }
+      .wrap{ max-width:unset !important; padding:0 !important; }
+      .topbar, .card, .paperHost{ box-shadow:none !important; border:none !important; background:transparent !important; }
+      .topbar{ display:none !important; }
+      .grid{ display:block !important; margin:0 !important; }
+      .card{ display:none !important; }
+      .paperHost{ padding:0 !important; border:none !important; background:transparent !important; }
+      #paper{ border-radius:0 !important; padding:0 !important; }
+      .footerBar{ display:none !important; }
+      a, button{ display:none !important; }
+    }
   </style>
 </head>
 
@@ -142,9 +158,12 @@
           Logo hochladen
           <input id="logoFile" type="file" accept="image/*" class="hidden">
         </label>
-        <button class="btn ok" id="btnSave">Save Einsatz</button>
+
+        <button class="btn ok" id="btnNewSave" title="Neuen Einsatz speichern">Save NEW</button>
+        <button class="btn" id="btnUpdate" title="Änderungen automatisch speichern (nur ausgewählt)">Update Selected</button>
         <button class="btn" id="btnClearForm">Clear</button>
         <button class="btn warn" id="btnPDF">Generate PDF</button>
+        <button class="btn" id="btnPrint">Print</button>
         <button class="btn bad" id="btnDelete">Delete Selected</button>
       </div>
     </div>
@@ -152,7 +171,7 @@
     <div class="grid">
       <!-- Left: Form + List -->
       <div class="card">
-        <h2>Einsatz erfassen</h2>
+        <h2>Einsatz erfassen (für Mitarbeiter & Selbständige)</h2>
 
         <div class="row">
           <div>
@@ -203,7 +222,11 @@
               <option value="Selbständige">Selbständige (Inhaber)</option>
               <option value="Mitarbeiter">Mitarbeiter</option>
             </select>
-            <div class="hint">Wenn “Selbständige”, werden Name/Bewacher-ID automatisch gefüllt. Wenn “Mitarbeiter”, trägst du die Person ein.</div>
+            <div class="hint">
+              • <b>Selbständige</b>: Name/Bewacher-ID werden automatisch gesetzt (Inhaber).<br/>
+              • <b>Mitarbeiter</b>: Name/Bewacher-ID musst du eintragen (Mitarbeiter).<br/>
+              ✅ <b>Für beide</b> gilt: gleiche Unterschrift-Funktion + PDF/Print.
+            </div>
           </div>
           <div>
             <label>Position / Posten</label>
@@ -227,23 +250,27 @@
 
         <div class="splitline"></div>
 
-        <h2>Unterschrift Einsatzkraft</h2>
+        <h2>Unterschrift Einsatzkraft (Mitarbeiter / Selbständige)</h2>
         <div class="sigWrap">
           <canvas id="sigPad" class="sigPad"></canvas>
           <div class="sigBtns">
             <button class="btn" id="btnSigClear">Unterschrift löschen</button>
-            <span class="pill" title="Unterschrift wird in der Auswahl gespeichert (lokal)">
+            <span class="pill" title="Unterschrift wird im Einsatz gespeichert (lokal)">
               <span id="sigStateDot" class="statusDot"></span>
               <span id="sigState">keine Unterschrift</span>
             </span>
           </div>
-          <div class="hint">Unterschrift wird in der ausgewählten Einsatzmeldung gespeichert und erscheint im PDF als: <b>Unterschrift Einsatzkraft (Mitarbeiter / Selbständige)</b>.</div>
+          <div class="hint">
+            Diese Unterschrift ist immer die <b>Einsatzkraft</b> (egal ob Mitarbeiter oder Selbständige) und erscheint in <b>PDF</b> und <b>Print</b>.
+          </div>
         </div>
 
         <div class="splitline"></div>
 
         <h2>Gespeicherte Einsätze</h2>
-        <div class="hint" style="margin-top:-2px">Tippe einen Eintrag an, um ihn zu laden. Dann kannst du PDF erzeugen oder löschen.</div>
+        <div class="hint" style="margin-top:-2px">
+          Tippe einen Eintrag an, um ihn zu laden. Dann kannst du <b>Update Selected</b>, <b>PDF</b>, <b>Print</b> oder <b>Delete</b>.
+        </div>
         <div class="list" id="list"></div>
       </div>
 
@@ -285,14 +312,14 @@
               </div>
             </div>
 
-            <table aria-label="Mitarbeiter Liste">
+            <table aria-label="Einsatzkraft">
               <thead>
                 <tr>
                   <th style="width:46px">#</th>
                   <th>Name</th>
                   <th style="width:140px">Bewacher-ID</th>
-                  <th style="width:160px">Rolle</th>
-                  <th style="width:220px">Unterschrift Einsatzkraft</th>
+                  <th style="width:170px">Rolle</th>
+                  <th style="width:240px">Unterschrift Einsatzkraft</th>
                 </tr>
               </thead>
               <tbody>
@@ -301,9 +328,7 @@
                   <td id="pName">—</td>
                   <td id="pBewID">—</td>
                   <td id="pRole">—</td>
-                  <td>
-                    <img id="pSigImgSmall" class="sigImg" alt="Unterschrift"/>
-                  </td>
+                  <td><img id="pSigImgSmall" class="sigImg" alt="Unterschrift"/></td>
                 </tr>
               </tbody>
             </table>
@@ -331,7 +356,8 @@
           <div class="footerBar">
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <span class="badge">Einsatz-ID: <b id="pId">—</b></span>
-              <span class="badge">Speicherung: <b>lokal (nur auf diesem Gerät)</b></span>
+              <span class="badge">Speicherung: <b>lokal (dieses Gerät)</b></span>
+              <span class="badge">Modus: <b id="pMode">—</b></span>
             </div>
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
               <button class="click" id="btnCall2">Tel: 015778697052</button>
@@ -347,18 +373,22 @@
     (function(){
       "use strict";
 
-      // ========= Constants / Defaults =========
+      // ====== SET YOUR OWNER DEFAULTS HERE ======
       const OWNER_NAME_DEFAULT = "Mustafa Abdi";
-      const OWNER_BEWID_DEFAULT = ""; // haddii aad rabto ku qor Bewacher-ID-gaaga halkan (optional)
+      const OWNER_BEWID_DEFAULT = ""; // optional: set your Bewacher-ID here for auto fill
+
+      // ====== Storage keys ======
       const LS_KEYS = {
-        LOGO: "ms_logo_dataurl_v1",
-        LIST: "ms_einsatz_list_v1"
+        LOGO: "ms_logo_dataurl_v2",
+        LIST: "ms_einsatz_list_v2"
       };
 
-      // ========= Helpers =========
+      // ====== Helpers ======
       const $ = (id)=>document.getElementById(id);
       const todayISO = ()=> new Date().toISOString().slice(0,10);
-      const uid = ()=> "MS-" + Date.now().toString(36).toUpperCase();
+
+      // Stable unique IDs
+      const uid = ()=> "MS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
 
       function sanitizeText(s){
         if(s == null) return "";
@@ -375,25 +405,18 @@
           const raw = localStorage.getItem(LS_KEYS.LIST);
           const list = raw ? JSON.parse(raw) : [];
           return Array.isArray(list) ? list : [];
-        }catch(e){
-          return [];
-        }
+        }catch(e){ return []; }
       }
 
       function saveList(list){
         localStorage.setItem(LS_KEYS.LIST, JSON.stringify(list));
       }
 
-      function loadLogo(){
-        return localStorage.getItem(LS_KEYS.LOGO) || "";
-      }
+      function loadLogo(){ return localStorage.getItem(LS_KEYS.LOGO) || ""; }
 
       function setLogo(dataUrl){
-        if(dataUrl){
-          localStorage.setItem(LS_KEYS.LOGO, dataUrl);
-        }else{
-          localStorage.removeItem(LS_KEYS.LOGO);
-        }
+        if(dataUrl) localStorage.setItem(LS_KEYS.LOGO, dataUrl);
+        else localStorage.removeItem(LS_KEYS.LOGO);
         applyLogoToUI();
       }
 
@@ -412,103 +435,117 @@
         }
       }
 
-      // ========= Signature Pad =========
-      const canvas = $("sigPad");
-      const ctx = canvas.getContext("2d");
+      // ====== Signature pad ======
+      const sigCanvas = $("sigPad");
+      const sigCtx = sigCanvas.getContext("2d");
       let drawing = false;
       let last = null;
+      let currentSigDataUrl = "";
 
-      function resizeCanvas(){
-        // keep content? We'll clear on resize (simple + stable for mobile).
-        const rect = canvas.getBoundingClientRect();
+      function resizeSigCanvas(){
+        const rect = sigCanvas.getBoundingClientRect();
         const ratio = Math.max(1, window.devicePixelRatio || 1);
-        canvas.width = Math.floor(rect.width * ratio);
-        canvas.height = Math.floor(rect.height * ratio);
-        ctx.setTransform(ratio,0,0,ratio,0,0);
-        ctx.lineWidth = 2;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.strokeStyle = "rgba(234,242,255,.95)";
+        sigCanvas.width = Math.floor(rect.width * ratio);
+        sigCanvas.height = Math.floor(rect.height * ratio);
+        sigCtx.setTransform(ratio,0,0,ratio,0,0);
+        sigCtx.lineWidth = 2;
+        sigCtx.lineCap = "round";
+        sigCtx.lineJoin = "round";
+        sigCtx.strokeStyle = "rgba(234,242,255,.95)";
         clearSignature(false);
       }
 
       function clearSignature(updateState=true){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
+        sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
         if(updateState){
           currentSigDataUrl = "";
           setSigState();
-          // also update preview
           updatePreviewFromForm();
         }
       }
 
       function pointFromEvent(e){
-        const rect = canvas.getBoundingClientRect();
+        const rect = sigCanvas.getBoundingClientRect();
         const t = (e.touches && e.touches[0]) ? e.touches[0] : e;
         return { x: (t.clientX - rect.left), y: (t.clientY - rect.top) };
       }
 
-      function startDraw(e){
-        drawing = true;
-        last = pointFromEvent(e);
-        e.preventDefault();
-      }
-
+      function startDraw(e){ drawing = true; last = pointFromEvent(e); e.preventDefault(); }
       function moveDraw(e){
         if(!drawing) return;
         const p = pointFromEvent(e);
-        ctx.beginPath();
-        ctx.moveTo(last.x,last.y);
-        ctx.lineTo(p.x,p.y);
-        ctx.stroke();
+        sigCtx.beginPath();
+        sigCtx.moveTo(last.x,last.y);
+        sigCtx.lineTo(p.x,p.y);
+        sigCtx.stroke();
         last = p;
         e.preventDefault();
       }
-
       function endDraw(){
         if(!drawing) return;
-        drawing = false;
-        last = null;
-        // export to dataurl (small + stable)
+        drawing = false; last = null;
         currentSigDataUrl = exportSignature();
         setSigState();
         updatePreviewFromForm();
       }
 
       function exportSignature(){
-        // Export as PNG, but crop-like simple: if empty, return ""
-        // We'll detect emptiness by sampling pixels.
         const c = document.createElement("canvas");
-        c.width = canvas.width; c.height = canvas.height;
+        c.width = sigCanvas.width; c.height = sigCanvas.height;
         const cctx = c.getContext("2d");
-        cctx.drawImage(canvas,0,0);
+        cctx.drawImage(sigCanvas,0,0);
         const img = cctx.getImageData(0,0,c.width,c.height).data;
         let nonEmpty = false;
-        for(let i=3;i<img.length;i+=4){
-          if(img[i] !== 0){ nonEmpty=true; break; }
-        }
+        for(let i=3;i<img.length;i+=4){ if(img[i] !== 0){ nonEmpty=true; break; } }
         if(!nonEmpty) return "";
         return c.toDataURL("image/png");
       }
 
-      canvas.addEventListener("pointerdown", startDraw);
-      canvas.addEventListener("pointermove", moveDraw);
-      window.addEventListener("pointerup", endDraw);
-      canvas.addEventListener("touchstart", startDraw, {passive:false});
-      canvas.addEventListener("touchmove", moveDraw, {passive:false});
-      canvas.addEventListener("touchend", endDraw);
+      function redrawSignatureCanvas(dataUrl){
+        clearSignature(false);
+        if(!dataUrl) return;
+        const img = new Image();
+        img.onload = ()=>{
+          const rect = sigCanvas.getBoundingClientRect();
+          sigCtx.drawImage(img, 10, 10, rect.width-20, rect.height-20);
+        };
+        img.src = dataUrl;
+      }
 
-      let currentSigDataUrl = "";
+      sigCanvas.addEventListener("pointerdown", startDraw);
+      sigCanvas.addEventListener("pointermove", moveDraw);
+      window.addEventListener("pointerup", endDraw);
+      sigCanvas.addEventListener("touchstart", startDraw, {passive:false});
+      sigCanvas.addEventListener("touchmove", moveDraw, {passive:false});
+      sigCanvas.addEventListener("touchend", endDraw);
 
       function setSigState(){
         setStatus(!!currentSigDataUrl, $("sigStateDot"), $("sigState"), "Unterschrift gesetzt", "keine Unterschrift");
       }
 
-      // ========= Form / Preview =========
-      const formIds = ["fDate","fType","fClient","fObject","fAddr","fShift","fRole","fPosition","fName","fBewID","fNote"];
+      // ====== Form / Mode logic (Mitarbeiter & Selbständige) ======
+      let currentSelectedId = "";
+
+      function applyRoleBehavior(){
+        const role = $("fRole").value;
+        if(role === "Selbständige"){
+          // auto-fill owner
+          $("fName").value = sanitizeText($("fName").value) || OWNER_NAME_DEFAULT;
+          if(OWNER_BEWID_DEFAULT && !sanitizeText($("fBewID").value)) $("fBewID").value = OWNER_BEWID_DEFAULT;
+          $("fName").placeholder = OWNER_NAME_DEFAULT;
+          $("fBewID").placeholder = OWNER_BEWID_DEFAULT || "Bewacher-ID (optional)";
+        }else{
+          // Mitarbeiter: user enters name & id
+          if(sanitizeText($("fName").value) === OWNER_NAME_DEFAULT) $("fName").value = "";
+          if(OWNER_BEWID_DEFAULT && sanitizeText($("fBewID").value) === OWNER_BEWID_DEFAULT) $("fBewID").value = "";
+          $("fName").placeholder = "Name Mitarbeiter";
+          $("fBewID").placeholder = "Bewacher-ID Mitarbeiter";
+        }
+        updatePreviewFromForm();
+      }
 
       function getForm(){
-        const role = $("fRole").value;
+        const role = sanitizeText($("fRole").value);
         return {
           id: currentSelectedId || uid(),
           date: $("fDate").value || todayISO(),
@@ -517,7 +554,7 @@
           object: sanitizeText($("fObject").value),
           addr: sanitizeText($("fAddr").value),
           shift: sanitizeText($("fShift").value),
-          role: sanitizeText(role),
+          role,
           position: sanitizeText($("fPosition").value),
           name: sanitizeText($("fName").value),
           bewid: sanitizeText($("fBewID").value),
@@ -540,42 +577,20 @@
         $("fNote").value = data.note || "";
         currentSigDataUrl = data.sig || "";
         setSigState();
-        // draw signature back to canvas
         redrawSignatureCanvas(currentSigDataUrl);
-        updatePreviewFromForm();
         applyRoleBehavior();
-      }
-
-      function redrawSignatureCanvas(dataUrl){
-        clearSignature(false);
-        if(!dataUrl) return;
-        const img = new Image();
-        img.onload = ()=>{
-          // fit inside canvas visually
-          const rect = canvas.getBoundingClientRect();
-          const ratio = Math.max(1, window.devicePixelRatio || 1);
-          // canvas is already scaled; but ctx uses CSS coords due to setTransform.
-          ctx.drawImage(img, 10, 10, rect.width-20, rect.height-20);
-        };
-        img.src = dataUrl;
-      }
-
-      function fillOwnerDefaultsIfEmpty(){
-        if(!$("fName").value.trim()) $("fName").value = OWNER_NAME_DEFAULT;
-        if(!$("fBewID").value.trim() && OWNER_BEWID_DEFAULT) $("fBewID").value = OWNER_BEWID_DEFAULT;
-      }
-
-      function applyRoleBehavior(){
-        const role = $("fRole").value;
-        if(role === "Selbständige"){
-          fillOwnerDefaultsIfEmpty();
-          $("fName").placeholder = OWNER_NAME_DEFAULT;
-          $("fBewID").placeholder = OWNER_BEWID_DEFAULT || "Bewacher-ID (optional)";
-        }else{
-          $("fName").placeholder = "Name Mitarbeiter";
-          $("fBewID").placeholder = "Bewacher-ID Mitarbeiter";
-        }
         updatePreviewFromForm();
+      }
+
+      function validateForm(d){
+        const missing = [];
+        if(!d.date) missing.push("Datum");
+        if(!d.client) missing.push("Kunde");
+        if(!d.object) missing.push("Objekt");
+        if(!d.shift) missing.push("Schichtzeit");
+        if(!d.name) missing.push("Name Einsatzkraft");
+        // Bewacher-ID can be optional in some setups, but recommended.
+        return missing;
       }
 
       function updatePreviewFromForm(){
@@ -593,6 +608,7 @@
         $("pName").textContent = d.name || "—";
         $("pBewID").textContent = d.bewid || "—";
         $("pRole").textContent = d.role || "—";
+        $("pMode").textContent = d.role || "—";
 
         const sigBig = $("pSigImg");
         const sigSmall = $("pSigImgSmall");
@@ -607,15 +623,8 @@
         }
       }
 
-      formIds.forEach(id=>{
-        $(id).addEventListener("input", updatePreviewFromForm);
-        $(id).addEventListener("change", updatePreviewFromForm);
-      });
-      $("fRole").addEventListener("change", applyRoleBehavior);
-
-      // ========= List UI =========
+      // ====== List UI ======
       const listEl = $("list");
-      let currentSelectedId = "";
 
       function renderList(){
         const list = loadList().sort((a,b)=> (b.date||"").localeCompare(a.date||"") || (b.id||"").localeCompare(a.id||""));
@@ -630,12 +639,16 @@
         for(const it of list){
           const div = document.createElement("div");
           div.className = "item";
+          div.dataset.id = it.id;
+
           const title = document.createElement("div");
           title.className = "t";
-          title.textContent = `${it.name || "—"} • ${it.object || "Objekt"} ✓`;
+          title.textContent = `${it.role || "—"} • ${it.name || "—"} • ${it.object || "Objekt"} ✓`;
+
           const sub = document.createElement("div");
           sub.className = "s";
           sub.textContent = `${it.date || ""} • ${it.shift || ""} • ${it.client || ""} • ${it.type || ""}`;
+
           const idline = document.createElement("div");
           idline.className = "s";
           idline.textContent = `Einsatz-ID: ${it.id}`;
@@ -650,7 +663,6 @@
             highlightSelected();
           });
 
-          div.dataset.id = it.id;
           listEl.appendChild(div);
         }
         highlightSelected();
@@ -664,47 +676,40 @@
         });
       }
 
-      // ========= Save / Delete / Clear =========
-      function validateForm(d){
-        const missing = [];
-        if(!d.date) missing.push("Datum");
-        if(!d.client) missing.push("Kunde");
-        if(!d.object) missing.push("Objekt");
-        if(!d.shift) missing.push("Schichtzeit");
-        if(!d.name) missing.push("Name Einsatzkraft");
-        // Bewacher-ID can be empty sometimes; but recommended
-        return missing;
-      }
-
-      $("btnSave").addEventListener("click", ()=>{
+      // ====== Buttons ======
+      function saveNew(){
         const d = getForm();
+        d.id = uid(); // force new
         const missing = validateForm(d);
-        if(missing.length){
-          alert("Bitte ausfüllen: " + missing.join(", "));
-          return;
-        }
+        if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+
         const list = loadList();
-        const idx = list.findIndex(x=>x.id === d.id);
-        if(idx >= 0) list[idx] = d;
-        else list.push(d);
+        list.push(d);
         saveList(list);
         currentSelectedId = d.id;
         renderList();
-        alert("Einsatz gespeichert ✓");
-      });
+        alert("Neuer Einsatz gespeichert ✓");
+      }
 
-      $("btnDelete").addEventListener("click", ()=>{
-        if(!currentSelectedId){
-          alert("Bitte zuerst einen Einsatz aus der Liste auswählen.");
-          return;
+      function updateSelected(){
+        if(!currentSelectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+        const d = getForm();
+        d.id = currentSelectedId;
+
+        const missing = validateForm(d);
+        if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+
+        const list = loadList();
+        const idx = list.findIndex(x=>x.id === currentSelectedId);
+        if(idx >= 0){
+          list[idx] = d;
+          saveList(list);
+          renderList();
+          alert("Einsatz aktualisiert ✓");
+        }else{
+          alert("Eintrag nicht gefunden. Bitte erneut speichern.");
         }
-        if(!confirm("Diesen Einsatz wirklich löschen?")) return;
-        const list = loadList().filter(x=>x.id !== currentSelectedId);
-        saveList(list);
-        currentSelectedId = "";
-        clearForm();
-        renderList();
-      });
+      }
 
       function clearForm(){
         $("fDate").value = todayISO();
@@ -722,32 +727,48 @@
         currentSigDataUrl = "";
         setSigState();
         clearSignature(false);
-        updatePreviewFromForm();
         applyRoleBehavior();
+        updatePreviewFromForm();
+        highlightSelected();
       }
 
-      $("btnClearForm").addEventListener("click", ()=>{
+      function deleteSelected(){
+        if(!currentSelectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+        if(!confirm("Diesen Einsatz wirklich löschen?")) return;
+        const list = loadList().filter(x=>x.id !== currentSelectedId);
+        saveList(list);
+        currentSelectedId = "";
         clearForm();
-      });
+        renderList();
+      }
+
+      $("btnNewSave").addEventListener("click", saveNew);
+      $("btnUpdate").addEventListener("click", updateSelected);
+      $("btnClearForm").addEventListener("click", clearForm);
+      $("btnDelete").addEventListener("click", deleteSelected);
 
       $("btnSigClear").addEventListener("click", ()=>{
         clearSignature(true);
       });
 
-      // ========= PDF =========
+      $("fRole").addEventListener("change", applyRoleBehavior);
+
+      // Update preview on form edits
+      ["fDate","fType","fClient","fObject","fAddr","fShift","fPosition","fName","fBewID","fNote"].forEach(id=>{
+        $(id).addEventListener("input", updatePreviewFromForm);
+        $(id).addEventListener("change", updatePreviewFromForm);
+      });
+
+      // ====== PDF ======
       async function generatePDF(){
         const d = getForm();
         const missing = validateForm(d);
-        if(missing.length){
-          alert("Bitte ausfüllen: " + missing.join(", "));
-          return;
-        }
-        // Make sure preview up to date
+        if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
         updatePreviewFromForm();
 
         const el = $("paper");
-        const scale = Math.min(2, (window.devicePixelRatio || 1)); // stable + sharp
-        const canvas = await html2canvas(el, {
+        const scale = Math.min(2, (window.devicePixelRatio || 1));
+        const cnv = await html2canvas(el, {
           scale,
           useCORS: true,
           backgroundColor: "#ffffff",
@@ -755,22 +776,19 @@
           scrollY: 0
         });
 
-        const imgData = canvas.toDataURL("image/png");
+        const imgData = cnv.toDataURL("image/png");
         const { jsPDF } = window.jspdf;
 
-        // A4 portrait in mm
         const pdf = new jsPDF("p","mm","a4");
         const pageW = pdf.internal.pageSize.getWidth();
         const pageH = pdf.internal.pageSize.getHeight();
 
-        // Fit image to page with margins
         const margin = 8;
         const maxW = pageW - margin*2;
         const maxH = pageH - margin*2;
 
-        // Convert canvas px aspect to mm fit
-        const imgWpx = canvas.width;
-        const imgHpx = canvas.height;
+        const imgWpx = cnv.width;
+        const imgHpx = cnv.height;
         const ratio = Math.min(maxW / imgWpx, maxH / imgHpx);
         const w = imgWpx * ratio;
         const h = imgHpx * ratio;
@@ -779,10 +797,13 @@
         const y = margin;
 
         pdf.addImage(imgData, "PNG", x, y, w, h, undefined, "FAST");
+
+        const safeRole = (d.role || "Einsatz").replace(/[^\w\- ]+/g,"").trim() || "Einsatz";
+        const safeName = (d.name || "Name").replace(/[^\w\- ]+/g,"").trim() || "Name";
         const safeClient = (d.client || "Kunde").replace(/[^\w\- ]+/g,"").trim() || "Kunde";
         const safeObj = (d.object || "Objekt").replace(/[^\w\- ]+/g,"").trim() || "Objekt";
-        const filename = `Einsatzmeldung_${d.date}_${safeClient}_${safeObj}.pdf`.replace(/\s+/g,"_");
 
+        const filename = `Einsatzmeldung_${d.date}_${safeRole}_${safeName}_${safeClient}_${safeObj}.pdf`.replace(/\s+/g,"_");
         pdf.save(filename);
       }
 
@@ -793,28 +814,28 @@
         });
       });
 
-      // ========= Clickable tel/email =========
-      function callNumber(num){
-        const tel = "tel:" + num.replace(/\s+/g,"");
-        window.location.href = tel;
-      }
-      function emailTo(addr){
-        const mail = "mailto:" + addr.trim();
-        window.location.href = mail;
-      }
+      // ====== Print ======
+      $("btnPrint").addEventListener("click", ()=>{
+        const d = getForm();
+        const missing = validateForm(d);
+        if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+        updatePreviewFromForm();
+        window.print();
+      });
+
+      // ====== Clickable tel/email ======
+      function callNumber(num){ window.location.href = "tel:" + num.replace(/\s+/g,""); }
+      function emailTo(addr){ window.location.href = "mailto:" + addr.trim(); }
       $("btnCall").addEventListener("click", ()=>callNumber("015778697052"));
       $("btnCall2").addEventListener("click", ()=>callNumber("015778697052"));
       $("btnMail").addEventListener("click", ()=>emailTo("Kontakt.mass.bremen@hotmail.com"));
       $("btnMail2").addEventListener("click", ()=>emailTo("Kontakt.mass.bremen@hotmail.com"));
 
-      // ========= Logo upload =========
+      // ====== Logo upload ======
       $("logoFile").addEventListener("change", async (e)=>{
         const file = e.target.files && e.target.files[0];
         if(!file) return;
-        if(!file.type.startsWith("image/")){
-          alert("Bitte ein Bild auswählen.");
-          return;
-        }
+        if(!file.type.startsWith("image/")){ alert("Bitte ein Bild auswählen."); return; }
         const dataUrl = await fileToDataURL(file);
         setLogo(dataUrl);
         alert("Logo gespeichert ✓");
@@ -830,13 +851,14 @@
         });
       }
 
-      // ========= Init =========
+      // ====== Init ======
       function init(){
         applyLogoToUI();
-        resizeCanvas();
-        window.addEventListener("resize", ()=>{ resizeCanvas(); redrawSignatureCanvas(currentSigDataUrl); });
+        resizeSigCanvas();
+        window.addEventListener("resize", ()=>{ resizeSigCanvas(); redrawSignatureCanvas(currentSigDataUrl); });
 
         $("fDate").value = todayISO();
+        $("fRole").value = "Selbständige";
         $("fName").value = OWNER_NAME_DEFAULT;
         $("fBewID").value = OWNER_BEWID_DEFAULT || "";
         applyRoleBehavior();
