@@ -42,8 +42,12 @@
     }
     .btn:hover{border-color:rgba(58,166,255,.55);box-shadow:0 0 0 3px rgba(58,166,255,.12)}
     .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .btn.ok{background:rgba(33,209,159,.14)}
+    .btn.warn{background:rgba(255,206,84,.14)}
+    .btn.bad{background:rgba(255,77,109,.14)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
 
-    .grid{display:grid;grid-template-columns:460px 1fr;gap:14px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:500px 1fr;gap:14px;margin-top:14px}
     @media (max-width:980px){ .grid{grid-template-columns:1fr} }
 
     .card{
@@ -56,12 +60,34 @@
       width:100%;padding:12px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.18);color:#eaf2ff;outline:none;
     }
+    input:focus,select:focus{border-color:rgba(58,166,255,.6);box-shadow:0 0 0 3px rgba(58,166,255,.12)}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media (max-width:560px){ .row{grid-template-columns:1fr} }
     .split{height:1px;background:var(--line);margin:12px 0}
     .hint{font-size:12px;color:var(--muted);line-height:1.35}
+    .mini{font-size:11px;color:var(--muted);line-height:1.35}
 
-    /* PAPER */
+    /* employees editor */
+    .empBox{border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:10px;margin-top:10px;background:rgba(0,0,0,.10)}
+    .empHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .empTitle{font-weight:900}
+    .empRow{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:10px;margin-top:10px;background:rgba(0,0,0,.10)}
+    .empTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .empNum{font-weight:900}
+    .empBtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .smBtn{padding:8px 10px;border-radius:12px;font-size:12px}
+
+    /* saved list */
+    .list{display:grid;gap:10px;margin-top:10px}
+    .item{
+      border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;background:rgba(0,0,0,.14);
+      cursor:pointer;
+    }
+    .item:hover{border-color:rgba(58,166,255,.55)}
+    .item .t{font-weight:900}
+    .item .s{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.35}
+
+    /* PAPER (1:1) */
     .paperHost{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow)}
     .paper{background:#fff;color:#111;border-radius:14px;padding:16px}
     .pTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
@@ -73,15 +99,16 @@
     .pMeta{font-size:12px;color:#333;text-align:right;line-height:1.5}
     .pBox{border:2px solid #111;border-radius:12px;padding:12px;margin-top:10px}
     .pBoxGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border:2px solid #111;padding:10px;font-size:12px;vertical-align:top}
-    th{background:#f3f4f6;font-weight:900}
+    table.pTable{width:100%;border-collapse:collapse;margin-top:10px}
+    .pTable th,.pTable td{border:2px solid #111;padding:10px;font-size:12px;vertical-align:top}
+    .pTable th{background:#f3f4f6;font-weight:900}
     .pSigRow{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:10px}
     .pSigBox{border:2px solid #111;border-radius:12px;padding:12px;min-height:120px}
     .pLabel{font-size:12px;font-weight:900;margin-bottom:6px}
     .pSignSlot{height:64px;border:2px solid #111;border-radius:10px;background:#fff}
     .pSigLine{height:2px;background:#111;margin-top:56px}
     .small{font-size:11px;color:#333}
+    .pLine{font-size:12px;margin:4px 0}
 
     @media print{
       @page{ size:A4; margin:10mm; }
@@ -113,12 +140,18 @@
         <input id="logoFile" type="file" accept="image/*" style="display:none">
       </label>
       <button class="btn" id="btnResetLogo">Reset Logo</button>
-      <button class="btn" id="btnPDF">Generate PDF</button>
+
+      <button class="btn ok" id="btnSaveNew">Speichern (NEW)</button>
+      <button class="btn" id="btnUpdate" disabled>Speichern (Update)</button>
+      <button class="btn bad" id="btnDelete" disabled>Löschen</button>
+
+      <button class="btn warn" id="btnPDF">Generate PDF</button>
       <button class="btn" id="btnPrint">Print</button>
     </div>
   </div>
 
   <div class="grid">
+    <!-- LEFT -->
     <div class="card">
       <h2>Einsatz erfassen</h2>
 
@@ -143,11 +176,11 @@
       <div class="row">
         <div>
           <label>Kunde / Objekt</label>
-          <input id="fClient" placeholder="z.B. procertus — hotel">
+          <input id="fClient" placeholder="z.B. Procertus — Hotel">
         </div>
         <div>
           <label>Adresse</label>
-          <input id="fAddr" placeholder="z.B. Werschenregerstr 6, 28237 Bremen">
+          <input id="fAddr" placeholder="Straße, PLZ Ort">
         </div>
       </div>
 
@@ -157,32 +190,42 @@
           <input id="fShift" placeholder="18:00 – 06:00">
         </div>
         <div>
-          <label>Position</label>
-          <input id="fPosition" placeholder="z.B. Nachtwache">
+          <label>Ort / Datum (für Feld rechts)</label>
+          <input id="fOrt" placeholder="Bremen">
         </div>
       </div>
 
       <div class="split"></div>
 
-      <div class="row">
-        <div>
-          <label>Name</label>
-          <input id="fName" placeholder="Mustafa Mursal">
+      <div class="empBox">
+        <div class="empHead">
+          <div class="empTitle">Mitarbeiter (mehrere)</div>
+          <div class="empBtns">
+            <button class="btn smBtn" id="btnAddEmp">+ Add Mitarbeiter</button>
+            <button class="btn smBtn" id="btnClearAll">Clear</button>
+          </div>
         </div>
-        <div>
-          <label>Bewacher-ID</label>
-          <input id="fBewID" placeholder="324242">
-        </div>
+        <div class="mini">Row 1 = Mitarbeiter 1 (ama Selbständige). Ku dar 2,3,4… (Add Mitarbeiter).</div>
+        <div id="empEditor"></div>
       </div>
 
+      <div class="split"></div>
+
+      <h2>Gespeicherte Einsätze</h2>
+      <div class="mini">Taabo entry → load → Update/Delete/PDF/Print.</div>
+      <div class="list" id="list"></div>
+
+      <div class="split"></div>
       <div class="hint">
-        ✅ Table header: <b>Unterschrift Mitarbeiter / Selbständige</b><br>
-        ✅ Unterschrift Arbeitskräfte removed<br>
-        ✅ Einsatz-ID + Speicherort removed<br>
+        ✅ More Mitarbeiter: table-ka wuxuu qaadaa rows badan<br>
+        ✅ Speichern: NEW / Update / Delete + History (localStorage)<br>
+        ✅ Einsatz-ID & Speicherort: removed<br>
+        ✅ Unterschrift Arbeitskräfte: removed<br>
         ✅ Fest Logo: <b>logo.png</b>
       </div>
     </div>
 
+    <!-- RIGHT PAPER -->
     <div class="paperHost">
       <div class="paper" id="paper">
         <div class="pTop">
@@ -219,7 +262,7 @@
 
           <div class="pLine" style="margin-top:12px"><b>Mitarbeiter (Liste)</b></div>
 
-          <table>
+          <table class="pTable">
             <thead>
               <tr>
                 <th style="width:46px">#</th>
@@ -229,15 +272,7 @@
                 <th style="width:240px">Unterschrift Mitarbeiter / Selbständige</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td id="pName">—</td>
-                <td id="pBewID">—</td>
-                <td id="pPosition">—</td>
-                <td><div class="pSignSlot"></div></td>
-              </tr>
-            </tbody>
+            <tbody id="pEmpTbody"></tbody>
           </table>
 
           <div class="pSigRow">
@@ -247,7 +282,7 @@
             </div>
             <div class="pSigBox">
               <div class="pLabel">Ort / Datum</div>
-              <div class="small">Bremen, <span id="pDate2">—</span></div>
+              <div class="small"><span id="pOrt">Bremen</span>, <span id="pDate2">—</span></div>
               <div class="pSigLine"></div>
             </div>
           </div>
@@ -264,10 +299,27 @@
 (() => {
   "use strict";
 
-  const LS_LOGO = "ms_logo_fest_v1";
+  const LS_LOGO = "ms_logo_fest_v2";
+  const LS_LIST = "ms_einsatz_saved_v1";
+
   const $ = (id) => document.getElementById(id);
   const todayISO = () => new Date().toISOString().slice(0,10);
+  const uid = () => "MS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
   const clean = (s) => (s==null ? "" : String(s).replace(/\s+/g," ").trim());
+
+  let selectedId = "";
+  let employees = [];
+
+  function loadSaved(){
+    try{
+      const raw = localStorage.getItem(LS_LIST);
+      const v = raw ? JSON.parse(raw) : [];
+      return Array.isArray(v) ? v : [];
+    }catch{ return []; }
+  }
+  function saveSaved(list){
+    localStorage.setItem(LS_LIST, JSON.stringify(list));
+  }
 
   function applyLogo(){
     const data = localStorage.getItem(LS_LOGO);
@@ -280,22 +332,254 @@
     }
   }
 
+  function addEmployeeRow(prefill){
+    employees.push({
+      name: clean(prefill?.name),
+      bewid: clean(prefill?.bewid),
+      position: clean(prefill?.position)
+    });
+    renderEmpEditor();
+    updatePreview();
+  }
+
+  function renderEmpEditor(){
+    const box = $("empEditor");
+    box.innerHTML = "";
+    if(!employees.length){
+      const div = document.createElement("div");
+      div.className = "mini";
+      div.textContent = "No Mitarbeiter yet. Click “Add Mitarbeiter”.";
+      box.appendChild(div);
+      return;
+    }
+
+    employees.forEach((emp, idx) => {
+      const row = document.createElement("div");
+      row.className = "empRow";
+      row.innerHTML = `
+        <div class="empTop">
+          <div class="empNum">#${idx+1}</div>
+          <div class="empBtns">
+            <button class="btn bad smBtn" type="button" data-del="${idx}" ${employees.length<=1 ? "disabled" : ""}>Remove</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label>Name</label>
+            <input data-name="${idx}" value="${(emp.name||"").replace(/"/g,"&quot;")}" placeholder="Name">
+          </div>
+          <div>
+            <label>Bewacher-ID</label>
+            <input data-bew="${idx}" value="${(emp.bewid||"").replace(/"/g,"&quot;")}" placeholder="Bewacher-ID">
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div style="grid-column:1 / -1">
+            <label>Position</label>
+            <input data-pos="${idx}" value="${(emp.position||"").replace(/"/g,"&quot;")}" placeholder="Position">
+          </div>
+        </div>
+      `;
+      box.appendChild(row);
+    });
+
+    box.querySelectorAll("[data-name]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.name; employees[i].name = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-bew]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.bew; employees[i].bewid = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-pos]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.pos; employees[i].position = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", (e)=>{
+      const i = +e.target.dataset.del;
+      if(employees.length <= 1) return;
+      employees.splice(i,1);
+      renderEmpEditor();
+      updatePreview();
+    }));
+  }
+
+  function getForm(){
+    return {
+      id: selectedId || uid(),
+      date: $("fDate").value || todayISO(),
+      type: clean($("fType").value),
+      client: clean($("fClient").value),
+      addr: clean($("fAddr").value),
+      shift: clean($("fShift").value),
+      ort: clean($("fOrt").value) || "Bremen",
+      employees: employees.map(e => ({
+        name: clean(e.name),
+        bewid: clean(e.bewid),
+        position: clean(e.position)
+      }))
+    };
+  }
+
+  function setForm(d){
+    $("fDate").value = d.date || todayISO();
+    $("fType").value = d.type || "Hotel";
+    $("fClient").value = d.client || "";
+    $("fAddr").value = d.addr || "";
+    $("fShift").value = d.shift || "";
+    $("fOrt").value = d.ort || "Bremen";
+
+    employees = Array.isArray(d.employees) && d.employees.length ? d.employees.map(e=>({
+      name: clean(e.name),
+      bewid: clean(e.bewid),
+      position: clean(e.position)
+    })) : [];
+
+    if(!employees.length) addEmployeeRow({}); else { renderEmpEditor(); updatePreview(); }
+  }
+
+  function validate(d){
+    const missing = [];
+    if(!d.date) missing.push("Datum");
+    if(!d.client) missing.push("Kunde / Objekt");
+    if(!d.shift) missing.push("Schichtzeit");
+    if(!d.employees?.length) missing.push("Mitarbeiter");
+    if(d.employees?.length && !clean(d.employees[0]?.name)) missing.push("Name (#1)");
+    return missing;
+  }
+
   function updatePreview(){
-    const d = $("fDate").value || todayISO();
-    $("pDate").textContent = d;
-    $("pDate2").textContent = d;
-    $("pType").textContent = clean($("fType").value) || "—";
-    $("pClient").textContent = clean($("fClient").value) || "—";
-    $("pAddr").textContent = clean($("fAddr").value) || "—";
-    $("pShift").textContent = clean($("fShift").value) || "—";
-    $("pName").textContent = clean($("fName").value) || "—";
-    $("pBewID").textContent = clean($("fBewID").value) || "—";
-    $("pPosition").textContent = clean($("fPosition").value) || "—";
+    const d = getForm();
+
+    $("pDate").textContent = d.date || "—";
+    $("pDate2").textContent = d.date || "—";
+    $("pType").textContent = d.type || "—";
+    $("pClient").textContent = d.client || "—";
+    $("pAddr").textContent = d.addr || "—";
+    $("pShift").textContent = d.shift || "—";
+    $("pOrt").textContent = d.ort || "Bremen";
+
+    // rows
+    const tb = $("pEmpTbody");
+    tb.innerHTML = "";
+    const list = d.employees || [];
+    if(!list.length){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>1</td><td>—</td><td>—</td><td>—</td><td><div class="pSignSlot"></div></td>`;
+      tb.appendChild(tr);
+      return;
+    }
+    list.forEach((emp, idx)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${emp.name || "—"}</td>
+        <td>${emp.bewid || "—"}</td>
+        <td>${emp.position || "—"}</td>
+        <td><div class="pSignSlot"></div></td>
+      `;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderSavedList(){
+    const list = loadSaved().sort((a,b)=> (b.date||"").localeCompare(a.date||""));
+    const box = $("list");
+    box.innerHTML = "";
+    if(!list.length){
+      const div = document.createElement("div");
+      div.className = "mini";
+      div.textContent = "Noch keine Einsätze gespeichert.";
+      box.appendChild(div);
+      return;
+    }
+    list.forEach(it=>{
+      const first = it.employees?.[0]?.name || "—";
+      const count = (it.employees?.length || 0);
+      const div = document.createElement("div");
+      div.className = "item";
+      div.dataset.id = it.id;
+      div.innerHTML = `
+        <div class="t">${it.date || ""} • ${it.client || ""}</div>
+        <div class="s">${it.type || ""} • ${it.shift || ""} • ${count} Mitarbeiter • #1: ${first}</div>
+      `;
+      div.addEventListener("click", ()=>{
+        selectedId = it.id;
+        setForm(it);
+        setSelectedUI(true);
+      });
+      box.appendChild(div);
+    });
+  }
+
+  function setSelectedUI(on){
+    $("btnUpdate").disabled = !on;
+    $("btnDelete").disabled = !on;
+  }
+
+  function saveNew(){
+    const d = getForm();
+    d.id = uid();
+    const miss = validate(d);
+    if(miss.length){ alert("Bitte ausfüllen: " + miss.join(", ")); return; }
+
+    const list = loadSaved();
+    list.push(d);
+    saveSaved(list);
+
+    selectedId = d.id;
+    setSelectedUI(true);
+    renderSavedList();
+    alert("Gespeichert ✓");
+  }
+
+  function saveUpdate(){
+    if(!selectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+    const d = getForm();
+    d.id = selectedId;
+    const miss = validate(d);
+    if(miss.length){ alert("Bitte ausfüllen: " + miss.join(", ")); return; }
+
+    const list = loadSaved();
+    const idx = list.findIndex(x=>x.id === selectedId);
+    if(idx < 0){ alert("Eintrag nicht gefunden."); return; }
+    list[idx] = d;
+    saveSaved(list);
+    renderSavedList();
+    alert("Aktualisiert ✓");
+  }
+
+  function deleteSelected(){
+    if(!selectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+    if(!confirm("Diesen Einsatz wirklich löschen?")) return;
+    const list = loadSaved().filter(x=>x.id !== selectedId);
+    saveSaved(list);
+    selectedId = "";
+    setSelectedUI(false);
+    clearAll();
+    renderSavedList();
+  }
+
+  function clearAll(){
+    $("fDate").value = todayISO();
+    $("fType").value = "Hotel";
+    $("fClient").value = "";
+    $("fAddr").value = "";
+    $("fShift").value = "";
+    $("fOrt").value = "Bremen";
+    employees = [];
+    addEmployeeRow({});
+    selectedId = "";
+    setSelectedUI(false);
+    updatePreview();
   }
 
   async function generatePDF(){
     updatePreview();
     applyLogo();
+    const d = getForm();
+    const miss = validate(d);
+    if(miss.length){ alert("Bitte ausfüllen: " + miss.join(", ")); return; }
+
     const el = $("paper");
     const scale = Math.min(2, (window.devicePixelRatio || 1));
     const cnv = await html2canvas(el, {scale, useCORS:true, backgroundColor:"#ffffff", scrollX:0, scrollY:0});
@@ -310,11 +594,14 @@
     const w = cnv.width * ratio;
     const h = cnv.height * ratio;
     pdf.addImage(imgData, "PNG", (pageW-w)/2, margin, w, h, undefined, "FAST");
-    pdf.save("Einsatzmeldung.pdf");
-  }
 
+    const safe = (s)=> (s||"").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"_") || "Einsatz";
+    const filename = `Einsatzmeldung_${d.date}_${safe(d.client)}.pdf`;
+    pdf.save(filename);
+  }
   function printA4(){ updatePreview(); applyLogo(); window.print(); }
 
+  // Logo replace / reset
   $("logoFile").addEventListener("change", async (e)=>{
     const file = e.target.files && e.target.files[0];
     if(!file) return;
@@ -330,24 +617,41 @@
     e.target.value = "";
     alert("Logo ersetzt ✓ (fest gespeichert)");
   });
-
   $("btnResetLogo").addEventListener("click", ()=>{
     localStorage.removeItem(LS_LOGO);
     applyLogo();
     alert("Logo reset ✓ (zurück zu logo.png)");
   });
 
-  ["fDate","fType","fClient","fAddr","fShift","fPosition","fName","fBewID"].forEach(id=>{
-    $(id).addEventListener("input", updatePreview);
-    $(id).addEventListener("change", updatePreview);
-  });
+  // Buttons
+  $("btnAddEmp").addEventListener("click", ()=>addEmployeeRow({}));
+  $("btnClearAll").addEventListener("click", clearAll);
+
+  $("btnSaveNew").addEventListener("click", saveNew);
+  $("btnUpdate").addEventListener("click", saveUpdate);
+  $("btnDelete").addEventListener("click", deleteSelected);
 
   $("btnPDF").addEventListener("click", ()=>generatePDF().catch(err=>{console.error(err);alert("PDF Fehler: "+(err?.message||err));}));
   $("btnPrint").addEventListener("click", printA4);
 
-  $("fDate").value = todayISO();
-  applyLogo();
-  updatePreview();
+  // Live preview updates
+  ["fDate","fType","fClient","fAddr","fShift","fOrt"].forEach(id=>{
+    $(id).addEventListener("input", updatePreview);
+    $(id).addEventListener("change", updatePreview);
+  });
+
+  // INIT
+  function init(){
+    $("fDate").value = todayISO();
+    $("fOrt").value = "Bremen";
+    applyLogo();
+    employees = [];
+    addEmployeeRow({});
+    renderSavedList();
+    setSelectedUI(false);
+    updatePreview();
+  }
+  init();
 })();
 </script>
 </body>
