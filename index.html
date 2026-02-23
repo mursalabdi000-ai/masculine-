@@ -1,6 +1,891 @@
 <!doctype html>
 <html lang="de">
+<head><!doctype html>
+<html lang="de">
 <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Masculine Security — Einsatzmeldung</title>
+
+  <!-- PDF libs -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#0f1a30; --panel2:#0c162a;
+      --line:rgba(255,255,255,.14); --text:#eaf2ff; --muted:rgba(234,242,255,.72);
+      --accent:#3aa6ff; --ok:#21d19f; --warn:#ffce54; --bad:#ff4d6d;
+      --r:18px; --shadow:0 14px 40px rgba(0,0,0,.35);
+
+      /* Paper */
+      --paper:#fff; --ink:#111827; --ink2:#344054; --paperline:#111827;
+      --paperlineSoft:#cbd5e1;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:radial-gradient(1000px 600px at 20% 10%, #163b74 0%, rgba(22,59,116,0) 55%), var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:16px}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border:1px solid var(--line);border-radius:22px;padding:12px 14px;box-shadow:var(--shadow);
+      position:sticky;top:10px;z-index:5;
+    }
+    .brand{display:flex;gap:12px;align-items:center;min-width:280px}
+    .logo{
+      width:46px;height:46px;border-radius:14px;background:#0b0f1a;border:1px solid var(--line);
+      display:grid;place-items:center;overflow:hidden;flex:0 0 auto;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover;display:block}
+    .brand h1{margin:0;font-size:14px;line-height:1.2}
+    .brand .sub{margin-top:2px;font-size:12px;color:var(--muted);line-height:1.35}
+    .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .btn{
+      border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);
+      padding:10px 12px;border-radius:14px;cursor:pointer;font-weight:750;font-size:13px;
+      display:inline-flex;gap:8px;align-items:center;
+    }
+    .btn:hover{border-color:rgba(58,166,255,.55);box-shadow:0 0 0 3px rgba(58,166,255,.12)}
+    .btn.ok{background:rgba(33,209,159,.14);border-color:rgba(33,209,159,.35)}
+    .btn.warn{background:rgba(255,206,84,.14);border-color:rgba(255,206,84,.35)}
+    .btn.bad{background:rgba(255,77,109,.14);border-color:rgba(255,77,109,.35)}
+    .pill{
+      border:1px solid var(--line);border-radius:999px;padding:8px 10px;font-size:12px;color:var(--muted);
+      display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.12);
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--bad);display:inline-block}
+    .dot.ok{background:var(--ok)}
+    .click{
+      border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);
+      padding:8px 10px;border-radius:12px;cursor:pointer;font-weight:800;font-size:12px;
+    }
+
+    .grid{display:grid;grid-template-columns:460px 1fr;gap:14px;margin-top:14px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow);
+    }
+    .card h2{margin:0 0 10px 0;font-size:15px}
+    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
+    input,select,textarea{
+      width:100%;padding:12px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);color:var(--text);outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color:rgba(58,166,255,.6);box-shadow:0 0 0 3px rgba(58,166,255,.12)}
+    textarea{min-height:70px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:560px){ .row{grid-template-columns:1fr} }
+    .hint{font-size:12px;color:var(--muted);line-height:1.35;margin-top:8px}
+    .split{height:1px;background:var(--line);margin:12px 0}
+
+    .sigPad{
+      width:100%;height:140px;border-radius:16px;border:1px dashed rgba(255,255,255,.22);
+      background:rgba(0,0,0,.14);touch-action:none;
+    }
+    .sigBtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .list{display:grid;gap:10px}
+    .item{
+      border:1px solid var(--line);border-radius:18px;padding:12px;background:rgba(0,0,0,.14);cursor:pointer;
+    }
+    .item:hover{border-color:rgba(58,166,255,.55)}
+    .item .t{font-weight:850}
+    .item .s{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.35}
+
+    /* ===== PAPER (match your screenshot) ===== */
+    .paperHost{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:24px;padding:14px;box-shadow:var(--shadow)}
+    .paper{
+      background:var(--paper); color:var(--ink);
+      border-radius:14px; padding:16px;
+    }
+    .pTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:10px;
+    }
+    .pBrand{display:flex; gap:12px; align-items:flex-start}
+    .pLogoBox{
+      width:62px; height:62px; border:2px solid #111; border-radius:8px;
+      overflow:hidden; background:#f3f4f6; display:grid; place-items:center;
+    }
+    .pLogoBox img{width:100%;height:100%;object-fit:cover;display:block}
+    .pTitle{font-size:22px;font-weight:900;margin:0;line-height:1.1}
+    .pSub{font-size:12px;color:var(--ink2);line-height:1.4;margin-top:4px}
+    .pMeta{font-size:12px;color:var(--ink2);text-align:right;line-height:1.5}
+    .pBox{
+      border:2px solid #111; border-radius:12px; padding:12px; margin-top:10px;
+    }
+    .pBoxGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;align-items:start}
+    @media (max-width:980px){ .pMeta{text-align:left} .pTop{flex-direction:column} .pBoxGrid{grid-template-columns:1fr} }
+    .pLabel{font-size:12px;color:#111;font-weight:900;margin-bottom:6px}
+    .pLine{font-size:12px;color:#111;margin:4px 0}
+    .pLine b{font-weight:900}
+    table.pTable{width:100%;border-collapse:collapse;margin-top:10px}
+    .pTable th,.pTable td{
+      border:2px solid #111;
+      padding:10px;
+      font-size:12px;
+      vertical-align:top;
+    }
+    .pTable th{background:#f3f4f6;font-weight:900}
+    .pSigBox{
+      border:2px solid #111; border-radius:12px; padding:12px; min-height:120px;
+    }
+    .pSigRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+    .pSigRow2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:10px}
+    .pSigImg{max-width:100%;max-height:70px;display:block;margin-top:6px}
+    .pSigLine{height:2px;background:#111;margin-top:56px}
+    .pSmall{font-size:11px;color:var(--ink2)}
+    .pSignSlot{
+      height:64px; border:2px solid #111; border-radius:10px;
+      background:#fff;
+    }
+
+    /* PRINT */
+    @media print{
+      @page{ size:A4; margin:10mm; }
+      html,body{ background:#fff !important; color:#000 !important; }
+      .wrap{ max-width:unset !important; padding:0 !important; }
+      .topbar,.card,.paperHost{ box-shadow:none !important; border:none !important; background:transparent !important; }
+      .topbar{ display:none !important; }
+      .grid{ display:block !important; margin:0 !important; }
+      .card{ display:none !important; }
+      .paperHost{ padding:0 !important; border:none !important; }
+      #paper{ border-radius:0 !important; padding:0 !important; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" title="Logo">
+        <img id="topLogoImg" alt="Logo"/>
+      </div>
+      <div>
+        <h1>Masculine Security — Einsatzmeldung</h1>
+        <div class="sub">
+          Werschenregerstraße 6, 28237 Bremen •
+          <span class="click" id="btnCall">Tel: 015778697052</span> •
+          <span class="click" id="btnMail">E-Mail: Kontakt.mass.bremen@hotmail.com</span> •
+          <span class="pill"><span id="logoDot" class="dot"></span> Logo: <b id="logoState">nicht gesetzt</b></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <label class="btn" for="logoFile">Logo hochladen
+        <input id="logoFile" type="file" accept="image/*" style="display:none">
+      </label>
+
+      <button class="btn" id="btnAddEmp">+ Add Mitarbeiter</button>
+      <button class="btn ok" id="btnSaveNew">Save NEW</button>
+      <button class="btn" id="btnUpdate">Update Selected</button>
+      <button class="btn" id="btnClear">Clear</button>
+      <button class="btn warn" id="btnPDF">Generate PDF</button>
+      <button class="btn" id="btnPrint">Print</button>
+      <button class="btn bad" id="btnDelete">Delete Selected</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="card">
+      <h2>Einsatz erfassen (wie dein Formular)</h2>
+
+      <div class="row">
+        <div>
+          <label>Datum</label>
+          <input id="fDate" type="date">
+        </div>
+        <div>
+          <label>Typ</label>
+          <select id="fType">
+            <option>Hotel</option>
+            <option>Baustelle</option>
+            <option>Objektschutz</option>
+            <option>Revierdienst</option>
+            <option>Veranstaltung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Kunde / Auftraggeber</label>
+          <input id="fClient" placeholder="z.B. procertus">
+        </div>
+        <div>
+          <label>Objekt</label>
+          <input id="fObject" placeholder="z.B. hotel">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Adresse Objekt</label>
+          <input id="fAddr" placeholder="Straße, PLZ Ort">
+        </div>
+        <div>
+          <label>Schichtzeit</label>
+          <input id="fShift" placeholder="18:00 – 06:00">
+        </div>
+      </div>
+
+      <div class="split"></div>
+
+      <div class="row">
+        <div>
+          <label>Modus</label>
+          <select id="fMode">
+            <option value="Selbständige">Selbständige (Inhaber)</option>
+            <option value="Mitarbeiter">Mitarbeiter (Liste)</option>
+          </select>
+          <div class="hint">
+            • Selbständige: adiga (Inhaber) row 1 auto.<br>
+            • Mitarbeiter: waxaad ku dari kartaa 2,3,4… (Add Mitarbeiter).
+          </div>
+        </div>
+        <div>
+          <label>Standard Position</label>
+          <input id="fPosDefault" placeholder="z.B. Nachtwache / Zugangskontrolle">
+        </div>
+      </div>
+
+      <div class="split"></div>
+
+      <h2>Mitarbeiter-Liste</h2>
+      <div class="hint">Row 1 = adiga ama Mitarbeiter 1. Add Mitarbeiter si aad u kordhiso.</div>
+      <div id="empEditor"></div>
+
+      <div class="split"></div>
+
+      <h2>Unterschrift Einsatzkraft (Mitarbeiter / Selbständige)</h2>
+      <canvas id="sigEmp" class="sigPad"></canvas>
+      <div class="sigBtns">
+        <button class="btn" id="btnEmpClear">Clear</button>
+        <span class="pill"><span id="empDot" class="dot"></span> <b id="empState">keine</b></span>
+      </div>
+
+      <div class="split"></div>
+
+      <h2>Unterschrift Arbeitgeber / Auftraggeber (Kunde) (optional)</h2>
+      <canvas id="sigClient" class="sigPad"></canvas>
+      <div class="sigBtns">
+        <button class="btn" id="btnClientClear">Clear</button>
+        <span class="pill"><span id="cliDot" class="dot"></span> <b id="cliState">keine</b></span>
+      </div>
+
+      <div class="split"></div>
+
+      <h2>Gespeicherte Einsätze</h2>
+      <div class="hint">Tippe einen Eintrag an → laden → Update/PDF/Print/Delete.</div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <!-- RIGHT (Preview) -->
+    <div class="paperHost">
+      <div class="paper" id="paper">
+        <div class="pTop">
+          <div class="pBrand">
+            <div class="pLogoBox"><img id="paperLogoImg" alt="Logo"></div>
+            <div>
+              <div class="pTitle">Einsatzmeldung</div>
+              <div class="pSub">
+                <b>Masculine Security</b> • Werschenregerstraße 6, 28237 Bremen<br>
+                Tel: 015778697052 • E-Mail: Kontakt.mass.bremen@hotmail.com
+              </div>
+            </div>
+          </div>
+          <div class="pMeta">
+            <div><b>Datum:</b> <span id="pDate">—</span></div>
+            <div><b>Typ:</b> <span id="pType">—</span></div>
+          </div>
+        </div>
+
+        <div class="pBox">
+          <div class="pBoxGrid">
+            <div>
+              <div class="pLine"><b>Kunde / Objekt</b></div>
+              <div class="pLine">Kunde / Auftraggeber: <b id="pClient">—</b></div>
+              <div class="pLine">Objekt: <b id="pObject">—</b></div>
+              <div class="pLine">Adresse: <span id="pAddr">—</span></div>
+            </div>
+            <div>
+              <div class="pLine"><b>Schichtzeit</b></div>
+              <div class="pLine"><b id="pShift">—</b></div>
+            </div>
+          </div>
+
+          <div class="pLine" style="margin-top:12px"><b>Mitarbeiter (Liste)</b></div>
+          <table class="pTable">
+            <thead>
+              <tr>
+                <th style="width:46px">#</th>
+                <th>Name</th>
+                <th style="width:140px">Bewacher-ID</th>
+                <th style="width:170px">Position</th>
+                <th style="width:240px">Unterschrift Mitarbeiter</th>
+              </tr>
+            </thead>
+            <tbody id="pEmpTbody"></tbody>
+          </table>
+
+          <div class="pSigRow2">
+            <div class="pSigBox">
+              <div class="pLabel">Unterschrift Arbeitgeber / Auftraggeber</div>
+              <img id="pClientSig" class="pSigImg" alt="Kunde Unterschrift">
+              <div class="pSigLine"></div>
+            </div>
+            <div class="pSigBox">
+              <div class="pLabel">Ort / Datum</div>
+              <div class="pSmall">Bremen, <span id="pDate2">—</span></div>
+              <div class="pSigLine"></div>
+            </div>
+          </div>
+
+          <div class="pSigBox" style="margin-top:10px">
+            <div class="pLabel">Unterschrift Einsatzkraft (Mitarbeiter / Selbständige)</div>
+            <img id="pEmpSig" class="pSigImg" alt="Einsatzkraft Unterschrift">
+            <div class="pSigLine"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div class="pSmall">Einsatz-ID: <b id="pId">—</b></div>
+          <div class="pSmall">Speicherort: lokal (Gerät)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ===== SETTINGS =====
+  const OWNER_NAME_DEFAULT = "Mustafa Abdi";
+  const OWNER_BEWID_DEFAULT = ""; // optional
+  const OWNER_POSITION_DEFAULT = "Nachtwache";
+
+  const LS = {
+    LOGO: "ms_logo_form_v1",
+    LIST: "ms_einsatz_form_v1"
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  const uid = () => "MS-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2,6).toUpperCase();
+  const clean = (s) => (s==null ? "" : String(s).replace(/\s+/g," ").trim());
+  const setDot = (el, ok) => el.classList.toggle("ok", !!ok);
+
+  // ===== STORAGE =====
+  function loadList(){
+    try{ const raw = localStorage.getItem(LS.LIST); const v = raw ? JSON.parse(raw) : []; return Array.isArray(v) ? v : []; }
+    catch{ return []; }
+  }
+  function saveList(list){ localStorage.setItem(LS.LIST, JSON.stringify(list)); }
+
+  function loadLogo(){ return localStorage.getItem(LS.LOGO) || ""; }
+  function setLogo(dataUrl){
+    if(dataUrl) localStorage.setItem(LS.LOGO, dataUrl);
+    else localStorage.removeItem(LS.LOGO);
+    applyLogo();
+  }
+  function applyLogo(){
+    const data = loadLogo();
+    if(data){
+      $("topLogoImg").src = data;
+      $("paperLogoImg").src = data;
+      $("logoState").textContent = "OK";
+      setDot($("logoDot"), true);
+    }else{
+      $("topLogoImg").removeAttribute("src");
+      $("paperLogoImg").removeAttribute("src");
+      $("logoState").textContent = "nicht gesetzt";
+      setDot($("logoDot"), false);
+    }
+  }
+
+  // ===== SIGNATURE PADS =====
+  function makePad(canvas){
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let last = null;
+
+    function resize(){
+      const r = canvas.getBoundingClientRect();
+      const ratio = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(r.width * ratio);
+      canvas.height = Math.floor(r.height * ratio);
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "rgba(234,242,255,.95)";
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    function point(e){
+      const rect = canvas.getBoundingClientRect();
+      const t = (e.touches && e.touches[0]) ? e.touches[0] : e;
+      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+    function start(e){ drawing = true; last = point(e); e.preventDefault(); }
+    function move(e){
+      if(!drawing) return;
+      const p = point(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x,last.y);
+      ctx.lineTo(p.x,p.y);
+      ctx.stroke();
+      last = p;
+      e.preventDefault();
+    }
+    function end(){ drawing = false; last = null; }
+
+    function clear(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+
+    function toDataURL(){
+      const tmp = document.createElement("canvas");
+      tmp.width = canvas.width; tmp.height = canvas.height;
+      const tctx = tmp.getContext("2d");
+      tctx.drawImage(canvas,0,0);
+      const data = tctx.getImageData(0,0,tmp.width,tmp.height).data;
+      for(let i=3;i<data.length;i+=4) if(data[i] !== 0) return tmp.toDataURL("image/png");
+      return "";
+    }
+    function fromDataURL(url){
+      clear();
+      if(!url) return;
+      const img = new Image();
+      img.onload = () => {
+        const r = canvas.getBoundingClientRect();
+        ctx.drawImage(img, 10, 10, r.width-20, r.height-20);
+      };
+      img.src = url;
+    }
+
+    canvas.addEventListener("pointerdown", start);
+    canvas.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+    canvas.addEventListener("touchstart", start, {passive:false});
+    canvas.addEventListener("touchmove", move, {passive:false});
+    canvas.addEventListener("touchend", end);
+
+    return { resize, clear, toDataURL, fromDataURL };
+  }
+
+  const padEmp = makePad($("sigEmp"));
+  const padCli = makePad($("sigClient"));
+
+  // ===== EMPLOYEES LIST =====
+  let employees = []; // [{name,bewid,position}]
+  function defaultRow(){
+    return {
+      name: OWNER_NAME_DEFAULT,
+      bewid: OWNER_BEWID_DEFAULT,
+      position: clean($("fPosDefault").value) || OWNER_POSITION_DEFAULT
+    };
+  }
+
+  function renderEmpEditor(){
+    const box = $("empEditor");
+    box.innerHTML = "";
+    employees.forEach((emp, idx) => {
+      const wrap = document.createElement("div");
+      wrap.style.border = "1px solid rgba(255,255,255,.14)";
+      wrap.style.borderRadius = "16px";
+      wrap.style.padding = "10px";
+      wrap.style.marginBottom = "10px";
+      wrap.style.background = "rgba(0,0,0,.10)";
+
+      wrap.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="font-weight:900">#${idx+1}</div>
+          <button class="btn bad" type="button" ${employees.length<=1 ? "disabled" : ""} data-del="${idx}">Remove</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label>Name</label>
+            <input data-name="${idx}" value="${emp.name ? emp.name.replace(/"/g,"&quot;") : ""}" placeholder="Name">
+          </div>
+          <div>
+            <label>Bewacher-ID</label>
+            <input data-bew="${idx}" value="${emp.bewid ? emp.bewid.replace(/"/g,"&quot;") : ""}" placeholder="Bewacher-ID">
+          </div>
+        </div>
+        <label>Position</label>
+        <input data-pos="${idx}" value="${emp.position ? emp.position.replace(/"/g,"&quot;") : ""}" placeholder="Position">
+      `;
+
+      box.appendChild(wrap);
+    });
+
+    box.querySelectorAll("[data-name]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.name; employees[i].name = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-bew]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.bew; employees[i].bewid = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-pos]").forEach(inp => inp.addEventListener("input", (e)=>{
+      const i = +e.target.dataset.pos; employees[i].position = clean(e.target.value); updatePreview();
+    }));
+    box.querySelectorAll("[data-del]").forEach(btn => btn.addEventListener("click", (e)=>{
+      const i = +e.target.dataset.del;
+      if(employees.length <= 1) return;
+      employees.splice(i,1);
+      renderEmpEditor();
+      updatePreview();
+    }));
+  }
+
+  function addEmployee(){
+    const pos = clean($("fPosDefault").value) || OWNER_POSITION_DEFAULT;
+    employees.push({name:"", bewid:"", position:pos});
+    renderEmpEditor();
+    updatePreview();
+  }
+
+  function applyMode(){
+    const mode = $("fMode").value;
+    if(mode === "Selbständige"){
+      employees = [defaultRow()];
+    }else{
+      // keep list but ensure at least 1 row
+      if(!employees.length) employees = [{name:"", bewid:"", position: clean($("fPosDefault").value) || OWNER_POSITION_DEFAULT}];
+      // if only owner row exists and empty desired, keep as is
+    }
+    renderEmpEditor();
+    updatePreview();
+  }
+
+  // ===== FORM / STATE =====
+  let selectedId = "";
+
+  function getForm(){
+    return {
+      id: selectedId || uid(),
+      date: $("fDate").value || todayISO(),
+      type: clean($("fType").value),
+      client: clean($("fClient").value),
+      object: clean($("fObject").value),
+      addr: clean($("fAddr").value),
+      shift: clean($("fShift").value),
+      mode: clean($("fMode").value),
+      posDefault: clean($("fPosDefault").value),
+      employees: employees.map(e=>({
+        name: clean(e.name),
+        bewid: clean(e.bewid),
+        position: clean(e.position)
+      })),
+      sigEmp: padEmp.toDataURL(),
+      sigClient: padCli.toDataURL()
+    };
+  }
+
+  function setForm(d){
+    $("fDate").value = d.date || todayISO();
+    $("fType").value = d.type || "Hotel";
+    $("fClient").value = d.client || "";
+    $("fObject").value = d.object || "";
+    $("fAddr").value = d.addr || "";
+    $("fShift").value = d.shift || "";
+    $("fMode").value = d.mode || "Selbständige";
+    $("fPosDefault").value = d.posDefault || OWNER_POSITION_DEFAULT;
+    employees = Array.isArray(d.employees) && d.employees.length ? d.employees : [defaultRow()];
+    padEmp.fromDataURL(d.sigEmp || "");
+    padCli.fromDataURL(d.sigClient || "");
+    renderEmpEditor();
+    updateSigStates();
+    updatePreview();
+  }
+
+  function validate(d){
+    const missing = [];
+    if(!d.date) missing.push("Datum");
+    if(!d.client) missing.push("Kunde");
+    if(!d.object) missing.push("Objekt");
+    if(!d.shift) missing.push("Schichtzeit");
+    if(!d.employees?.length) missing.push("Mitarbeiter");
+    // require at least first employee name
+    if(!clean(d.employees[0]?.name)) missing.push("Name (Row 1)");
+    return missing;
+  }
+
+  function updateSigStates(){
+    const emp = padEmp.toDataURL();
+    const cli = padCli.toDataURL();
+    $("empState").textContent = emp ? "gesetzt" : "keine";
+    $("cliState").textContent = cli ? "gesetzt" : "keine";
+    setDot($("empDot"), !!emp);
+    setDot($("cliDot"), !!cli);
+  }
+
+  function updatePreview(){
+    const d = getForm();
+
+    $("pId").textContent = d.id || "—";
+    $("pDate").textContent = d.date || "—";
+    $("pDate2").textContent = d.date || "—";
+    $("pType").textContent = d.type || "—";
+    $("pClient").textContent = d.client || "—";
+    $("pObject").textContent = d.object || "—";
+    $("pAddr").textContent = d.addr || "—";
+    $("pShift").textContent = d.shift || "—";
+
+    // employees table (exact like your form)
+    const tbody = $("pEmpTbody");
+    tbody.innerHTML = "";
+    const list = (d.employees || []);
+    for(let i=0;i<list.length;i++){
+      const emp = list[i];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${emp.name || "—"}</td>
+        <td>${emp.bewid || "—"}</td>
+        <td>${emp.position || "—"}</td>
+        <td><div class="pSignSlot"></div></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    const empSig = d.sigEmp;
+    const cliSig = d.sigClient;
+
+    if(empSig){
+      $("pEmpSig").src = empSig;
+      $("pEmpSig").style.display = "block";
+    }else{
+      $("pEmpSig").removeAttribute("src");
+      $("pEmpSig").style.display = "none";
+    }
+
+    if(cliSig){
+      $("pClientSig").src = cliSig;
+      $("pClientSig").style.display = "block";
+    }else{
+      $("pClientSig").removeAttribute("src");
+      $("pClientSig").style.display = "none";
+    }
+  }
+
+  // ===== HISTORY LIST =====
+  function renderList(){
+    const list = loadList().sort((a,b)=> (b.date||"").localeCompare(a.date||"") || (b.id||"").localeCompare(a.id||""));
+    const box = $("list");
+    box.innerHTML = "";
+    if(!list.length){
+      const div = document.createElement("div");
+      div.className = "hint";
+      div.textContent = "Noch keine Einsätze gespeichert.";
+      box.appendChild(div);
+      return;
+    }
+    for(const it of list){
+      const div = document.createElement("div");
+      div.className = "item";
+      div.dataset.id = it.id;
+      const firstName = it.employees?.[0]?.name || "—";
+      div.innerHTML = `
+        <div class="t">${it.mode || "—"} • ${firstName} • ${it.object || "Objekt"} ✓</div>
+        <div class="s">${it.date || ""} • ${it.shift || ""} • ${it.client || ""} • ${it.type || ""}</div>
+        <div class="s">Einsatz-ID: ${it.id}</div>
+      `;
+      div.addEventListener("click", ()=>{
+        selectedId = it.id;
+        setForm(it);
+        highlightSelected();
+      });
+      box.appendChild(div);
+    }
+    highlightSelected();
+  }
+
+  function highlightSelected(){
+    document.querySelectorAll(".item").forEach(el=>{
+      el.style.outline = (el.dataset.id === selectedId) ? "3px solid rgba(58,166,255,.35)" : "none";
+    });
+  }
+
+  // ===== SAVE / UPDATE / DELETE =====
+  function saveNew(){
+    updateSigStates();
+    const d = getForm();
+    d.id = uid();
+    const missing = validate(d);
+    if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+    const list = loadList();
+    list.push(d);
+    saveList(list);
+    selectedId = d.id;
+    renderList();
+    updatePreview();
+    alert("Neuer Einsatz gespeichert ✓");
+  }
+
+  function updateSelected(){
+    if(!selectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+    updateSigStates();
+    const d = getForm();
+    d.id = selectedId;
+    const missing = validate(d);
+    if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+    const list = loadList();
+    const idx = list.findIndex(x=>x.id === selectedId);
+    if(idx < 0){ alert("Eintrag nicht gefunden."); return; }
+    list[idx] = d;
+    saveList(list);
+    renderList();
+    updatePreview();
+    alert("Einsatz aktualisiert ✓");
+  }
+
+  function deleteSelected(){
+    if(!selectedId){ alert("Bitte zuerst einen Einsatz auswählen."); return; }
+    if(!confirm("Diesen Einsatz wirklich löschen?")) return;
+    const list = loadList().filter(x=>x.id !== selectedId);
+    saveList(list);
+    selectedId = "";
+    clearForm();
+    renderList();
+  }
+
+  function clearForm(){
+    $("fDate").value = todayISO();
+    $("fType").value = "Hotel";
+    $("fClient").value = "";
+    $("fObject").value = "";
+    $("fAddr").value = "";
+    $("fShift").value = "";
+    $("fMode").value = "Selbständige";
+    $("fPosDefault").value = OWNER_POSITION_DEFAULT;
+    employees = [defaultRow()];
+    padEmp.clear();
+    padCli.clear();
+    selectedId = "";
+    renderEmpEditor();
+    updateSigStates();
+    updatePreview();
+    highlightSelected();
+  }
+
+  // ===== PDF / PRINT =====
+  async function generatePDF(){
+    updateSigStates();
+    updatePreview();
+
+    const d = getForm();
+    const missing = validate(d);
+    if(missing.length){ alert("Bitte ausfüllen: " + missing.join(", ")); return; }
+
+    const el = $("paper");
+    const scale = Math.min(2, (window.devicePixelRatio || 1));
+    const cnv = await html2canvas(el, {scale, useCORS:true, backgroundColor:"#ffffff", scrollX:0, scrollY:0});
+    const imgData = cnv.toDataURL("image/png");
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p","mm","a4");
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 8;
+    const maxW = pageW - margin*2;
+    const maxH = pageH - margin*2;
+    const ratio = Math.min(maxW/cnv.width, maxH/cnv.height);
+    const w = cnv.width * ratio;
+    const h = cnv.height * ratio;
+    pdf.addImage(imgData, "PNG", (pageW-w)/2, margin, w, h, undefined, "FAST");
+
+    const safe = (s)=> (s||"").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"_") || "Einsatz";
+    const firstName = d.employees?.[0]?.name || "Name";
+    const filename = `Einsatzmeldung_${d.date}_${safe(d.mode)}_${safe(firstName)}_${safe(d.client)}_${safe(d.object)}.pdf`;
+    pdf.save(filename);
+  }
+
+  function printA4(){
+    updateSigStates();
+    updatePreview();
+    window.print();
+  }
+
+  // ===== CLICKABLE TEL/MAIL =====
+  const call = (n)=> window.location.href = "tel:" + String(n).replace(/\s+/g,"");
+  const mail = (m)=> window.location.href = "mailto:" + String(m).trim();
+  $("btnCall").addEventListener("click", ()=>call("015778697052"));
+  $("btnMail").addEventListener("click", ()=>mail("Kontakt.mass.bremen@hotmail.com"));
+
+  // ===== EVENTS =====
+  $("fMode").addEventListener("change", applyMode);
+  $("fPosDefault").addEventListener("input", ()=>{
+    // update default position in empty positions
+    const pos = clean($("fPosDefault").value) || OWNER_POSITION_DEFAULT;
+    employees = employees.map(e => ({...e, position: e.position ? e.position : pos}));
+    renderEmpEditor();
+    updatePreview();
+  });
+
+  ["fDate","fType","fClient","fObject","fAddr","fShift"].forEach(id=>{
+    $(id).addEventListener("input", updatePreview);
+    $(id).addEventListener("change", updatePreview);
+  });
+
+  $("btnEmpClear").addEventListener("click", ()=>{ padEmp.clear(); updateSigStates(); updatePreview(); });
+  $("btnClientClear").addEventListener("click", ()=>{ padCli.clear(); updateSigStates(); updatePreview(); });
+
+  $("btnAddEmp").addEventListener("click", addEmployee);
+  $("btnSaveNew").addEventListener("click", saveNew);
+  $("btnUpdate").addEventListener("click", updateSelected);
+  $("btnClear").addEventListener("click", clearForm);
+  $("btnDelete").addEventListener("click", deleteSelected);
+  $("btnPDF").addEventListener("click", ()=>generatePDF().catch(e=>{ console.error(e); alert("PDF Fehler: " + (e?.message || e)); }));
+  $("btnPrint").addEventListener("click", printA4);
+
+  $("logoFile").addEventListener("change", async (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(!file.type.startsWith("image/")){ alert("Bitte ein Bild auswählen."); return; }
+    const dataUrl = await new Promise((res,rej)=>{
+      const fr = new FileReader();
+      fr.onload = ()=>res(fr.result);
+      fr.onerror = ()=>rej(fr.error);
+      fr.readAsDataURL(file);
+    });
+    setLogo(dataUrl);
+    alert("Logo gespeichert ✓");
+    e.target.value = "";
+  });
+
+  // ===== INIT =====
+  function init(){
+    applyLogo();
+    $("fDate").value = todayISO();
+    $("fPosDefault").value = OWNER_POSITION_DEFAULT;
+    $("fMode").value = "Selbständige";
+    employees = [defaultRow()];
+
+    padEmp.resize();
+    padCli.resize();
+    window.addEventListener("resize", ()=>{ padEmp.resize(); padCli.resize(); });
+
+    renderEmpEditor();
+    updateSigStates();
+    updatePreview();
+    renderList();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Masculine Security — Einsatzmeldung (Pro)</title>
